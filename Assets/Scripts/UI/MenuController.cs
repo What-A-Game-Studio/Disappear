@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MenuController : MonoBehaviour
 {
-    [SerializeField]
-    MenuType menuName;
-    public MenuType MenuName { get { return menuName; } }
+    [SerializeField] private MenuType menuName;
+
     public bool IsOpen;
+    public MenuType MenuName => menuName;
+
     public void Open()
     {
         IsOpen = true;

@@ -1,17 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
 using Photon.Realtime;
+using TMPro;
+using UnityEngine;
 
 public class RoomListItemController : MonoBehaviour
 {
+    [SerializeField] private TMP_Text roomNameTxt;
 
-    [SerializeField]
-    TMP_Text roomNameTxt;
-
-    [SerializeField]
-    TMP_Text nbPlayerTxt;
+    [SerializeField] private TMP_Text nbPlayerTxt;
 
     private RoomInfo roomInfo;
 
@@ -20,7 +15,6 @@ public class RoomListItemController : MonoBehaviour
         this.roomInfo = roomInfo;
         roomNameTxt.text = roomInfo.Name;
         nbPlayerTxt.text = roomInfo.PlayerCount + "/" + roomInfo.MaxPlayers;
-
     }
 
     public void JoinRoom()

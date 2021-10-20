@@ -1,21 +1,16 @@
-using Photon.Realtime;
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerListItemController : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
-    TMP_Text playerNameTxt;
+    [SerializeField] private TMP_Text playerNameTxt;
 
-    [SerializeField]
-    TMP_Text PlayerPingTxt;
+    [SerializeField] private TMP_Text PlayerPingTxt;
 
-    [SerializeField]
-    Image playerHostImage;
+    [SerializeField] private Image playerHostImage;
 
     private Player playerInfo;
 
@@ -28,10 +23,7 @@ public class PlayerListItemController : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        if (playerInfo == otherPlayer)
-        {
-            Destroy(gameObject);
-        }
+        if (playerInfo == otherPlayer) Destroy(gameObject);
     }
 
     public override void OnLeftRoom()
