@@ -6,17 +6,17 @@ using System.IO;
 
 public class PlayerManager : MonoBehaviour
 {
-    PhotonView pv;
+    PhotonView photonView;
 
     private void Awake()
     {
-        pv = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (pv.IsMine) // PV.IsMine == true if controller own by local client
+        if (photonView.IsMine) // PV.IsMine == true if controller own by local client
         {
             CreateController();
         }

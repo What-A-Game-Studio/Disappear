@@ -16,22 +16,23 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
     public bool separateControls { get; private set; }
     #endregion
 
-    private static RoomManager instance;
     public static RoomManager Instance
     {
-        get
-        {
-            if (instance == null) instance = FindObjectOfType<RoomManager>();
-            return instance;
-        }
-        set { instance = value; }
+        get;
+        private set;
     }
     private const byte playerQuitEventCode = 1;
     private string leavingPlayer;
 
     private void Awake()
     {
+        if (RoomManager.Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
         DontDestroyOnLoad(gameObject);
+        RoomManager.Instance = this;
     }
 
     public override void OnEnable()
@@ -96,7 +97,7 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
     #region  ======================= Private : Start  =======================
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        if (scene.buildIndex == 1) //if game secene 
+        if (scene.name == "MultiplayerGameScene") //if game secene 
         {
             //Instantiate RoomMangar at (0,0,0) because it's a Empty
             PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, "PlayerManager"), Vector3.zero, Quaternion.identity);

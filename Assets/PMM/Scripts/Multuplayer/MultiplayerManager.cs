@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
 
-    public static string PhotonPrefabPath { get; set; } = "PhotonPrefabs";
+    public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
     [Header("Inputs")]
     [SerializeField]
