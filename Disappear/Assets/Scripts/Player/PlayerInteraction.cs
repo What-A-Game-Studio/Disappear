@@ -18,17 +18,14 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E) && interactableObject != null)
         {
-            Debug.Log("Input");
             interactableObject.onInteract?.Invoke(this.transform.parent.gameObject);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Detect trigger");
         if (other.CompareTag("Interactable"))
         {
-            Debug.Log("Detect Interactable");
             if (!other.TryGetComponent(out interactableObject))
             {
                 interactableObject = null;
