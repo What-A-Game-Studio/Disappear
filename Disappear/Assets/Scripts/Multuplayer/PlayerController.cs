@@ -116,16 +116,17 @@ public class PlayerController : MonoBehaviour, Groundable
     }
     private void MoveControls()
     {
+        if (!OnSlope(true))
+        {
+            moveAmount = Vector3.zero;
+            return;
+        }
         Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         
-        if (OnSlope())
-        {
-            moveDir =  GetSlopeDirection(moveDir) * Time.fixedDeltaTime;
-        }
-        moveAmount = Vector3.SmoothDamp(moveAmount,
-            moveDir * GetSpeed(),
-            ref smoothMoveVelocity,
-            smoothTime);
+            moveAmount = Vector3.SmoothDamp(moveAmount,
+                moveDir * GetSpeed(),
+                ref smoothMoveVelocity,
+                smoothTime);
     }
 
     private float GetSpeed()
@@ -178,22 +179,19 @@ public class PlayerController : MonoBehaviour, Groundable
         cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
     }
     
-    private bool OnSlope()
+    private bool OnSlope(bool checkCanWalk = false)
     {
-        Debug.DrawRay(transform.position,Vector3.down*(collider.height/2f+0.3f), Color.red);
         
         if (Physics.Raycast(transform.position,Vector3.down, out slopeHit, collider.height/2f+0.3f,mask))
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            Debug.Log("hit ! " + slopeHit.transform.name + " " +angle + "°" );
-            return angle > maxSlopeAngle && angle != 0;
+            if(!checkCanWalk)
+                return angle != 0;
+            else
+                return angle < maxSlopeAngle;
         }
         return false;
     }
 
-    private Vector3 GetSlopeDirection(Vector3 moveDir)
-    {
-        Debug.DrawRay(transform.position,Vector3.ProjectOnPlane(moveDir, slopeHit.normal).normalized, Color.red);
-        return Vector3.ProjectOnPlane(moveDir, slopeHit.normal).normalized;
-    }
+
 }

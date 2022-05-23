@@ -376,6 +376,11 @@ PrefabInstance:
       propertyPath: mask.m_Bits
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3890693891190730715, guid: 9464aa24fb6708848ad105c84a4f11d7,
+        type: 3}
+      propertyPath: maxSlopeAngle
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 3890693891190730716, guid: 9464aa24fb6708848ad105c84a4f11d7,
         type: 3}
       propertyPath: m_RootOrder
