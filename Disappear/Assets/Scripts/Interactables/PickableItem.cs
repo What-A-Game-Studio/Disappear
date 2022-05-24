@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class PickUpItem : Item
+public class PickableItem : Item
 {
     private PlayerInventory inventory;
     
