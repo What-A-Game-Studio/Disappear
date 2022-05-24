@@ -21,6 +21,7 @@ public class Case
 public class InventoryUIManager : MonoBehaviour
 {
     private List<Case> listCases = new List<Case>();
+    private List<Case> overlapCases = new List<Case>();
 
     public static InventoryItem draggingItem;
     public static bool isDragging;
@@ -70,37 +71,47 @@ public class InventoryUIManager : MonoBehaviour
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        listCases[index].Img.color = listCases[index].Occupied ? Color.red : Color.green;
-       // CheckSurroundingCases(index);
+        CheckSurroundingCases(index);
         draggingItem.OnMouseOverCase(pointerData.pointerEnter.transform.position);
     }
 
-    private bool CheckSurroundingCases(int baseCaseIndex)
+    private void CheckSurroundingCases(int baseCaseIndex)
     {
+        overlapCases.Add(listCases[baseCaseIndex]);
         int y = baseCaseIndex / gridWidth;
         int x = baseCaseIndex - (y * gridWidth);
         int itemWidth = draggingItem.ItemSize.x - 1;
         int itemHeight = draggingItem.ItemSize.y - 1;
-        for (int i = y - itemHeight; i < y + itemHeight; i++)
+
+        if (itemHeight > 0)
         {
-            for (int j = x - itemWidth; i < x + itemWidth; j++)
+            overlapCases.Add(listCases[(y + draggingItem.SelectedPart.y) * gridWidth + x]);
+        }
+
+        bool allCaseFree = true;
+        foreach (Case c in overlapCases)
+        {
+            if (c.Occupied)
             {
-                if (i >= 0 && i <= gridHeight)
-                {
-                    Case checkingCase = listCases[i * gridWidth + x];
-                    if (checkingCase.Occupied)
-                    {
-                        checkingCase.Img.color = Color.red;
-                    }
-                    else
-                    {
-                        checkingCase.Img.color = Color.green;
-                    }
-                }
+                allCaseFree = false;
+                break;
             }
         }
 
-        return true;
+        if (allCaseFree)
+        {
+            foreach (Case c in overlapCases)
+            {
+                c.Img.color = Color.green;
+            }
+        }
+        else
+        {
+            foreach (Case c in overlapCases)
+            {
+                c.Img.color = Color.red;
+            }
+        }
     }
 
     public void ColorOnMouseExitCase(BaseEventData data)
@@ -109,7 +120,12 @@ public class InventoryUIManager : MonoBehaviour
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        listCases[index].Img.color = Color.white;
+        foreach (Case c in overlapCases)
+        {
+            c.Img.color = Color.white;
+        }
+
+        overlapCases.Clear();
         draggingItem.OnMouseExitCase();
     }
 

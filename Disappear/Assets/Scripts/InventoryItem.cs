@@ -9,6 +9,11 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private Vector2Int selectedPart;
 
+    public Vector2Int SelectedPart
+    {
+        get { return selectedPart; }
+    }
+
     private Vector2 mousePosition;
     private Vector2 startPosition;
     private Vector2 differencePoint;
@@ -68,8 +73,8 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         Vector2 posLocal = transform.InverseTransformPoint(mousePosition);
-        selectedPart.x = posLocal.x < 0 ? 0 : 1;
-        selectedPart.y = posLocal.y < 0 ? 0 : 1;
+        selectedPart.x = posLocal.x < 0 ? 1 : -1;
+        selectedPart.y = posLocal.y >= 0 ? 1 : -1;
         Debug.Log("SelectedPart : " + selectedPart);
 
         oldPosition = transform.position;
