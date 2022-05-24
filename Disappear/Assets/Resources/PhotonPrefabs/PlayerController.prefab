@@ -97,7 +97,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.3
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 405707022988291170}
-  sceneViewId: 1
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &405707022988291170
@@ -170,7 +170,6 @@ MonoBehaviour:
     m_Bits: 1
   currentSpeed: 0
   <Grounded>k__BackingField: 0
-  angle: 0
 --- !u!1 &3305526283022994802
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,7 +197,7 @@ Transform:
   m_GameObject: {fileID: 3305526283022994802}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 1, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8166667921074782656}
