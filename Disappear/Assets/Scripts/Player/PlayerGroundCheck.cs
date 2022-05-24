@@ -3,6 +3,6 @@ using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
 
-public class PlayerGroundCheck : GroundCheck<PlayerController>
+public class PlayerGroundCheck : GroundCheck<PlayerControllerBis>
 {
 }
