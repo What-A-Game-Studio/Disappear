@@ -1019,6 +1019,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2075396466868102050, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: downForceSlope
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 2930072519294234951, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}
       propertyPath: sceneViewId
@@ -1083,6 +1088,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerController
+      objectReference: {fileID: 0}
+    - target: {fileID: 5404921602855517816, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: m_Mass
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b94ba26fe3f0ddb4e865ebc15f48b198, type: 3}

@@ -1,191 +1,263 @@
-using Photon.Pun;
+using System;
+using System.Collections;
 using UnityEngine;
+using Photon.Pun;
 
 public class PlayerController : MonoBehaviour, Groundable
 {
     [Header("Camera")] 
-    [SerializeField] private GameObject cameraHolder;
-    [SerializeField] private float mouseSpeed=1.0f;
+    [SerializeField] private GameObject cameraObject;
     
-    [Header("Move")]
-    [SerializeField] private float speedBase;
-    [SerializeField] private float airSpeedMultiplier;
-
+    [Header("Walking")] 
+    [SerializeField] protected float speed;
+    [SerializeField] protected float drag;
+    private float horizontalInput, verticalInput;
+    private Vector3 moveDirection;
+    private const float SpeedModifier = 10f;
+    private Transform orientation;
     
-    [Header("Sprint")]
+    [Header("Sprinting")] 
     [SerializeField] private float sprintSpeedMultiplier;
     
-    [SerializeField] private float sprintRecoverTime;
-    [SerializeField] private float staminaMax;
-    [SerializeField]  private float currentStamina;
-    [SerializeField] private float staminaSpentPerSeconds;
-    [SerializeField] private float staminaRecoverPerSeconds;
-    
-    [Header("Crouch")]
+    [Header("Crouching")] 
     [SerializeField] private float crouchSpeedMultiplier;
+    //Do the job for now 
+    //Change when we have better model
+    [SerializeField] private float crouchYScale;
+    [SerializeField] private float crouchingDownForce;
+    private float crouchOriginYScale;
     
-    [Header("Lie")]
-    [SerializeField] private float lieSpeedMultiplier;
-    [SerializeField] private float smoothTime;
     
-    [Header("Jump")]
-    [SerializeField] private float jumpForce;
-
-    [Header("Slop")] 
+    [Header("Jump")] 
+    [SerializeField]
+    private float jumpForce;
+    [SerializeField]
+    private float jumpCooldown;
+    [SerializeField]
+    private float airMultiplier;
+    private bool readyToJump = true;
+    public bool Grounded { get; set; }
+    
+    [Header("Slope")] 
     [SerializeField]
     private float maxSlopeAngle = 45f;
     [SerializeField] 
-    private float downForceSlope = 80f;
+    private float downForceSlope = 8f;
     [SerializeField]
     private LayerMask mask = 0;
     private RaycastHit slopeHit;
+    private float angle;
     
-    private float verticalLookRotation;
-    public bool Grounded { get; set; }
-
-    private bool jump;
-    
-    private Vector3 smoothMoveVelocity;
-    private Vector3 moveAmount;
-
+    PhotonView pv;
     private Rigidbody rb;
     private CapsuleCollider collider;
-    PhotonView pv;
 
-    void Awake()
+    private void Awake()
     {
+        pv = GetComponent<PhotonView>();
+        if (pv == null)
+            throw new Exception("PlayerController required PhotonView !");
+        
+        if(!pv.IsMine) 
+            return;
+        
+        if (cameraObject == null)
+            throw new Exception("PlayerController required CameraHolderPrefab !");
+        
+        orientation = transform.Find("Orientation");
+        if (orientation == null)
+            throw new Exception("PlayerController required Orientation GameObject in theres children!");
+        
+        
+        GameObject cameraHolder = Instantiate(cameraObject);
+        CameraController cameraController = cameraHolder.GetComponent<CameraController>();
+        cameraController.Orientation = orientation;
+        
+        
         collider = GetComponent<CapsuleCollider>(); 
         rb = GetComponent<Rigidbody>();
-        pv = GetComponent<PhotonView>();
+        rb.freezeRotation = true;
     }
 
-    void Start()
+    // Start is called before the first frame update
+    private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        //Is mine mean is local player
-        if (!pv.IsMine)
-        {
-            Destroy(GetComponentInChildren<Camera>().gameObject);
-            Destroy(rb);
-            return;
-        }
-
-        currentStamina = staminaMax;
-
+        crouchOriginYScale = transform.localScale.y;
     }
 
-    void Update()
+    // Update is called once per frame
+    private void Update()
     {
         if(!pv.IsMine)
             return;
-        Look();
-        MoveControls();
-        JumpControls();
-        //Debug.DrawRay(transform.position,Vector3.down * (collider.height/2f+0.2f), Color.red);
+        
+        InputsControls();
+        SpeedControl();
+        if (Grounded)
+            rb.drag = drag;
+        else
+            rb.drag = 0;
     }
-
 
     private void FixedUpdate()
     {
         if(!pv.IsMine)
             return;
         Move();
-        Jump();
-
     }
+
     
-    private void JumpControls()
-    {
-        jump = Input.GetButton("Jump") && Grounded;
-    }
+    /// <summary>
+    /// Handle user input
+    /// </summary>
+    private void InputsControls()
+    {     
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
 
-    private void Jump()
-    {
-        if (jump)
+        if (Input.GetButtonDown("Jump") && readyToJump && Grounded)
         {
-            //Reset the Y velocity to make sure the jump height is the same every time
-            Vector3 v = rb.velocity;
-            v = new Vector3(v.x, 0f, v.z);
-            rb.velocity = v;
-            
-            rb.AddForce(transform.up * jumpForce);
-            Grounded = false;
-            jump = true;
+            readyToJump = false;
+            Jump();
+            StartCoroutine(ResetJump());
+        }
+
+        Vector3 localScale = transform.localScale;
+        if (Input.GetButtonDown("Crouch"))
+        {
+            localScale = new Vector3(localScale.x, crouchYScale, localScale.z);
+            transform.localScale = localScale;
+            rb.AddForce(Vector3.down * crouchingDownForce, ForceMode.Impulse);
+        }
+
+        if (Input.GetButtonUp("Crouch"))
+        {
+            transform.localScale = new Vector3(localScale.x, crouchOriginYScale, localScale.z);
         }
     }
-    private void MoveControls()
+
+    /// <summary>
+    /// Apply physics based of InputsControls
+    /// </summary>
+    protected virtual void Move()
     {
-        Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        //calculate dir 
+        moveDirection = (orientation.forward * verticalInput + orientation.right * horizontalInput);
+        Vector3 movDir;
         
-        moveAmount = Vector3.SmoothDamp(moveAmount,
-            moveDir * GetSpeed(),
-            ref smoothMoveVelocity,
-            smoothTime);
-    }
-
-    private float GetSpeed()
-    {
-        float calculateSpeed = speedBase;
-        if (!Grounded)
-            return calculateSpeed * airSpeedMultiplier;
-        if (Input.GetButton("Lie"))
-        {
-            calculateSpeed *= lieSpeedMultiplier;
-            return calculateSpeed;
-        }
-
-        if (Input.GetButton("Sprint"))
-        {
-            calculateSpeed *= sprintSpeedMultiplier;
-            currentStamina -= staminaSpentPerSeconds * Time.deltaTime;
-        }
-        else if(currentStamina <= staminaMax)
-        {
-            currentStamina += staminaRecoverPerSeconds * Time.deltaTime;
-        }
-
-        if (Input.GetButton("Crouch"))
-        {
-            calculateSpeed *= crouchSpeedMultiplier;
-        }
-
-        return calculateSpeed;
-    }
-    
-
-    private void Move()
-    {
+        //on slope we turn off gravity
+        //for avoid slip down
         bool onSlope = OnSlope();
         rb.useGravity = !onSlope;
-        if (onSlope && rb.velocity.y > 0)
+        if (onSlope)
         {
-            rb.AddForce(Vector3.down * downForceSlope, ForceMode.Force);
+            if (angle < maxSlopeAngle)
+            {
+                movDir = GetSlopeMoveDirection();
+            }
+            else
+            {
+                movDir = Vector3.zero;
+            }
+
+            if(rb.velocity.y > 0f)
+                rb.AddForce(Vector3.down * downForceSlope, ForceMode.Force);
         }
-        rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
-        
-    }
-    void Look()
-    {
-        //Rotate Character
-        transform.Rotate(Vector3.up * (Input.GetAxisRaw("Mouse X") * mouseSpeed));
-        verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSpeed;
-        verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
-        cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
+        else
+        {
+            movDir = moveDirection.normalized;
+        }
+        rb.AddForce(movDir * (GetSpeed() * SpeedModifier), ForceMode.Force);
     }
     
+    /// <summary>
+    /// "clamp" speed at max speed 
+    /// </summary>
+    private void SpeedControl()
+    {
+        float currentSpeed = GetSpeed();
+            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            if (flatVel.magnitude > currentSpeed)
+            {
+                flatVel = flatVel.normalized * currentSpeed;
+                rb.velocity = new Vector3(flatVel.x, rb.velocity.y, flatVel.z);
+            }
+    }
+
+    /// <summary>
+    /// Calculate player speed based on Inputs & position
+    /// </summary>
+    /// <returns>Speed value</returns>
+    private float GetSpeed()
+    {
+        float resultSpeed = speed;
+        if (Grounded && Input.GetButton("Sprint"))
+        {
+            resultSpeed *= sprintSpeedMultiplier;
+        }
+        if (!Grounded)
+        {
+            resultSpeed *= airMultiplier;
+        }
+
+        if (Grounded && Input.GetButton("Crouch"))
+        {
+            resultSpeed *= crouchSpeedMultiplier;
+        }
+
+        if (angle > maxSlopeAngle)
+        {
+            resultSpeed = 0f;
+        }
+        return resultSpeed;
+    }
+    
+    /// <summary>
+    /// Apply Jump physics
+    /// </summary>
+    private void Jump()
+    {
+        //rest y velocity
+        Vector3 velocity = rb.velocity;
+        velocity = new Vector3(velocity.x, 0f, velocity.z);
+        rb.velocity = velocity;
+        rb.AddForce(transform.up* jumpForce, ForceMode.Impulse);
+    }
+
+    /// <summary>
+    ///  After seconds reactive jump & store slope angle in "angle"
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ResetJump()
+    {
+        yield return new WaitForSeconds(jumpCooldown);
+        readyToJump = true;
+    }
+    
+    /// <summary>
+    /// Check if player is on slope
+    /// </summary>
+    /// <returns></returns>
     private bool OnSlope()
     {
+        angle = 0;
         Debug.DrawRay(transform.position,Vector3.down*(collider.height/2f+0.3f), Color.red);
-        
+
         if (Physics.Raycast(transform.position,Vector3.down, out slopeHit, collider.height/2f+0.3f,mask))
         {
-            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-            Debug.Log("hit ! " + slopeHit.transform.name + " " +angle + "°" );
-            return angle > maxSlopeAngle && angle != 0;
+            angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlopeAngle && angle != 0;
         }
         return false;
     }
 
-
+    /// <summary>
+    /// Calculate direction based on slope 
+    /// </summary>
+    /// <returns></returns>
+    private Vector3 GetSlopeMoveDirection()
+    {
+        
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
 }
