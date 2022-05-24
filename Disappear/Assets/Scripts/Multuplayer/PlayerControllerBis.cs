@@ -32,11 +32,23 @@ public class PlayerControllerBis : MonoBehaviour, Groundable
     private float airMultiplier;
     private bool readyToJump = true;
     
+    [Header("Slope")] 
+    [SerializeField]
+    private float maxSlopeAngle = 45f;
+    [SerializeField] 
+    private float downForceSlope = 8f;
+    [SerializeField]
+    private LayerMask mask = 0;
+    private RaycastHit slopeHit;
+    private float angle;
+    
     [Header("DEBUG")]
     [SerializeField]
     private float currentSpeed = 0;
     [field:SerializeField]
     public bool Grounded { get; set; }
+
+    
     
     
     PhotonView pv;
@@ -115,37 +127,65 @@ public class PlayerControllerBis : MonoBehaviour, Groundable
             StartCoroutine(ResetJump());
         }
 
+        Vector3 localScale = transform.localScale;
         if (Input.GetButtonDown("Crouch"))
         {
-            transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
+            localScale = new Vector3(localScale.x, crouchYScale, localScale.z);
+            transform.localScale = localScale;
             rb.AddForce(Vector3.down * crouchingDownForce, ForceMode.Impulse);
-            
         }
 
         if (Input.GetButtonUp("Crouch"))
         {
-            transform.localScale = new Vector3(transform.localScale.x, crouchOriginYScale, transform.localScale.z);
+            transform.localScale = new Vector3(localScale.x, crouchOriginYScale, localScale.z);
         }
     }
 
     protected virtual void Move()
     {
         //calculate dir 
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;        
-        rb.AddForce(moveDirection.normalized * (GetSpeed() * SpeedModifier), ForceMode.Force);
+        moveDirection = (orientation.forward * verticalInput + orientation.right * horizontalInput);
+        Vector3 movDir;
+        
+        //on slope we turn off gravity
+        //for avoid slip down
+        bool onSlope = OnSlope();
+        rb.useGravity = !onSlope;
+        if (onSlope)
+        {
+            if (angle < maxSlopeAngle)
+            {
+                movDir = GetSlopeMoveDirection();
+            }
+            else
+            {
+                movDir = Vector3.zero;
+            }
+
+            Debug.DrawRay(transform.position,movDir*2, Color.red);
+
+            if(rb.velocity.y > 0f)
+                rb.AddForce(Vector3.down * downForceSlope, ForceMode.Force);
+        }
+        else
+        {
+            movDir = moveDirection.normalized;
+        }
+        Debug.Log(movDir);
+        rb.AddForce(movDir * (GetSpeed() * SpeedModifier), ForceMode.Force);
     }
     /// <summary>
     /// "clamp" speed at max speed 
     /// </summary>
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         float currentSpeed = GetSpeed();
-        if (flatVel.magnitude > currentSpeed)
-        {
-            flatVel = flatVel.normalized * currentSpeed;
-            rb.velocity = new Vector3(flatVel.x, rb.velocity.y, flatVel.z);
-        }
+            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            if (flatVel.magnitude > currentSpeed)
+            {
+                flatVel = flatVel.normalized * currentSpeed;
+                rb.velocity = new Vector3(flatVel.x, rb.velocity.y, flatVel.z);
+            }
     }
 
 
@@ -165,6 +205,11 @@ public class PlayerControllerBis : MonoBehaviour, Groundable
         {
             resultSpeed *= crouchSpeedMultiplier;
         }
+
+        if (angle > maxSlopeAngle)
+        {
+            resultSpeed = 0f;
+        }
         return resultSpeed;
     }
     
@@ -179,5 +224,24 @@ public class PlayerControllerBis : MonoBehaviour, Groundable
     {
         yield return new WaitForSeconds(jumpCooldown);
         readyToJump = true;
+    }
+    
+    private bool OnSlope()
+    {
+        angle = 0;
+        Debug.DrawRay(transform.position,Vector3.down*(collider.height/2f+0.3f), Color.red);
+
+        if (Physics.Raycast(transform.position,Vector3.down, out slopeHit, collider.height/2f+0.3f,mask))
+        {
+            angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlopeAngle && angle != 0;
+        }
+        return false;
+    }
+
+    private Vector3 GetSlopeMoveDirection()
+    {
+        
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
 }

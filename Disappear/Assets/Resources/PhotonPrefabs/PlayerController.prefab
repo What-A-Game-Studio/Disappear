@@ -121,7 +121,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 405707022988291170}
-  sceneViewId: 0
+  sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &405707022988291170
@@ -163,8 +163,14 @@ MonoBehaviour:
   jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.6
+  maxSlopeAngle: 40
+  downForceSlope: 8
+  mask:
+    serializedVersion: 2
+    m_Bits: 1
   currentSpeed: 0
   <Grounded>k__BackingField: 0
+  angle: 0
 --- !u!1 &3305526283022994802
 GameObject:
   m_ObjectHideFlags: 0
