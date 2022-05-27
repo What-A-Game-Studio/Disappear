@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using ExitGames.Client.Photon;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Vector3 = UnityEngine.Vector3;
 
 public class Case
 {
@@ -72,7 +75,7 @@ public class InventoryUIManager : MonoBehaviour
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
         CheckSurroundingCases(index);
-        draggingItem.OnMouseOverCase(pointerData.pointerEnter.transform.position);
+        draggingItem.OnMouseOverCase();
     }
 
     private void CheckSurroundingCases(int baseCaseIndex)
@@ -82,19 +85,29 @@ public class InventoryUIManager : MonoBehaviour
         int x = baseCaseIndex - (y * gridWidth);
         int itemWidth = draggingItem.ItemSize.x - 1;
         int itemHeight = draggingItem.ItemSize.y - 1;
-
-        if (itemHeight > 0)
-        {
-            overlapCases.Add(listCases[(y + draggingItem.SelectedPart.y) * gridWidth + x]);
-        }
-
         bool allCaseFree = true;
-        foreach (Case c in overlapCases)
+
+        int start = y - draggingItem.SelectedPart.y;
+        int end = start + draggingItem.ItemSize.y;
+        Debug.Log("start : " + start);
+        Debug.Log("End :" + end);
+        for (int i = start; i < end; i++)
         {
-            if (c.Occupied)
+            if (i >= 0 && i < gridHeight)
+            {
+                Case checkingCase = listCases[i * gridWidth + x];
+                if (!overlapCases.Contains(checkingCase))
+                {
+                    overlapCases.Add(checkingCase);
+                    if (checkingCase.Occupied)
+                    {
+                        allCaseFree = false;
+                    }
+                }
+            }
+            else
             {
                 allCaseFree = false;
-                break;
             }
         }
 
@@ -132,16 +145,47 @@ public class InventoryUIManager : MonoBehaviour
 
     public void DropItemOnCase(BaseEventData data)
     {
-        Debug.Log("Drop Item...");
-        PointerEventData pointerData = data as PointerEventData;
-        int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        listCases[index].Occupied = true;
-        listCases[index].Img.color = Color.white;
-        draggingItem.StockInCase(index);
+        bool allCaseFree = true;
+        foreach (Case c in overlapCases)
+        {
+            if (c.Occupied || c.Img.color == Color.red)
+            {
+                allCaseFree = false;
+            }
+            c.Img.color = Color.white;
+            
+        }
+
+        if (allCaseFree)
+        {
+            List<int> index = new List<int>();
+            Vector3 itemNewPosition = Vector3.zero;
+
+            foreach (Case c in overlapCases)
+            {
+                index.Add(listCases.IndexOf(c));
+                c.Occupied = true;
+                itemNewPosition += c.Img.transform.position;
+            }
+
+            itemNewPosition /= overlapCases.Count;
+            draggingItem.StockInCase(index, itemNewPosition);
+
+        }
+        else
+        {
+            draggingItem.canDrop = false;
+        }
+        overlapCases.Clear();
     }
 
-    public void CatchItemOnCase(int index)
+    public void CatchItemOnCase(List<int> index)
     {
-        listCases[index].Occupied = false;
+        if (index.Count <= 0) return;
+        for (int i = 0; i < index.Count; i++)
+        {
+            listCases[index[i]].Occupied = false;
+        }
+
     }
 }

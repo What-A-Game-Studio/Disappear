@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     [field: SerializeField] public Vector2Int ItemSize { get; private set; }
 
@@ -14,16 +15,17 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         get { return selectedPart; }
     }
 
+    private RectTransform itemTransform;
+
     private Vector2 mousePosition;
     private Vector2 startPosition;
     private Vector2 differencePoint;
     private Vector2 oldPosition;
-    private Vector2 dropPosition;
-
+    private Vector2 selectedPosition;
     private Image img;
-    private bool isOverCase;
+    public bool canDrop { get; set; }
 
-    public int storedIndex { get; private set; }
+    public List<int> storedIndex { get; private set; }
 
     private void Awake()
     {
@@ -31,6 +33,13 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             Debug.Log("Couldn't find component Image on " + gameObject.name);
         }
+
+        if (!TryGetComponent(out itemTransform))
+        {
+            Debug.Log("Couldn't find component RectTransform on " + gameObject.name);
+        }
+
+        storedIndex = new List<int>();
     }
 
     // Update is called once per frame
@@ -61,8 +70,8 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private void UpdateStartPosition()
     {
-        startPosition.x = transform.position.x;
-        startPosition.y = transform.position.y;
+        startPosition.x = itemTransform.position.x;
+        startPosition.y = itemTransform.position.y;
     }
 
     private void UpdateDifferencePoint()
@@ -70,14 +79,20 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         differencePoint = mousePosition - startPosition;
     }
 
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        UpdateMousePosition();
+        selectedPosition = itemTransform.InverseTransformPoint(mousePosition);
+        selectedPosition.x += itemTransform.sizeDelta.x / 2;
+        selectedPosition.y += itemTransform.sizeDelta.y / 2;
+        selectedPart.x = ItemSize.x - Mathf.FloorToInt(selectedPosition.x / 100) - 1;
+        selectedPart.y = ItemSize.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
+        Debug.Log("selected part : " + selectedPart);
+        oldPosition = itemTransform.position;
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Vector2 posLocal = transform.InverseTransformPoint(mousePosition);
-        selectedPart.x = posLocal.x < 0 ? 1 : -1;
-        selectedPart.y = posLocal.y >= 0 ? 1 : -1;
-        Debug.Log("SelectedPart : " + selectedPart);
-
-        oldPosition = transform.position;
         img.raycastTarget = false;
         InventoryUIManager.draggingItem = this;
         InventoryUIManager.isDragging = true;
@@ -85,23 +100,30 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = mousePosition - differencePoint;
+        itemTransform.position = mousePosition - differencePoint;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isOverCase)
+        Debug.Log("Henlo : " + canDrop);
+
+        if (!canDrop)
         {
-            transform.position = oldPosition;
+            itemTransform.position = oldPosition;
         }
     }
 
-    public void StockInCase(int index)
+    public void StockInCase(List<int> index, Vector2 dropPosition)
     {
-        if (isOverCase)
+        Debug.Log("Stock ? " + canDrop);
+        if (canDrop)
         {
-            transform.position = dropPosition;
+            itemTransform.position = dropPosition;
             storedIndex = index;
+        }
+        else
+        {
+            itemTransform.position = oldPosition;
         }
 
         InventoryUIManager.draggingItem = null;
@@ -110,14 +132,13 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         img.raycastTarget = true;
     }
 
-    public void OnMouseOverCase(Vector2 position)
+    public void OnMouseOverCase()
     {
-        isOverCase = true;
-        dropPosition = position;
+        canDrop = true;
     }
 
     public void OnMouseExitCase()
     {
-        isOverCase = false;
+        canDrop = false;
     }
 }
