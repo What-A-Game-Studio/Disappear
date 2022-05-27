@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
+  m_Name: FoodCan_Data
+  m_EditorClassIdentifier: 
+  <ShortName>k__BackingField: Food can
+  <FullName>k__BackingField: Food can
+  <Description>k__BackingField: "est un contenant m\xE9tallique herm\xE9tique permettant
+    la mise en conserve des aliments et leur maintien \xE0 temp\xE9rature ambiante"
+  <Weight>k__BackingField: 5
+  <Size>k__BackingField: {x: 1, y: 1}
+  <ItemType>k__BackingField: 2
+  <TierEnum>k__BackingField: 1
+  <Model>k__BackingField: {fileID: 919132149155446097, guid: e00faf9dd152f2744815006623b2f658,
+    type: 3}
+  <Image>k__BackingField: {fileID: 2800000, guid: 5c360dc0ebfe1e54eb29cc51bf90536d,
+    type: 3}
