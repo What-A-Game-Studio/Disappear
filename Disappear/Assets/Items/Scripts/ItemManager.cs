@@ -28,6 +28,8 @@ public class ItemManager : MonoBehaviour
             return;
         }
         
+        Debug.Log("ItemManager awaked");
+        
         totalRate = RarityTiers.Sum(tier => tier.Rate);
         spawners = GameObject.FindObjectsOfType<ItemSpawner>();
         foreach (ItemSpawner spawn in spawners)

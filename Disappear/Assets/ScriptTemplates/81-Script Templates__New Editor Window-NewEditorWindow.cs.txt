@@ -5,14 +5,9 @@ using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 
-public class #SCRIPTNAME#: EditorWindow
+[CustomEditor(typeof(#SCRIPTNAME#))]
+public class #SCRIPTNAME#: Editor
 {
-        [MenuItem("Custom Menu/#SCRIPTNAME#")]
-        public static void ShowWindow()
-        {
-            GetWindow<#SCRIPTNAME#>("#SCRIPTNAME#");
-        }
-
         private void OnGUI()
         {
             #NOTRIM#
@@ -22,12 +17,10 @@ public class #SCRIPTNAME#: EditorWindow
         {
             #NOTRIM#
         }
-
-        // Call to create a thin dividing line between Editor UI elements
-        void GuiLine()
+        
+        private void OnSceneGUI()
         {
-            Rect rect = EditorGUILayout.GetControlRect(false, 1);
-            rect.height = 1;
-            EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
+             #SCRIPTNAME# t = (#SCRIPTNAME#)target;
+             #NOTRIM#
         }
 }
