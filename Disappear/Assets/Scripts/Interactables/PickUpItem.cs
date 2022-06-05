@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System;
 using UnityEngine;
 
-public class PickUpItem : Item
+public class PickUpItem : Interactable
 {
     private PlayerInventory inventory;
-    
+    public ItemController ItemController { get; set; }
+
+
     protected override void ActionOnInteract(GameObject sender)
     {
-        if (sender.TryGetComponent(out inventory))
+        if (sender.TryGetComponent<PlayerInventory>(out inventory))
         {
-            inventory.AddItemToInventory(this);
-            PoolSystem.Instance.StoreInPool(this.gameObject.name);
+            inventory.AddItemToInventory(ItemController.ItemData);
+            ItemManager.Instance.StoreItem(this);
         }
         else
         {

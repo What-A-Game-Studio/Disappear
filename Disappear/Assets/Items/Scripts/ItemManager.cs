@@ -12,6 +12,8 @@ public class ItemManager : MonoBehaviour
     
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
+    
+    
     [Header("DEBUG")]
     [SerializeField] private ItemSpawner[] spawners;
 
@@ -101,4 +103,11 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
+
+    public void StoreItem(PickUpItem pickUpItem)
+    {
+        pickUpItem.gameObject.SetActive(false);
+        pickUpItem.transform.parent = transform;
+        pickUpItem.transform.localPosition = Vector3.zero;
+    }
 }

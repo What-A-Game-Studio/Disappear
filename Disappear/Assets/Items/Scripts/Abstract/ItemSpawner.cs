@@ -32,6 +32,7 @@ public abstract class ItemSpawner : MonoBehaviour
         GameObject go = Instantiate(item.Model, SpawnCoordinate(), quaternion.identity);
         go.transform.parent = transform;
         ItemController ic = go.AddComponent<ItemController>();
-                                                         
+        ic.ItemData = item;
+
     }
 }

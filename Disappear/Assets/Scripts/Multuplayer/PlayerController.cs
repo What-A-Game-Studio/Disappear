@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour, Groundable
 {
     [Header("Camera")] 
     [SerializeField] private GameObject cameraObject;
+    [SerializeField] private float cameraSpeed = 300f;
     
     [Header("Walking")] 
     [SerializeField] protected float speed;
@@ -64,15 +65,15 @@ public class PlayerController : MonoBehaviour, Groundable
         if (cameraObject == null)
             throw new Exception("PlayerController required CameraHolderPrefab !");
         
-        orientation = transform.Find("Orientation");
+        orientation = transform.Find("CameraHolder");
         if (orientation == null)
-            throw new Exception("PlayerController required Orientation GameObject in theres children!");
+            throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
         
         
         GameObject cameraHolder = Instantiate(cameraObject);
         CameraController cameraController = cameraHolder.GetComponent<CameraController>();
         cameraController.Orientation = orientation;
-        
+        cameraController.Speed = cameraSpeed;
         
         collider = GetComponent<CapsuleCollider>(); 
         rb = GetComponent<Rigidbody>();

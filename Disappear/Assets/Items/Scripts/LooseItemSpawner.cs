@@ -26,4 +26,5 @@ public class LooseItemSpawner : ItemSpawner
         
         return new Vector3(pos.x, 0, pos.y)  + transform.position;
     }
+
 }

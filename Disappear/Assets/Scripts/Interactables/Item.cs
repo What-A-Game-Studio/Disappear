@@ -4,7 +4,5 @@ using UnityEngine;
 
 public abstract class Item : Interactable
 {
-    protected string name;
-    protected int value;
-    protected int weight;
+
 }

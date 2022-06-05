@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    [SerializeField] private float speed;
+    public float Speed { get; set; }
     [SerializeField] private float minX, maxX;
     private float yRot, xRot;
 
@@ -25,8 +25,8 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         transform.position = Orientation.position;
-        yRot += Input.GetAxisRaw("Mouse X") * Time.deltaTime * speed;
-        xRot -= Input.GetAxisRaw("Mouse Y") * Time.deltaTime * speed;
+        yRot += Input.GetAxisRaw("Mouse X") * Time.deltaTime * Speed;
+        xRot -= Input.GetAxisRaw("Mouse Y") * Time.deltaTime * Speed;
 
         xRot = Mathf.Clamp(xRot, minX, maxX);
 

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public List<Item> itemsInInventory;
+    public List<ItemDataSO> itemsInInventory;
 
-    public void AddItemToInventory(Item item)
+    public void AddItemToInventory(ItemDataSO item)
     {
         itemsInInventory.Add(item);
     }

@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2075396466077718710
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2075396466077718711}
-  m_Layer: 3
-  m_Name: Orientation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2075396466077718711
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2075396466077718710}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2968944649093107016}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2968944649093107022
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,10 +30,9 @@ Transform:
   m_GameObject: {fileID: 2968944649093107022}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -2.89, y: 1.28, z: -3.55}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2075396466077718711}
   - {fileID: 8166667921074782656}
   - {fileID: 8441624208194678369}
   - {fileID: 3705860309108114893}
@@ -121,7 +89,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 405707022988291170}
-  sceneViewId: 0
+  sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &405707022988291170
@@ -154,13 +122,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraObject: {fileID: 8444057675903429607, guid: 155c67809591d3d4591120748144564f,
     type: 3}
+  cameraSpeed: 250
   speed: 5
   drag: 5
   sprintSpeedMultiplier: 1.4
   crouchSpeedMultiplier: 0.4
   crouchYScale: 0.5
   crouchingDownForce: 5
-  jumpForce: 10
+  jumpForce: 6
   jumpCooldown: 0.25
   airMultiplier: 0.6
   maxSlopeAngle: 40
@@ -168,8 +137,6 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 1
-  currentSpeed: 0
-  <Grounded>k__BackingField: 0
 --- !u!1 &3305526283022994802
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +249,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2968944649093107016}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7698142622724479570
 GameObject:
@@ -315,7 +282,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2968944649093107016}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &9128346735600263587
 BoxCollider:
@@ -372,5 +339,5 @@ Transform:
   m_Children:
   - {fileID: 6619887688758993932}
   m_Father: {fileID: 2968944649093107016}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
