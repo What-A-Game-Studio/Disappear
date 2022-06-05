@@ -952,6 +952,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &903216983 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2968944649093107022, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+    type: 3}
+  m_PrefabInstance: {fileID: 2075396466687497218}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &903216990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 903216983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7804c006321bf1142b2a7a51e4a46079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inventoryAnimation: {fileID: 0}
 --- !u!1 &1130699013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1953,8 +1972,8 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2075396466868102050, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}
-      propertyPath: downForceSlope
-      value: 15
+      propertyPath: jumpForce
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2930072519294234951, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}

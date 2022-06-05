@@ -103,11 +103,15 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-
-    public void StoreItem(PickUpItem pickUpItem)
+    public void SpawnItem(string itemName, Vector3 spawnPosition)
     {
-        pickUpItem.gameObject.SetActive(false);
-        pickUpItem.transform.parent = transform;
-        pickUpItem.transform.localPosition = Vector3.zero;
+        // if (itemsChildren.ContainsKey(itemName))
+        //     itemsChildren[itemName].transform.position = spawnPosition;
+    }
+    public void StoreItem(ItemController item)
+    {
+        item.gameObject.SetActive(false);
+        item.transform.parent = transform;
+        item.transform.localPosition = Vector3.zero;
     }
 }

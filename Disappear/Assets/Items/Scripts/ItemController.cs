@@ -24,7 +24,7 @@ public class ItemController : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         gameObject.AddComponent<BoxCollider>();
-        PickUpItem pui = gameObject.AddComponent<PickUpItem>();
+        PickableItem pui = gameObject.AddComponent<PickableItem>();
         pui.ItemController = this;
         // transform.Rotate(GetRdmVector(0,360f));
     }

@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class PickableItem : Item
+public class PickableItem : Interactable
 {
     private PlayerInventory inventory;
-    
+    public ItemController ItemController { get; set; }
+
+
     protected override void ActionOnInteract(GameObject sender)
     {
         if (sender.TryGetComponent(out inventory))
         {
-            inventory.AddItemToInventory(this);
-            PoolSystem.Instance.StoreInPool(this.gameObject.name);
+            inventory.AddItemToInventory(ItemController);
+            ItemManager.Instance.StoreItem(ItemController);
         }
         else
         {

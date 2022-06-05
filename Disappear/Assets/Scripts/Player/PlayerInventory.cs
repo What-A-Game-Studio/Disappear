@@ -7,7 +7,7 @@ using WebSocketSharp;
 
 public class PlayerInventory : MonoBehaviour
 {
-    private List<Item> itemsInInventory = new List<Item>();
+    private List<ItemController> itemsInInventory = new List<ItemController>();
     private bool inventoryOpened = false;
     private PlayerController pc;
 
@@ -56,14 +56,14 @@ public class PlayerInventory : MonoBehaviour
     }
 
 
-    public void AddItemToInventory(Item item)
+    public void AddItemToInventory(ItemController item)
     {
         itemsInInventory.Add(item);
     }
 
-    public void DropItem(Item item)
+    public void DropItem(ItemController item)
     {
-        PoolSystem.Instance.SpawnItem(item.name, transform.position);
+        ItemManager.Instance.SpawnItem(item.name, transform.position);
         itemsInInventory.Remove(item);
     }
 }
