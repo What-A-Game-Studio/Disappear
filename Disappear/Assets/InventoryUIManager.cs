@@ -79,12 +79,12 @@ public class InventoryUIManager : MonoBehaviour
 
     public void StockNewItem(ItemDataSO itemData)
     {
-        Sprite itemSprite = Sprite.Create(itemData.Image,
-            new Rect(0.0f, 0.0f, itemData.Image.width, itemData.Image.height), new Vector2(0.5f, 0.5f));
         GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
-        itemUI.GetComponent<Image>().sprite = itemSprite;
+        itemUI.GetComponent<Image>().sprite = itemData.Image;
         InventoryItem uiInventory = itemUI.GetComponent<InventoryItem>();
         uiInventory.ItemSize = itemData.Size;
+        itemUI.GetComponent<RectTransform>().sizeDelta =
+            new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
 
         for (int i = 0; i < listCases.Count; i++)
         {
@@ -92,6 +92,7 @@ public class InventoryUIManager : MonoBehaviour
 
             if (itemData.Size.x <= 1 && itemData.Size.y <= 1)
             {
+                Debug.Log("Little Item");
                 overlapCases.Add(listCases[i]);
                 uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
@@ -113,7 +114,7 @@ public class InventoryUIManager : MonoBehaviour
         int y = baseCaseIndex / gridWidth;
         int x = baseCaseIndex - (y * gridWidth);
 
-        for (int i = y; i < y + itemSize.y - 1; i++)
+        for (int i = y; i < y + itemSize.y; i++)
         {
             if (i < 0 || i > gridHeight)
             {
@@ -121,7 +122,7 @@ public class InventoryUIManager : MonoBehaviour
                 return false;
             }
 
-            for (int j = x; j < x + itemSize.x - 1; j++)
+            for (int j = x; j < x + itemSize.x; j++)
             {
                 if (j < 0 || j > gridWidth)
                 {
@@ -255,5 +256,6 @@ public class InventoryUIManager : MonoBehaviour
 
         itemNewPosition /= overlapCases.Count;
         item.StockInCase(index, itemNewPosition);
+        overlapCases.Clear();
     }
 }

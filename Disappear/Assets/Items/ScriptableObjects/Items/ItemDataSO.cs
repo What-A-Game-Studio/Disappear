@@ -14,7 +14,7 @@ public class ItemDataSO : ScriptableObject
     [field: SerializeField] public RarityTiersEnum TierEnum { get; private set; }
     
     [field: SerializeField] public GameObject Model { get; private set; }
-    [field: SerializeField] public Texture2D Image { get;private  set; }
+    [field: SerializeField] public Sprite Image { get;private  set; }
 
 
     //Item value =  (Size.X * Size.Y / Tier) * 100 

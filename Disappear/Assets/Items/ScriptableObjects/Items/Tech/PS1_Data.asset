@@ -16,12 +16,11 @@ MonoBehaviour:
   <FullName>k__BackingField: Playstation 1
   <Description>k__BackingField: "console de jeux vid\xE9o 32-bit cinqui\xE8me g\xE9n\xE9ration
     commercialis\xE9 par Sony Computer Entertainment en d\xE9cembre 1994"
-  <Value>k__BackingField: 30
   <Weight>k__BackingField: 3
   <Size>k__BackingField: {x: 1, y: 1}
   <ItemType>k__BackingField: 1
-  <SpawnRate>k__BackingField: 20
+  <TierEnum>k__BackingField: 0
   <Model>k__BackingField: {fileID: 919132149155446097, guid: 4b673f62ecc238a43b6645e29a99482e,
     type: 3}
-  <Image>k__BackingField: {fileID: 2800000, guid: 1680010b9b0302b4e81b612250e3239b,
+  <Image>k__BackingField: {fileID: 21300000, guid: 1680010b9b0302b4e81b612250e3239b,
     type: 3}
