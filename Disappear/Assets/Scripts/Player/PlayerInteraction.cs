@@ -6,19 +6,21 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
 
-    private Interactable interactableObject;
+    public Interactable interactableObject;
     // Start is called before the first frame update
-    void Start()
+
+    private GameObject player;
+    void Awake()
     {
-        
+        player = GameObject.FindGameObjectWithTag("Player") ;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && interactableObject != null)
+        if (Input.GetButtonDown("Interact") && interactableObject != null)
         {
-            interactableObject.onInteract?.Invoke(this.transform.parent.gameObject);
+            interactableObject.onInteract?.Invoke(player);
         }
     }
 

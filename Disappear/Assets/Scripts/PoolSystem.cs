@@ -29,15 +29,5 @@ public class PoolSystem : MonoBehaviour
         }
     }
 
-    public void SpawnItem(string itemName, Vector3 spawnPosition)
-    {
-        if (itemsChildren.ContainsKey(itemName))
-            itemsChildren[itemName].transform.position = spawnPosition;
-    }
 
-    public void StoreInPool(string itemName)
-    {
-        if (itemsChildren.ContainsKey(itemName))
-            itemsChildren[itemName].transform.position = poolPosition;
-    }
 }

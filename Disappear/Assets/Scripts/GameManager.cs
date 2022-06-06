@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour
     }
     public void QuitRoom()
     {
-        Debug.Log("Wesh !!");
         RoomManager.Instance.OnPlayerLeave();
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
