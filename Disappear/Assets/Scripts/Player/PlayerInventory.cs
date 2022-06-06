@@ -46,27 +46,30 @@ public class PlayerInventory : MonoBehaviour
     {
         inventoryAnimation.SetTrigger("Open");
         Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
         pc.enabled = false;
+        pc.CameraController.enabled = false;
     }
 
     private void CloseInventory()
     {
         inventoryAnimation.SetTrigger("Close");
         Cursor.lockState = CursorLockMode.Locked;
-
+        Cursor.visible = false;
         pc.enabled = true;
+        pc.CameraController.enabled = true;
     }
 
 
     public void AddItemToInventory(ItemController item)
     {
         itemsInInventory.Add(item);
-        inventoryUI.StockNewItem(item.ItemData);
+        inventoryUI.StockNewItem(item);
     }
 
     public void DropItem(ItemController item)
     {
-        ItemManager.Instance.SpawnItem(item.name, transform.position);
+        item.Activate();
         itemsInInventory.Remove(item);
     }
 }

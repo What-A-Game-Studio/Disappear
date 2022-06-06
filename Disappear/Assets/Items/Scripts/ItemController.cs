@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections;
 using UnityEngine;
@@ -46,5 +45,17 @@ public class ItemController : MonoBehaviour
         return new Vector3(Random.Range(min, max),
             Random.Range(min, max),
             Random.Range(min, max));
+    }
+
+    /// <summary>
+    /// Reactivate item at main camera position
+    ///  at forward direction
+    /// </summary>
+    public void Activate()
+    {
+        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
+        transform.position = orientationTransform.position + orientationTransform.forward;
+        rb.AddForce(orientationTransform.forward*forceAtSpawn);
+        gameObject.SetActive(true);
     }
 }

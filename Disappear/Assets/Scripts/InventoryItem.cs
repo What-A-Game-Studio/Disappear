@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
     IPointerEnterHandler, IPointerExitHandler
 {
-    [field: SerializeField] public Vector2Int ItemSize { get; set; }
-
+    public Vector2Int ItemSize => ItemController.ItemData.Size;
+    public ItemController ItemController { get; set; }
     private Vector2Int selectedPart;
 
     public Vector2Int SelectedPart
@@ -68,6 +68,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             isMouseOver = false;
             InventoryUIManager.Instance.FreeCases(StoredIndex);
+            PlayerController.MainPlayer.PlayerInventory.DropItem(ItemController);
             Destroy(gameObject);
         }
     }
@@ -95,8 +96,8 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         selectedPosition = itemTransform.InverseTransformPoint(mousePosition);
         selectedPosition.x += itemTransform.sizeDelta.x / 2;
         selectedPosition.y += itemTransform.sizeDelta.y / 2;
-        selectedPart.x = ItemSize.x - Mathf.FloorToInt(selectedPosition.x / 100) - 1;
-        selectedPart.y = ItemSize.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
+        selectedPart.x = ItemController.ItemData.Size.x - Mathf.FloorToInt(selectedPosition.x / 100) - 1;
+        selectedPart.y = ItemController.ItemData.Size.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
         Debug.Log("selected part : " + selectedPart);
         oldPosition = itemTransform.position;
     }

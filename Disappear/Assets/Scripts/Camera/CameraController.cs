@@ -33,4 +33,5 @@ public class CameraController : MonoBehaviour
         cam.transform.rotation = Quaternion.Euler(xRot, yRot,0);
         Orientation.rotation = Quaternion.Euler(0, yRot,0);
     }
+
 }

@@ -3,8 +3,15 @@ using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 
+[RequireComponent(
+    typeof(PlayerInventory),
+    typeof(PhotonView)
+)]
 public class PlayerController : MonoBehaviour, Groundable
 {
+
+    public static PlayerController MainPlayer { get; protected set; }
+    
     [Header("Camera")] 
     [SerializeField] private GameObject cameraObject;
     [SerializeField] private float cameraSpeed = 300f;
@@ -15,7 +22,7 @@ public class PlayerController : MonoBehaviour, Groundable
     private float horizontalInput, verticalInput;
     private Vector3 moveDirection;
     private const float SpeedModifier = 10f;
-    private Transform orientation;
+    public Transform OrientationTransform { get; protected set; }
     
     [Header("Sprinting")] 
     [SerializeField] private float sprintSpeedMultiplier;
@@ -52,7 +59,8 @@ public class PlayerController : MonoBehaviour, Groundable
     PhotonView pv;
     private Rigidbody rb;
     private CapsuleCollider collider;
-
+    public PlayerInventory PlayerInventory { get; protected set; }
+    public CameraController CameraController { get; protected set; }
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
@@ -62,18 +70,27 @@ public class PlayerController : MonoBehaviour, Groundable
         if(!pv.IsMine) 
             return;
         
+        MainPlayer = this;
+        
         if (cameraObject == null)
             throw new Exception("PlayerController required CameraHolderPrefab !");
         
-        orientation = transform.Find("CameraHolder");
-        if (orientation == null)
+        OrientationTransform = transform.Find("CameraHolder");
+        if (OrientationTransform == null)
             throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
+
         
+        
+        if (!TryGetComponent<PlayerInventory>( out PlayerInventory pi))
+        {
+            throw new Exception("PlayerController required PlayerInventory");
+        }
+        PlayerInventory = pi;
         
         GameObject cameraHolder = Instantiate(cameraObject);
-        CameraController cameraController = cameraHolder.GetComponent<CameraController>();
-        cameraController.Orientation = orientation;
-        cameraController.Speed = cameraSpeed;
+        CameraController = cameraHolder.GetComponent<CameraController>();
+        CameraController.Orientation = OrientationTransform;
+        CameraController.Speed = cameraSpeed;
         
         collider = GetComponent<CapsuleCollider>(); 
         rb = GetComponent<Rigidbody>();
@@ -143,7 +160,7 @@ public class PlayerController : MonoBehaviour, Groundable
     protected virtual void Move()
     {
         //calculate dir 
-        moveDirection = (orientation.forward * verticalInput + orientation.right * horizontalInput);
+        moveDirection = (OrientationTransform.forward * verticalInput + OrientationTransform.right * horizontalInput);
         Vector3 movDir;
         
         //on slope we turn off gravity
@@ -177,12 +194,12 @@ public class PlayerController : MonoBehaviour, Groundable
     private void SpeedControl()
     {
         float currentSpeed = GetSpeed();
-            Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-            if (flatVel.magnitude > currentSpeed)
-            {
-                flatVel = flatVel.normalized * currentSpeed;
-                rb.velocity = new Vector3(flatVel.x, rb.velocity.y, flatVel.z);
-            }
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        if (flatVel.magnitude > currentSpeed)
+        {
+            flatVel = flatVel.normalized * currentSpeed;
+            rb.velocity = new Vector3(flatVel.x, rb.velocity.y, flatVel.z);
+        }
     }
 
     /// <summary>

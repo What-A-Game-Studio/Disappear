@@ -19,8 +19,8 @@ public class Case
 
 public class InventoryUIManager : MonoBehaviour
 {
-    public static InventoryUIManager Instance { get; set; }
-
+    public static InventoryUIManager Instance { get; protected set; }
+    
     private List<Case> listCases = new List<Case>();
     private List<Case> overlapCases = new List<Case>();
 
@@ -86,24 +86,24 @@ public class InventoryUIManager : MonoBehaviour
         DraggingItem.OnMouseOverCase();
     }
 
-    public void StockNewItem(ItemDataSO itemData)
+    public void StockNewItem(ItemController itemController)
     {
         for (int i = 0; i < listCases.Count; i++)
         {
             if (listCases[i].Occupied) continue;
 
-            if (itemData.Size.x <= 1 && itemData.Size.y <= 1)
+            if (itemController.ItemData.Size.x <= 1 && itemController.ItemData.Size.y <= 1)
             {
-                InventoryItem uiInventory = GenerateUIItem(itemData);
+                InventoryItem uiInventory = GenerateUIItem(itemController);
                 overlapCases.Add(listCases[i]);
                 uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
                 break;
             }
 
-            if (CheckSurroundingCasesNew(i, itemData.Size))
+            if (CheckSurroundingCasesNew(i, itemController.ItemData.Size))
             {
-                InventoryItem uiInventory = GenerateUIItem(itemData);
+                InventoryItem uiInventory = GenerateUIItem(itemController);
                 uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
                 break;
@@ -111,12 +111,12 @@ public class InventoryUIManager : MonoBehaviour
         }
     }
 
-    public InventoryItem GenerateUIItem(ItemDataSO itemData)
+    public InventoryItem GenerateUIItem(ItemController itemController)
     {
         GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
-        itemUI.GetComponent<Image>().sprite = itemData.Image;
+        itemUI.GetComponent<Image>().sprite = itemController.ItemData.Image;
         InventoryItem uiInventory = itemUI.GetComponent<InventoryItem>();
-        uiInventory.ItemSize = itemData.Size;
+        uiInventory.ItemController = itemController;
         itemUI.GetComponent<RectTransform>().sizeDelta =
             new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
         return uiInventory;
