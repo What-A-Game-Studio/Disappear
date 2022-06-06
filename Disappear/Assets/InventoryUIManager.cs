@@ -29,6 +29,9 @@ public class InventoryUIManager : MonoBehaviour
     public static InventoryItem draggingItem;
     public static bool isDragging;
 
+    [SerializeField] private Transform itemContainer;
+    [SerializeField] private GameObject itemUIPrefab;
+    
     private bool previousState;
 
     private GridLayoutGroup grid;
@@ -76,6 +79,11 @@ public class InventoryUIManager : MonoBehaviour
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
         CheckSurroundingCases(index);
         draggingItem.OnMouseOverCase();
+    }
+
+    public void StockNewItem(ItemDataSO itemData)
+    {
+        
     }
 
     private void CheckSurroundingCases(int baseCaseIndex)
