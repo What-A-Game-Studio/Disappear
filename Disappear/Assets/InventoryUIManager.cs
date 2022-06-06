@@ -20,7 +20,7 @@ public class Case
 public class InventoryUIManager : MonoBehaviour
 {
     public static InventoryUIManager Instance { get; set; }
-    
+
     private List<Case> listCases = new List<Case>();
     private List<Case> overlapCases = new List<Case>();
 
@@ -38,12 +38,13 @@ public class InventoryUIManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Awake()
-    {       
+    {
         if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         IsDragging = false;
         previousState = IsDragging;
@@ -87,20 +88,13 @@ public class InventoryUIManager : MonoBehaviour
 
     public void StockNewItem(ItemDataSO itemData)
     {
-        GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
-        itemUI.GetComponent<Image>().sprite = itemData.Image;
-        InventoryItem uiInventory = itemUI.GetComponent<InventoryItem>();
-        uiInventory.ItemSize = itemData.Size;
-        itemUI.GetComponent<RectTransform>().sizeDelta =
-            new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
-
         for (int i = 0; i < listCases.Count; i++)
         {
             if (listCases[i].Occupied) continue;
 
             if (itemData.Size.x <= 1 && itemData.Size.y <= 1)
             {
-                Debug.Log("Little Item");
+                InventoryItem uiInventory = GenerateUIItem(itemData);
                 overlapCases.Add(listCases[i]);
                 uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
@@ -109,11 +103,23 @@ public class InventoryUIManager : MonoBehaviour
 
             if (CheckSurroundingCasesNew(i, itemData.Size))
             {
+                InventoryItem uiInventory = GenerateUIItem(itemData);
                 uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
                 break;
             }
         }
+    }
+
+    public InventoryItem GenerateUIItem(ItemDataSO itemData)
+    {
+        GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
+        itemUI.GetComponent<Image>().sprite = itemData.Image;
+        InventoryItem uiInventory = itemUI.GetComponent<InventoryItem>();
+        uiInventory.ItemSize = itemData.Size;
+        itemUI.GetComponent<RectTransform>().sizeDelta =
+            new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
+        return uiInventory;
     }
 
     private bool CheckSurroundingCasesNew(int baseCaseIndex, Vector2Int itemSize)
@@ -214,7 +220,7 @@ public class InventoryUIManager : MonoBehaviour
         overlapCases.Clear();
         DraggingItem.OnMouseExitCase();
     }
-    
+
     public void DropItemOnCase(BaseEventData data)
     {
         bool allCaseFree = true;
@@ -266,17 +272,17 @@ public class InventoryUIManager : MonoBehaviour
         overlapCases.Clear();
     }
 
-    
+
     /// <summary>
     /// Set to false Case.Occupied at index
     /// </summary>
     /// <param name="indexToFree"></param>
     public void FreeCases(List<int> indexToFree)
     {
-        if(indexToFree != null)
+        if (indexToFree != null)
             foreach (int idx in indexToFree)
             {
-                if(idx < listCases.Count)
+                if (idx < listCases.Count)
                     listCases[idx].Occupied = false;
             }
     }
