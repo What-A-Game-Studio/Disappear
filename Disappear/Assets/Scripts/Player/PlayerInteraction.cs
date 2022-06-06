@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
 
-    private Interactable interactableObject;
+    public Interactable interactableObject;
     // Start is called before the first frame update
 
     private GameObject player;
@@ -18,7 +18,7 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButton("Interact") && interactableObject != null)
+        if (Input.GetButtonDown("Interact") && interactableObject != null)
         {
             interactableObject.onInteract?.Invoke(player);
         }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
-    [field: SerializeField] public Vector2Int ItemSize { get; private set; }
+    [field: SerializeField] public Vector2Int ItemSize { get; set; }
 
     private Vector2Int selectedPart;
 
@@ -105,7 +105,6 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("Henlo : " + canDrop);
 
         if (!canDrop)
         {

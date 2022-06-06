@@ -7,10 +7,12 @@ using WebSocketSharp;
 
 public class PlayerInventory : MonoBehaviour
 {
+    
     private List<ItemController> itemsInInventory = new List<ItemController>();
     private bool inventoryOpened = false;
     private PlayerController pc;
 
+    [SerializeField] private InventoryUIManager inventoryUI;
     [SerializeField] private Animator inventoryAnimation;
 
     private void Awake()
@@ -59,6 +61,7 @@ public class PlayerInventory : MonoBehaviour
     public void AddItemToInventory(ItemController item)
     {
         itemsInInventory.Add(item);
+        inventoryUI.StockNewItem(item.ItemData);
     }
 
     public void DropItem(ItemController item)
