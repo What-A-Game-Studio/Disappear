@@ -8,9 +8,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private Interactable interactableObject;
     // Start is called before the first frame update
-    void Start()
+
+    private GameObject player;
+    void Awake()
     {
-        
+        player = GameObject.FindGameObjectWithTag("Player") ;
     }
 
     // Update is called once per frame
@@ -18,7 +20,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (Input.GetButton("Interact") && interactableObject != null)
         {
-            interactableObject.onInteract?.Invoke(this.transform.parent.gameObject);
+            interactableObject.onInteract?.Invoke(player);
         }
     }
 
