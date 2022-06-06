@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
+public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
+    IPointerEnterHandler, IPointerExitHandler
 {
     [field: SerializeField] public Vector2Int ItemSize { get; set; }
 
@@ -23,9 +24,11 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     private Vector2 oldPosition;
     private Vector2 selectedPosition;
     private Image img;
+
+    private bool isMouseOver = false;
     public bool canDrop { get; set; }
 
-    public List<int> storedIndex { get; private set; }
+    public List<int> StoredIndex { get; private set; }
 
     private void Awake()
     {
@@ -39,7 +42,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             Debug.Log("Couldn't find component RectTransform on " + gameObject.name);
         }
 
-        storedIndex = new List<int>();
+        StoredIndex = new List<int>();
     }
 
     // Update is called once per frame
@@ -59,6 +62,13 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (Input.GetMouseButtonUp(0))
         {
             img.raycastTarget = true;
+        }
+
+        if (Input.GetButtonDown("Discard item") && isMouseOver)
+        {
+            isMouseOver = false;
+            InventoryUIManager.Instance.FreeCases(StoredIndex);
+            Destroy(gameObject);
         }
     }
 
@@ -94,8 +104,8 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
         img.raycastTarget = false;
-        InventoryUIManager.draggingItem = this;
-        InventoryUIManager.isDragging = true;
+        InventoryUIManager.Instance.DraggingItem = this;
+        InventoryUIManager.Instance.IsDragging = true;
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -118,15 +128,15 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         if (canDrop)
         {
             itemTransform.position = dropPosition;
-            storedIndex = index;
+            StoredIndex = index;
         }
         else
         {
             itemTransform.position = oldPosition;
         }
 
-        InventoryUIManager.draggingItem = null;
-        InventoryUIManager.isDragging = false;
+        InventoryUIManager.Instance.DraggingItem = null;
+        InventoryUIManager.Instance.IsDragging = false;
 
         img.raycastTarget = true;
     }
@@ -139,5 +149,15 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public void OnMouseExitCase()
     {
         canDrop = false;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        isMouseOver = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isMouseOver = false;
     }
 }

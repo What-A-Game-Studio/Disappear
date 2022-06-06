@@ -19,11 +19,13 @@ public class Case
 
 public class InventoryUIManager : MonoBehaviour
 {
+    public static InventoryUIManager Instance { get; set; }
+    
     private List<Case> listCases = new List<Case>();
     private List<Case> overlapCases = new List<Case>();
 
-    public static InventoryItem draggingItem;
-    public static bool isDragging;
+    public InventoryItem DraggingItem { get; set; }
+    public bool IsDragging { get; set; }
 
     [SerializeField] private RectTransform itemContainer;
     [SerializeField] private GameObject itemUIPrefab;
@@ -36,9 +38,15 @@ public class InventoryUIManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Awake()
-    {
-        isDragging = false;
-        previousState = isDragging;
+    {       
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        IsDragging = false;
+        previousState = IsDragging;
         for (int i = 0; i < transform.childCount; i++)
         {
             if (transform.GetChild(i).TryGetComponent(out Image img))
@@ -59,22 +67,22 @@ public class InventoryUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (isDragging && isDragging != previousState)
+        if (IsDragging && IsDragging != previousState)
         {
-            CatchItemOnCase(draggingItem.storedIndex);
+            CatchItemOnCase(DraggingItem.StoredIndex);
         }
 
-        previousState = isDragging;
+        previousState = IsDragging;
     }
 
     public void ColorOnMouseOverCase(BaseEventData data)
     {
-        if (!isDragging) return;
+        if (!IsDragging) return;
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
         CheckSurroundingCases(index);
-        draggingItem.OnMouseOverCase();
+        DraggingItem.OnMouseOverCase();
     }
 
     public void StockNewItem(ItemDataSO itemData)
@@ -153,8 +161,8 @@ public class InventoryUIManager : MonoBehaviour
         int x = baseCaseIndex - (y * gridWidth);
         bool allCaseFree = true;
 
-        int start = y - draggingItem.SelectedPart.y;
-        int end = start + draggingItem.ItemSize.y;
+        int start = y - DraggingItem.SelectedPart.y;
+        int end = start + DraggingItem.ItemSize.y;
         for (int i = start; i < end; i++)
         {
             if (i >= 0 && i < gridHeight)
@@ -193,7 +201,7 @@ public class InventoryUIManager : MonoBehaviour
 
     public void ColorOnMouseExitCase(BaseEventData data)
     {
-        if (!isDragging) return;
+        if (!IsDragging) return;
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
@@ -203,10 +211,9 @@ public class InventoryUIManager : MonoBehaviour
         }
 
         overlapCases.Clear();
-        draggingItem.OnMouseExitCase();
+        DraggingItem.OnMouseExitCase();
     }
-
-
+    
     public void DropItemOnCase(BaseEventData data)
     {
         bool allCaseFree = true;
@@ -222,11 +229,11 @@ public class InventoryUIManager : MonoBehaviour
 
         if (allCaseFree)
         {
-            CalculateAveragePosition(draggingItem);
+            CalculateAveragePosition(DraggingItem);
         }
         else
         {
-            draggingItem.canDrop = false;
+            DraggingItem.canDrop = false;
         }
 
         overlapCases.Clear();
@@ -255,5 +262,20 @@ public class InventoryUIManager : MonoBehaviour
 
         itemNewPosition /= overlapCases.Count;
         item.StockInCase(index, itemNewPosition);
+    }
+
+    
+    /// <summary>
+    /// Set to false Case.Occupied at index
+    /// </summary>
+    /// <param name="indexToFree"></param>
+    public void FreeCases(List<int> indexToFree)
+    {
+        if(indexToFree != null)
+            foreach (int idx in indexToFree)
+            {
+                if(idx < listCases.Count)
+                    listCases[idx].Occupied = false;
+            }
     }
 }
