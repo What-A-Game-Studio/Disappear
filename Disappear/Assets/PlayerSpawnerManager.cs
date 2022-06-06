@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PlayerSpawnerManager : MonoBehaviour
 {
@@ -29,9 +31,12 @@ public class PlayerSpawnerManager : MonoBehaviour
         }
     }
 
-    public Vector3 SpawnPlayerToPosition()
+    public Vector3 ChooseRandomSpawnPosition()
     {
-        
+        int rand = Random.Range(0, playerSpawnPositionList.Count);
+        Vector3 newPos = playerSpawnPositionList[rand];
+        playerSpawnPositionList.RemoveAt(rand);
+        return newPos;
     }
 
 }
