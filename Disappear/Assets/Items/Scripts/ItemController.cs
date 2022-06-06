@@ -26,6 +26,7 @@ public class ItemController : MonoBehaviour
         gameObject.AddComponent<BoxCollider>();
         PickableItem pui = gameObject.AddComponent<PickableItem>();
         pui.ItemController = this;
+        rb.AddTorque(GetRdmVector(-1,1) * forceAtSpawn, ForceMode.Impulse);
         // transform.Rotate(GetRdmVector(0,360f));
     }
 
