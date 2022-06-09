@@ -6,25 +6,21 @@ using Random = UnityEngine.Random;
 
 public class PlayerSpawnerManager : MonoBehaviour
 {
-    private static PlayerSpawnerManager instance;
-
-    public static PlayerSpawnerManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<PlayerSpawnerManager>();
-            }
-            return instance;
-        }
-    }
+    public static PlayerSpawnerManager Instance { get; protected set; }
 
     private List<Vector3> playerSpawnPositionList = new List<Vector3>();
 
 
     private void Awake()
     {
+        if(Instance == null)
+            Instance = this;
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         for (int i = 0; i < transform.childCount; i++)
         {
             playerSpawnPositionList.Add(transform.GetChild(i).position);
@@ -38,5 +34,4 @@ public class PlayerSpawnerManager : MonoBehaviour
         playerSpawnPositionList.RemoveAt(rand);
         return newPos;
     }
-
 }
