@@ -25,12 +25,12 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     void CreateController()
     {
         Debug.Log("CreateController");
-        PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, nameof(PlayerController)), Vector3.one, Quaternion.identity);
+        PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, nameof(PlayerController)),
+            PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition(), Quaternion.identity);
     }
 }
