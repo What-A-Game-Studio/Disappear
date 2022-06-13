@@ -5,14 +5,32 @@ using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    #region Class Members
+
+    [Header("Interaction Parameters")] 
+
+    [Tooltip("Layer of objects that can be interacted with")] [SerializeField]
+    private LayerMask layer;
+
+    [Tooltip("Maximum distance to detect interactable objects")] [SerializeField]
+    private int interactMaxDistance;
 
     public Interactable interactableObject;
+    private Transform cam;
+    private RaycastHit hit;
+    private Ray camRay;
+    private GameObject player;
+
     // Start is called before the first frame update
 
-    private GameObject player;
+    #endregion
+
+    #region Unity Functions
+
     void Awake()
     {
-        player = GameObject.FindGameObjectWithTag("Player") ;
+        player = GameObject.FindGameObjectWithTag("Player");
+        cam = transform.parent;
     }
 
     // Update is called once per frame
@@ -24,22 +42,23 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    void FixedUpdate()
     {
-        if (other.CompareTag("Interactable"))
+        camRay = new Ray(cam.position, cam.forward);
+
+        if (Physics.Raycast(camRay, out hit, interactMaxDistance, layer))
         {
-            if (!other.TryGetComponent(out interactableObject))
+            Debug.Log("Found");
+            if (!hit.collider.TryGetComponent(out interactableObject))
             {
                 interactableObject = null;
             }
         }
-    }
-    
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Interactable"))
+        else
         {
             interactableObject = null;
         }
     }
+
+    #endregion
 }

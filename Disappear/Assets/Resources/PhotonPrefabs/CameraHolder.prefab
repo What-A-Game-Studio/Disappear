@@ -177,6 +177,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da6e9c43bee472c4aaa36cf896acbb52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer:
+    serializedVersion: 2
+    m_Bits: 64
+  interactMaxDistance: 100
+  interactableObject: {fileID: 0}
 --- !u!1 &8444057675903429607
 GameObject:
   m_ObjectHideFlags: 0
