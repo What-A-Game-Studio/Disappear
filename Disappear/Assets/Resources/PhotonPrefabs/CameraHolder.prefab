@@ -128,7 +128,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5378016359269356788}
-  - component: {fileID: 6429890291851667590}
   - component: {fileID: 855536662753785796}
   m_Layer: 0
   m_Name: PickableSensor
@@ -152,19 +151,6 @@ Transform:
   m_Father: {fileID: 5470221396774728073}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &6429890291851667590
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3672291778576303392}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5, z: 1}
-  m_Center: {x: 0, y: 0, z: 1}
 --- !u!114 &855536662753785796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,11 +163,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da6e9c43bee472c4aaa36cf896acbb52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 5470221396774728073}
   layer:
     serializedVersion: 2
     m_Bits: 64
-  interactMaxDistance: 100
-  interactableObject: {fileID: 0}
+  interactMaxDistance: 1
+  interactCubeSize: {x: 1, y: 1, z: 1}
 --- !u!1 &8444057675903429607
 GameObject:
   m_ObjectHideFlags: 0
