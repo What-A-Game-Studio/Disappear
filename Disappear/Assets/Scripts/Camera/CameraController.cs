@@ -10,6 +10,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minX, maxX;
     private float yRot, xRot;
 
+    public bool CanRotate { get; set; } = true;
+    
     private Camera cam;
     public Transform Orientation { get; set; }
 
@@ -25,6 +27,10 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         transform.position = Orientation.position;
+        
+        if(!CanRotate)
+            return;
+        
         yRot += Input.GetAxisRaw("Mouse X") * Time.deltaTime * Speed;
         xRot -= Input.GetAxisRaw("Mouse Y") * Time.deltaTime * Speed;
 

@@ -79,8 +79,6 @@ public class PlayerController : MonoBehaviour, Groundable
         if (OrientationTransform == null)
             throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
 
-        
-        
         if (!TryGetComponent<PlayerInventory>( out PlayerInventory pi))
         {
             throw new Exception("PlayerController required PlayerInventory");

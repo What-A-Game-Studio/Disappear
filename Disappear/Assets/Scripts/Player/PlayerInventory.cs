@@ -48,7 +48,7 @@ public class PlayerInventory : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
         pc.enabled = false;
-        pc.CameraController.enabled = false;
+        pc.CameraController.CanRotate = false;
     }
 
     private void CloseInventory()
@@ -57,7 +57,7 @@ public class PlayerInventory : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         pc.enabled = true;
-        pc.CameraController.enabled = true;
+        pc.CameraController.CanRotate = true;
     }
 
 
