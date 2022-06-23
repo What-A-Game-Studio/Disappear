@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -20,14 +21,16 @@ public class Case
 public class InventoryUIManager : MonoBehaviour
 {
     public static InventoryUIManager Instance { get; protected set; }
-    
+
     private List<Case> listCases = new List<Case>();
-    private List<Case> overlapCases = new List<Case>();
+    private List<int> overlapCasesIndex = new List<int>();
 
     public InventoryItem DraggingItem { get; set; }
     public bool IsDragging { get; set; }
 
+
     [SerializeField] private RectTransform itemContainer;
+    [field: SerializeField] public Transform itemDraggedContainer { get; private set; }
     [SerializeField] private GameObject itemUIPrefab;
 
     private bool previousState;
@@ -70,23 +73,33 @@ public class InventoryUIManager : MonoBehaviour
     {
         if (IsDragging && IsDragging != previousState)
         {
-            CatchItemOnCase(DraggingItem.StoredIndex);
+            CatchItemOnCase();
         }
 
         previousState = IsDragging;
     }
 
+    /// <summary>
+    /// Change color of cases when dragging an item over the inventory
+    /// </summary>
+    /// <param name="data"></param>
     public void ColorOnMouseOverCase(BaseEventData data)
     {
         if (!IsDragging) return;
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        CheckSurroundingCases(index);
+        CheckSurroundingCasesOnDragOver(index);
         DraggingItem.OnMouseOverCase();
     }
 
-    public void StockNewItem(ItemController itemController)
+
+    /// <summary>
+    /// Create corresponding item in the inventory when picking item 
+    /// </summary>
+    /// <param name="itemController">Informations of picked item</param>
+    /// <returns>true if there is enough space for item, false otherwise</returns>
+    public bool StockNewItem(ItemController itemController)
     {
         for (int i = 0; i < listCases.Count; i++)
         {
@@ -95,22 +108,28 @@ public class InventoryUIManager : MonoBehaviour
             if (itemController.ItemData.Size.x <= 1 && itemController.ItemData.Size.y <= 1)
             {
                 InventoryItem uiInventory = GenerateUIItem(itemController);
-                overlapCases.Add(listCases[i]);
-                uiInventory.canDrop = true;
+                listCases[i].Occupied = true;
+                overlapCasesIndex.Add(i);
                 CalculateAveragePosition(uiInventory);
-                break;
+                return true;
             }
 
-            if (CheckSurroundingCasesNew(i, itemController.ItemData.Size))
+            if (CheckSurroundingCasesOnStock(i, itemController.ItemData.Size))
             {
                 InventoryItem uiInventory = GenerateUIItem(itemController);
-                uiInventory.canDrop = true;
                 CalculateAveragePosition(uiInventory);
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
+    /// <summary>
+    /// Create the item UI prefab of picked item 
+    /// </summary>
+    /// <param name="itemController">Information of picked item</param>
+    /// <returns> The InventoryItem component of the created object</returns>
     public InventoryItem GenerateUIItem(ItemController itemController)
     {
         GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
@@ -119,119 +138,134 @@ public class InventoryUIManager : MonoBehaviour
         uiInventory.ItemController = itemController;
         itemUI.GetComponent<RectTransform>().sizeDelta =
             new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
+        uiInventory.canDrop = true;
         return uiInventory;
     }
 
-    private bool CheckSurroundingCasesNew(int baseCaseIndex, Vector2Int itemSize)
+    /// <summary>
+    /// Check if surrounding cases are free when trying to pick up a new item
+    /// </summary>
+    /// <param name="baseCaseIndex">the index to start in the inventory grid</param>
+    /// <param name="itemSize">the size of the item we are trying to stock</param>
+    /// <returns>true if surronding cases are free, false otherwise</returns>
+    private bool CheckSurroundingCasesOnStock(int baseCaseIndex, Vector2Int itemSize)
     {
-        overlapCases.Add(listCases[baseCaseIndex]);
+        overlapCasesIndex.Add(baseCaseIndex);
         int y = baseCaseIndex / gridWidth;
         int x = baseCaseIndex - (y * gridWidth);
 
         for (int i = y; i < y + itemSize.y; i++)
         {
-            if (i < 0 || i > gridHeight)
+            if (i < 0 || i >= gridHeight)
             {
-                overlapCases.Clear();
+                overlapCasesIndex.Clear();
                 return false;
             }
 
             for (int j = x; j < x + itemSize.x; j++)
             {
-                if (j < 0 || j > gridWidth)
+                if (j < 0 || j >= gridWidth)
                 {
-                    overlapCases.Clear();
+                    overlapCasesIndex.Clear();
                     return false;
                 }
 
-                Case checkingCase = listCases[i * gridWidth + j];
-                if (checkingCase.Occupied)
+                int checkingIndex = i * gridWidth + j;
+                if (listCases[checkingIndex].Occupied)
                 {
-                    overlapCases.Clear();
+                    overlapCasesIndex.Clear();
                     return false;
                 }
 
-                if (!overlapCases.Contains(checkingCase))
-                {
-                    overlapCases.Add(checkingCase);
-                }
+                if (!overlapCasesIndex.Contains(checkingIndex))
+                    overlapCasesIndex.Add(checkingIndex);
             }
         }
 
         return true;
     }
 
-    private void CheckSurroundingCases(int baseCaseIndex)
+
+    /// <summary>
+    /// Check if surrounding cases are free when dragging item over a case.
+    /// Change color of cases according to their availability
+    /// </summary>
+    /// <param name="baseCaseIndex">the index of the case currently overing</param>
+    private void CheckSurroundingCasesOnDragOver(int baseCaseIndex)
     {
-        overlapCases.Add(listCases[baseCaseIndex]);
+        overlapCasesIndex.Add(baseCaseIndex);
         int y = baseCaseIndex / gridWidth;
         int x = baseCaseIndex - (y * gridWidth);
         bool allCaseFree = true;
 
-        int start = y - DraggingItem.SelectedPart.y;
-        int end = start + DraggingItem.ItemSize.y;
-        for (int i = start; i < end; i++)
+        int startY = y - DraggingItem.SelectedPart.y;
+        int endY = startY + DraggingItem.ItemSize.y;
+        int startX = x - DraggingItem.SelectedPart.x;
+        int endX = startX + DraggingItem.ItemSize.x;
+
+
+        for (int i = startY; i < endY; i++)
         {
-            if (i >= 0 && i < gridHeight)
+            for (int j = startX; j < endX; j++)
             {
-                Case checkingCase = listCases[i * gridWidth + x];
-                if (!overlapCases.Contains(checkingCase))
+                int index = i * gridWidth + j;
+
+                if (!overlapCasesIndex.Contains(index))
                 {
-                    overlapCases.Add(checkingCase);
-                    if (checkingCase.Occupied)
-                    {
+                    if (i >= 0 && i < gridHeight && j >= 0 && j < gridWidth)
+                        overlapCasesIndex.Add(index);
+                    if (listCases[index].Occupied)
                         allCaseFree = false;
-                    }
                 }
-            }
-            else
-            {
-                allCaseFree = false;
             }
         }
 
         if (allCaseFree)
         {
-            foreach (Case c in overlapCases)
-            {
-                c.Img.color = Color.green;
-            }
+            foreach (int c in overlapCasesIndex)
+                listCases[c].Img.color = Color.green;
         }
         else
         {
-            foreach (Case c in overlapCases)
-            {
-                c.Img.color = Color.red;
-            }
+            foreach (int c in overlapCasesIndex)
+                listCases[c].Img.color = Color.red;
         }
     }
 
+    /// <summary>
+    /// Reset color of cases when mouse quit
+    /// </summary>
+    /// <param name="data"></param>
     public void ColorOnMouseExitCase(BaseEventData data)
     {
         if (!IsDragging) return;
 
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        foreach (Case c in overlapCases)
+        foreach (int c in overlapCasesIndex)
         {
-            c.Img.color = Color.white;
+            listCases[c].Img.color = Color.white;
         }
 
-        overlapCases.Clear();
+        overlapCasesIndex.Clear();
         DraggingItem.OnMouseExitCase();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="data"></param>
     public void DropItemOnCase(BaseEventData data)
     {
         bool allCaseFree = true;
-        foreach (Case c in overlapCases)
+        foreach (int c in overlapCasesIndex)
         {
-            if (c.Occupied || c.Img.color == Color.red)
+            if (listCases[c].Occupied || listCases[c].Img.color == Color.red)
             {
                 allCaseFree = false;
             }
 
-            c.Img.color = Color.white;
+            listCases[c].Img.color = Color.white;
         }
 
         if (allCaseFree)
@@ -243,15 +277,15 @@ public class InventoryUIManager : MonoBehaviour
             DraggingItem.canDrop = false;
         }
 
-        overlapCases.Clear();
+        overlapCasesIndex.Clear();
     }
 
-    public void CatchItemOnCase(List<int> index)
+    public void CatchItemOnCase()
     {
-        if (index.Count <= 0) return;
-        for (int i = 0; i < index.Count; i++)
+        if (DraggingItem.StoredIndex.Count <= 0) return;
+        for (int i = 0; i < DraggingItem.StoredIndex.Count; i++)
         {
-            listCases[index[i]].Occupied = false;
+            listCases[DraggingItem.StoredIndex[i]].Occupied = false;
         }
     }
 
@@ -260,16 +294,16 @@ public class InventoryUIManager : MonoBehaviour
         List<int> index = new List<int>();
         Vector3 itemNewPosition = Vector3.zero;
 
-        foreach (Case c in overlapCases)
+        foreach (int c in overlapCasesIndex)
         {
-            index.Add(listCases.IndexOf(c));
-            c.Occupied = true;
-            itemNewPosition += c.Img.transform.position;
+            index.Add(listCases.IndexOf(listCases[c]));
+            listCases[c].Occupied = true;
+            itemNewPosition += listCases[c].Img.transform.position;
         }
 
-        itemNewPosition /= overlapCases.Count;
+        itemNewPosition /= overlapCasesIndex.Count;
         item.StockInCase(index, itemNewPosition);
-        overlapCases.Clear();
+        overlapCasesIndex.Clear();
     }
 
 

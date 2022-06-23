@@ -10,14 +10,15 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public Vector2Int ItemSize => ItemController.ItemData.Size;
     public ItemController ItemController { get; set; }
     private Vector2Int selectedPart;
-
+    
     public Vector2Int SelectedPart
     {
         get { return selectedPart; }
     }
 
     private RectTransform itemTransform;
-
+    private Transform originalParent;
+    
     private Vector2 mousePosition;
     private Vector2 startPosition;
     private Vector2 differencePoint;
@@ -41,6 +42,8 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             Debug.Log("Couldn't find component RectTransform on " + gameObject.name);
         }
+        originalParent = itemTransform.parent;
+
 
         StoredIndex = new List<int>();
     }
@@ -90,21 +93,22 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         differencePoint = mousePosition - startPosition;
     }
 
+
     public void OnPointerDown(PointerEventData eventData)
     {
         UpdateMousePosition();
         selectedPosition = itemTransform.InverseTransformPoint(mousePosition);
         selectedPosition.x += itemTransform.sizeDelta.x / 2;
         selectedPosition.y += itemTransform.sizeDelta.y / 2;
-        selectedPart.x = ItemController.ItemData.Size.x - Mathf.FloorToInt(selectedPosition.x / 100) - 1;
+        selectedPart.x = Mathf.FloorToInt(selectedPosition.x / 100);
         selectedPart.y = ItemController.ItemData.Size.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
-        Debug.Log("selected part : " + selectedPart);
         oldPosition = itemTransform.position;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         img.raycastTarget = false;
+        transform.parent = InventoryUIManager.Instance.itemDraggedContainer;
         InventoryUIManager.Instance.DraggingItem = this;
         InventoryUIManager.Instance.IsDragging = true;
     }
@@ -116,6 +120,9 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        InventoryUIManager.Instance.DraggingItem = null;
+        InventoryUIManager.Instance.IsDragging = false;
+        transform.parent = originalParent;
 
         if (!canDrop)
         {
@@ -125,7 +132,6 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void StockInCase(List<int> index, Vector2 dropPosition)
     {
-        Debug.Log("Stock ? " + canDrop);
         if (canDrop)
         {
             itemTransform.position = dropPosition;
@@ -135,9 +141,6 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             itemTransform.position = oldPosition;
         }
-
-        InventoryUIManager.Instance.DraggingItem = null;
-        InventoryUIManager.Instance.IsDragging = false;
 
         img.raycastTarget = true;
     }
