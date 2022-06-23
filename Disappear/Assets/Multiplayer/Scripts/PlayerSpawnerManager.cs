@@ -20,6 +20,12 @@ public class PlayerSpawnerManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        if (transform.childCount == 0)
+        {
+            Debug.LogError("PlayerSpawnerManager need some spawners", this);
+            return;
+        }
         
         for (int i = 0; i < transform.childCount; i++)
         {

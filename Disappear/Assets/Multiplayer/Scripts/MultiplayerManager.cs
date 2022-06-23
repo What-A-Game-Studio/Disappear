@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
 
-    public static string PhotonPrefabPath { get; set; } = "PhotonPrefabs";
+    public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
     [Header("Inputs")]
     [SerializeField]
@@ -117,7 +117,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         RoomManager.Instance.SetSeparationControlsState(rulesBtn.GetComponent<Toggle>().isOn);
 
-        PhotonNetwork.LoadLevel("MultiplayerGameScene");
+        PhotonNetwork.LoadLevel(1);
     }
 
     #endregion  ======================= Public : end  =======================

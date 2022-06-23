@@ -30,7 +30,9 @@ public class PlayerManager : MonoBehaviour
     void CreateController()
     {
         Debug.Log("CreateController");
-        PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, nameof(PlayerController)),
+        PhotonNetwork.Instantiate(
+            Path.Combine(MultiplayerManager.PhotonPrefabPath, 
+                nameof(PlayerController)),
             PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition(), Quaternion.identity);
     }
 }
