@@ -13,9 +13,8 @@ public class PickableItem : Interactable
     {
         if (sender.TryGetComponent(out inventory))
         {
-            
-            inventory.AddItemToInventory(ItemController);
-            ItemManager.Instance.StoreItem(ItemController);
+            if (inventory.AddItemToInventory(ItemController))
+                ItemManager.Instance.StoreItem(ItemController);
         }
         else
         {
