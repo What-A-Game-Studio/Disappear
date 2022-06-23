@@ -273,7 +273,6 @@ public class PlayerController : MonoBehaviour, Groundable
     /// <returns></returns>
     private Vector3 GetSlopeMoveDirection()
     {
-        
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
     }
 }
