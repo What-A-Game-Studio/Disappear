@@ -76,6 +76,12 @@ public class InventoryUIManager : MonoBehaviour
             CatchItemOnCase();
         }
 
+        if (IsDragging && Input.GetButtonDown("RotateItemLeft"))
+            DraggingItem.RotateItemPositionOnZAxis(90);
+
+        if (IsDragging && Input.GetButtonDown("RotateItemRight"))
+            DraggingItem.RotateItemPositionOnZAxis(-90);
+
         previousState = IsDragging;
     }
 
@@ -213,9 +219,15 @@ public class InventoryUIManager : MonoBehaviour
                 if (!overlapCasesIndex.Contains(index))
                 {
                     if (i >= 0 && i < gridHeight && j >= 0 && j < gridWidth)
+                    {
                         overlapCasesIndex.Add(index);
-                    if (listCases[index].Occupied)
+                        if (listCases[index].Occupied)
+                            allCaseFree = false;
+                    }
+                    else
+                    {
                         allCaseFree = false;
+                    }
                 }
             }
         }
