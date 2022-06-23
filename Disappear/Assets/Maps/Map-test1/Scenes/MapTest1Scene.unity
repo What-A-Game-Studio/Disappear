@@ -608,6 +608,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2075396466868102050, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: downForceSlope
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 2930072519294234951, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}
       propertyPath: sceneViewId
@@ -898,6 +903,26 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1013781284}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1080712956 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1238340787835979506, guid: 7e0223e1d3e1733499accfa5ebffb67e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1653125694}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1080712960
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080712956}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -1974449766878446227, guid: 7e0223e1d3e1733499accfa5ebffb67e, type: 3}
 --- !u!1001 &1137555179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1488,6 +1513,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Stairs_650_400_300_Mesh
+      objectReference: {fileID: 0}
+    - target: {fileID: 1238340787835979506, guid: 7e0223e1d3e1733499accfa5ebffb67e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4172755398711765512, guid: 7e0223e1d3e1733499accfa5ebffb67e,
         type: 3}

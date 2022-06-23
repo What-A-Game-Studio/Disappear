@@ -135,7 +135,7 @@ MonoBehaviour:
   jumpCooldown: 0.25
   airMultiplier: 1
   maxSlopeAngle: 40
-  downForceSlope: 9
+  downForceSlope: 15
   mask:
     serializedVersion: 2
     m_Bits: 1
