@@ -7,7 +7,6 @@ using WebSocketSharp;
 
 public class PlayerInventory : MonoBehaviour
 {
-    
     private List<ItemController> itemsInInventory = new List<ItemController>();
     private bool inventoryOpened = false;
     private PlayerController pc;
@@ -17,7 +16,6 @@ public class PlayerInventory : MonoBehaviour
 
     private void Awake()
     {
-        
         if (!TryGetComponent(out pc))
         {
             Debug.LogError("Could not find PlayerController Component");
@@ -38,7 +36,6 @@ public class PlayerInventory : MonoBehaviour
                 CloseInventory();
                 inventoryOpened = false;
             }
-
         }
     }
 
@@ -61,10 +58,15 @@ public class PlayerInventory : MonoBehaviour
     }
 
 
-    public void AddItemToInventory(ItemController item)
+    public bool AddItemToInventory(ItemController item)
     {
-        itemsInInventory.Add(item);
-        inventoryUI.StockNewItem(item);
+        if (inventoryUI.StockNewItem(item))
+        {
+            itemsInInventory.Add(item);
+            return true;
+        }
+
+        return false;
     }
 
     public void DropItem(ItemController item)

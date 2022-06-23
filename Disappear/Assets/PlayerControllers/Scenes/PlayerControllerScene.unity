@@ -448,6 +448,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74d4155b1bcd6aa40b31c97f9f294972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &422896790 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2092310261840409420, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+    type: 3}
+  m_PrefabInstance: {fileID: 2075396466687497218}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &490465421 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9125711035734622214, guid: 2fde1499a04f4e248a368a172a49101f,
@@ -2347,6 +2353,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2075396467504797780, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: itemDraggedContainer
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2075396467504797780, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: <itemDraggedContainer>k__BackingField
+      value: 
+      objectReference: {fileID: 422896790}
     - target: {fileID: 2075396467822143725, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2491,6 +2507,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PlayerController
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062781458757402788, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2075396466871629890, guid: b94ba26fe3f0ddb4e865ebc15f48b198, type: 3}
