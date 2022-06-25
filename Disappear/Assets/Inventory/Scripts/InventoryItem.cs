@@ -7,7 +7,14 @@ using UnityEngine.UI;
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
     IPointerEnterHandler, IPointerExitHandler
 {
-    public Vector2Int ItemSize => ItemController.ItemData.Size;
+    private Vector2Int itemSize;
+
+    public Vector2Int ItemSize
+    {
+        get => itemSize;
+        set => itemSize = value;
+    }
+
     public ItemController ItemController { get; set; }
     private Vector2Int selectedPart;
 
@@ -102,14 +109,15 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         selectedPosition.x += itemTransform.sizeDelta.x / 2;
         selectedPosition.y += itemTransform.sizeDelta.y / 2;
         selectedPart.x = Mathf.FloorToInt(selectedPosition.x / 100);
-        selectedPart.y = ItemController.ItemData.Size.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
+        selectedPart.y = itemSize.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
         oldPosition = itemTransform.position;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         img.raycastTarget = false;
-        transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);;
+        transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
+        ;
         InventoryUIManager.Instance.DraggingItem = this;
         InventoryUIManager.Instance.IsDragging = true;
     }
@@ -166,8 +174,14 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         isMouseOver = false;
     }
 
-    public void RotateItemPositionOnZAxis(int zRotation)
+    public void RotateItemPositionOnZAxis()
     {
-        transform.Rotate(0, 0, zRotation);
+        if (transform.rotation.z == 0)
+            transform.Rotate(0, 0, -90);
+        else
+            transform.Rotate(0, 0, 90);
+        differencePoint = Vector2.zero;
+        itemTransform.position = mousePosition;
+        (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
     }
 }

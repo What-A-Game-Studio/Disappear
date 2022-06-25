@@ -77,11 +77,8 @@ public class InventoryUIManager : MonoBehaviour
         }
 
         if (IsDragging && Input.GetButtonDown("RotateItemLeft"))
-            DraggingItem.RotateItemPositionOnZAxis(90);
-
-        if (IsDragging && Input.GetButtonDown("RotateItemRight"))
-            DraggingItem.RotateItemPositionOnZAxis(-90);
-
+            DraggingItem.RotateItemPositionOnZAxis();
+        
         previousState = IsDragging;
     }
 
@@ -142,6 +139,7 @@ public class InventoryUIManager : MonoBehaviour
         itemUI.GetComponent<Image>().sprite = itemController.ItemData.Image;
         InventoryItem uiInventory = itemUI.GetComponent<InventoryItem>();
         uiInventory.ItemController = itemController;
+        uiInventory.ItemSize = itemController.ItemData.Size;
         itemUI.GetComponent<RectTransform>().sizeDelta =
             new Vector2(100 * uiInventory.ItemSize.x, 100 * uiInventory.ItemSize.y);
         uiInventory.canDrop = true;
