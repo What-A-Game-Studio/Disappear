@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using System.IO;
 
+[RequireComponent(typeof(PhotonView))]
 public class PlayerManager : MonoBehaviour
 {
     PhotonView pv;

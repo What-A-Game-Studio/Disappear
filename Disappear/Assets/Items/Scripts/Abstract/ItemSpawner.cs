@@ -1,17 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(PhotonView))]
 public abstract class ItemSpawner : MonoBehaviour
 {
     [field:SerializeField] public ItemType ItemType { get; protected set; }
-
+    private PhotonView pv;
     protected virtual void Awake()
     {
-        Debug.Log(name+" awaked");
+        pv = GetComponent<PhotonView>();
     }
 
     /// <summary>
@@ -27,13 +30,23 @@ public abstract class ItemSpawner : MonoBehaviour
     /// <returns>Item position</returns>
     protected abstract Vector3 SpawnCoordinate();    
     
-    public  void InstantiateItem(ItemDataSO item)
+    public void InstantiateItem(int id)
     {
-        GameObject go = Instantiate(item.Model, SpawnCoordinate(), quaternion.identity);
+        Debug.Log(nameof(RPC_Instantiate));
+        pv.RPC(nameof(RPC_Instantiate),RpcTarget.All,SpawnCoordinate(), id);
+    }
+
+    [PunRPC]
+    protected virtual void RPC_Instantiate(Vector3 position, int itemToSpawn)
+    {
+        ItemDataSO item = ItemManager.Instance.GetItemById(itemToSpawn);
+        if(item == null)
+            return;
+        
+        GameObject go = Instantiate(item.Model, position, quaternion.identity);
         go.transform.parent = transform;
         go.layer = LayerMask.NameToLayer("Interactable");
         ItemController ic = go.AddComponent<ItemController>();
         ic.ItemData = item;
-
     }
 }

@@ -1,27 +1,30 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Photon.Pun;
 using Random = UnityEngine.Random;
 /// <summary>
 /// ItemManager 
 /// </summary>
+[RequireComponent(typeof(PhotonView))]
 public class ItemManager : MonoBehaviour
 {
     
+    PhotonView pv;
     public static ItemManager Instance { get; private set; }
     
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
     
-    
-    [Header("DEBUG")]
-    [SerializeField] private ItemSpawner[] spawners;
+     private ItemSpawner[] spawners;
 
     private int TotalItems, theoryItems;
 
     private int totalRate;
     private void Awake()
     {		
+        
         if(Instance == null)
             Instance = this;
         else
@@ -29,11 +32,16 @@ public class ItemManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        if (!PhotonNetwork.IsMasterClient)
+            return;
         
-        Debug.Log("ItemManager awaked");
+
+        Debug.Log("I'm master client !");
         
         totalRate = RarityTiers.Sum(tier => tier.Rate);
         spawners = GameObject.FindObjectsOfType<ItemSpawner>();
+        
         foreach (ItemSpawner spawn in spawners)
         {
             ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
@@ -44,12 +52,11 @@ public class ItemManager : MonoBehaviour
                 ItemDataSO item = GetTierToSpawn(goodTypeItem);
                 if (item != null)
                 {
-                    spawn.InstantiateItem(item);
+                    spawn.InstantiateItem(Array.IndexOf(itemsData,item));
                     ++TotalItems;
                 }
             }
         }
-        Debug.Log(TotalItems + " / " + theoryItems);
     }
 
     /// <summary>
@@ -113,5 +120,20 @@ public class ItemManager : MonoBehaviour
         item.gameObject.SetActive(false);
         item.transform.parent = transform;
         item.transform.localPosition = Vector3.zero;
+    }
+
+    /// <summary>
+    /// Get one item by his position in array
+    /// </summary>
+    /// <param name="indexItem">item's index</param>
+    /// <returns>return null if indexItem is greater than array lenght or less than 0</returns>
+    public ItemDataSO GetItemById(int indexItem)
+    {
+        if (indexItem >= 0 && indexItem < itemsData.Length)
+        {
+            return itemsData[indexItem];
+        }
+
+        return null;
     }
 }
