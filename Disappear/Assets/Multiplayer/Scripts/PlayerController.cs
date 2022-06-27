@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 [RequireComponent(
     typeof(PlayerInventory),
@@ -9,88 +10,94 @@ using Photon.Pun;
 )]
 public class PlayerController : MonoBehaviour, Groundable
 {
-
     public static PlayerController MainPlayer { get; protected set; }
-    
-    [Header("Camera")] 
-    [SerializeField] private GameObject cameraObject;
+
+    [Header("Camera")] [SerializeField] private GameObject cameraObject;
     [SerializeField] private float cameraSpeed = 300f;
-    
-    [Header("Walking")] 
-    [SerializeField] protected float speed;
+
+    [Header("Walking")] [SerializeField] protected float speed;
     [SerializeField] protected float drag;
     private float horizontalInput, verticalInput;
     private Vector3 moveDirection;
     private const float SpeedModifier = 10f;
     public Transform OrientationTransform { get; protected set; }
-    
-    [Header("Sprinting")] 
-    [SerializeField] private float sprintSpeedMultiplier;
-    
-    [Header("Crouching")] 
-    [SerializeField] private float crouchSpeedMultiplier;
+
+    [Header("Sprinting")] [SerializeField] private float sprintSpeedMultiplier;
+
+    [Header("Crouching")] [SerializeField] private float crouchSpeedMultiplier;
+
     //Do the job for now 
     //Change when we have better model
     [SerializeField] private float crouchYScale;
     [SerializeField] private float crouchingDownForce;
     private float crouchOriginYScale;
-    
-    
-    [Header("Jump")] 
-    [SerializeField]
-    private float jumpForce;
-    [SerializeField]
-    private float jumpCooldown;
-    [SerializeField]
-    private float airMultiplier;
+
+
+    [Header("Jump")] [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpCooldown;
+    [SerializeField] private float airMultiplier;
     private bool readyToJump = true;
     public bool Grounded { get; set; }
-    
-    [Header("Slope")] 
-    [SerializeField]
-    private float maxSlopeAngle = 45f;
-    [SerializeField] 
-    private float downForceSlope = 8f;
-    [SerializeField]
-    private LayerMask mask = 0;
+
+    [Header("Slope")] [SerializeField] private float maxSlopeAngle = 45f;
+    [SerializeField] private float downForceSlope = 8f;
+    [SerializeField] private LayerMask mask = 0;
     private RaycastHit slopeHit;
     private float angle;
-    
+
     PhotonView pv;
     private Rigidbody rb;
     private CapsuleCollider collider;
     public PlayerInventory PlayerInventory { get; protected set; }
     public CameraController CameraController { get; protected set; }
+    public Animator PlayerAnimator { get; protected set; }
+
+    private bool isWalking;
+    private bool isRunning;
+    private bool isCrouching;
+    private bool runPressed;
+    private bool crouchPressed;
+    private readonly int IsWalking = Animator.StringToHash("isWalking");
+    private readonly int IsRunning = Animator.StringToHash("isRunning");
+    private readonly int IsCrouching = Animator.StringToHash("isCrouching");
+
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
         if (pv == null)
             throw new Exception("PlayerController required PhotonView !");
-        
-        if(!pv.IsMine) 
+
+        if (!pv.IsMine)
             return;
-        
+
         MainPlayer = this;
-        
+
         if (cameraObject == null)
             throw new Exception("PlayerController required CameraHolderPrefab !");
-        
+
         OrientationTransform = transform.Find("CameraHolder");
         if (OrientationTransform == null)
             throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
 
-        if (!TryGetComponent<PlayerInventory>( out PlayerInventory pi))
+        if (!TryGetComponent<PlayerInventory>(out PlayerInventory pi))
         {
             throw new Exception("PlayerController required PlayerInventory");
         }
+
+        if (!transform.GetChild(0).GetChild(0).TryGetComponent(out Animator pa))
+        {
+            throw new Exception("PlayerController required Animator on mesh");
+        }
+
         PlayerInventory = pi;
-        
+        PlayerAnimator = pa;
+
         GameObject cameraHolder = Instantiate(cameraObject);
         CameraController = cameraHolder.GetComponent<CameraController>();
         CameraController.Orientation = OrientationTransform;
         CameraController.Speed = cameraSpeed;
-        
-        collider = GetComponent<CapsuleCollider>(); 
+
+        collider = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
     }
@@ -104,32 +111,41 @@ public class PlayerController : MonoBehaviour, Groundable
     // Update is called once per frame
     private void Update()
     {
-        if(!pv.IsMine)
+        if (!pv.IsMine)
             return;
-        
+
         InputsControls();
         SpeedControl();
         if (Grounded)
             rb.drag = drag;
         else
             rb.drag = 0;
+        transform.rotation = CameraController.Orientation.rotation;    
+        SetAnimationState();
     }
 
     private void FixedUpdate()
     {
-        if(!pv.IsMine)
+        if (!pv.IsMine)
             return;
         Move();
     }
 
-    
+
     /// <summary>
     /// Handle user input
     /// </summary>
     private void InputsControls()
-    {     
+    {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
+
+        if (Input.GetButtonDown("Sprint"))
+            runPressed = true;
+
+        if (Input.GetButtonUp("Sprint"))
+            runPressed = false;
+
 
         if (Input.GetButtonDown("Jump") && readyToJump && Grounded)
         {
@@ -141,6 +157,7 @@ public class PlayerController : MonoBehaviour, Groundable
         Vector3 localScale = transform.localScale;
         if (Input.GetButtonDown("Crouch"))
         {
+            crouchPressed = true;
             localScale = new Vector3(localScale.x, crouchYScale, localScale.z);
             transform.localScale = localScale;
             rb.AddForce(Vector3.down * crouchingDownForce, ForceMode.Impulse);
@@ -148,6 +165,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
         if (Input.GetButtonUp("Crouch"))
         {
+            crouchPressed = false;
             transform.localScale = new Vector3(localScale.x, crouchOriginYScale, localScale.z);
         }
     }
@@ -160,7 +178,7 @@ public class PlayerController : MonoBehaviour, Groundable
         //calculate dir 
         moveDirection = (OrientationTransform.forward * verticalInput + OrientationTransform.right * horizontalInput);
         Vector3 movDir;
-        
+
         //on slope we turn off gravity
         //for avoid slip down
         bool onSlope = OnSlope();
@@ -176,16 +194,17 @@ public class PlayerController : MonoBehaviour, Groundable
                 movDir = Vector3.zero;
             }
 
-            if(rb.velocity.y > 0f)
+            if (rb.velocity.y > 0f)
                 rb.AddForce(Vector3.down * downForceSlope, ForceMode.Force);
         }
         else
         {
             movDir = moveDirection.normalized;
         }
+
         rb.AddForce(movDir * (GetSpeed() * SpeedModifier), ForceMode.Force);
     }
-    
+
     /// <summary>
     /// "clamp" speed at max speed 
     /// </summary>
@@ -207,10 +226,11 @@ public class PlayerController : MonoBehaviour, Groundable
     private float GetSpeed()
     {
         float resultSpeed = speed;
-        if (Grounded && Input.GetButton("Sprint"))
+        if (Grounded && runPressed)
         {
             resultSpeed *= sprintSpeedMultiplier;
         }
+
         if (!Grounded)
         {
             resultSpeed *= airMultiplier;
@@ -225,9 +245,10 @@ public class PlayerController : MonoBehaviour, Groundable
         {
             resultSpeed = 0f;
         }
+
         return resultSpeed;
     }
-    
+
     /// <summary>
     /// Apply Jump physics
     /// </summary>
@@ -237,7 +258,7 @@ public class PlayerController : MonoBehaviour, Groundable
         Vector3 velocity = rb.velocity;
         velocity = new Vector3(velocity.x, 0f, velocity.z);
         rb.velocity = velocity;
-        rb.AddForce(transform.up* jumpForce, ForceMode.Impulse);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     /// <summary>
@@ -249,7 +270,7 @@ public class PlayerController : MonoBehaviour, Groundable
         yield return new WaitForSeconds(jumpCooldown);
         readyToJump = true;
     }
-    
+
     /// <summary>
     /// Check if player is on slope
     /// </summary>
@@ -257,13 +278,14 @@ public class PlayerController : MonoBehaviour, Groundable
     private bool OnSlope()
     {
         angle = 0;
-        Debug.DrawRay(transform.position,Vector3.down*(collider.height/2f+0.3f), Color.red);
+        Debug.DrawRay(transform.position, Vector3.down * (collider.height / 2f + 0.3f), Color.red);
 
-        if (Physics.Raycast(transform.position,Vector3.down, out slopeHit, collider.height/2f+0.3f,mask))
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, collider.height / 2f + 0.3f, mask))
         {
             angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
         }
+
         return false;
     }
 
@@ -273,7 +295,28 @@ public class PlayerController : MonoBehaviour, Groundable
     /// <returns></returns>
     private Vector3 GetSlopeMoveDirection()
     {
-        
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
+
+    private void SetAnimationState()
+    {
+        isWalking = PlayerAnimator.GetBool(IsWalking);
+        isRunning = PlayerAnimator.GetBool(IsRunning);
+        isCrouching = PlayerAnimator.GetBool(IsCrouching);
+        bool isMoving = horizontalInput != 0 || verticalInput != 0;
+        if (Grounded)
+        {
+            if (!isWalking && isMoving)
+                PlayerAnimator.SetBool(IsWalking, true);
+
+            if (isWalking && !isMoving)
+                PlayerAnimator.SetBool(IsWalking, false);
+
+            if (!isRunning && isMoving && runPressed)
+                PlayerAnimator.SetBool(IsRunning, true);
+
+            if (isRunning && (!isMoving || !runPressed))
+                PlayerAnimator.SetBool(IsRunning, false);
+        }
     }
 }
