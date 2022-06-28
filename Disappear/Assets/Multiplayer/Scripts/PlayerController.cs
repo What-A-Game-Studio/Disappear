@@ -5,7 +5,6 @@ using Photon.Pun;
 using Photon.Realtime;
 
 [RequireComponent(
-    typeof(PlayerInventory),
     typeof(PhotonView)
 )]
 public class PlayerController : MonoBehaviour, Groundable
@@ -45,6 +44,9 @@ public class PlayerController : MonoBehaviour, Groundable
     private RaycastHit slopeHit;
     private float angle;
 
+    [Header("Inventory")]
+    [SerializeField] private GameObject gameUI;
+    
     PhotonView pv;
     private Rigidbody rb;
     public Vector3 PlayerVelocity => rb.velocity;
@@ -60,9 +62,13 @@ public class PlayerController : MonoBehaviour, Groundable
 
         if (!pv.IsMine)
             return;
+        
+        Init();
+    }
 
+    private void Init()
+    {
         MainPlayer = this;
-
         if (cameraObject == null)
             throw new Exception("PlayerController required CameraHolderPrefab !");
 
@@ -70,14 +76,8 @@ public class PlayerController : MonoBehaviour, Groundable
         if (OrientationTransform == null)
             throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
 
-        if (!TryGetComponent<PlayerInventory>(out PlayerInventory pi))
-        {
-            throw new Exception("PlayerController required PlayerInventory");
-        }
-
-
-
-        PlayerInventory = pi;
+        PlayerInventory = gameObject.AddComponent<PlayerInventory>();
+        PlayerInventory.Init(gameUI);
 
         GameObject cameraHolder = Instantiate(cameraObject);
         CameraController = cameraHolder.GetComponent<CameraController>();

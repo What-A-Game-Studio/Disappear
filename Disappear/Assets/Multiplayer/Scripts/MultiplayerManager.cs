@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
 
-    public static string PhotonPrefabPath { get; set; } = "PhotonPrefabs";
+    public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
     [Header("Inputs")]
     [SerializeField]
@@ -50,7 +50,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     void Start()
     {
         MenuManager.Instance.OpenMenu(MenuType.Loading);
-        Debug.Log("Connecting to Master");
+        
         PhotonNetwork.ConnectUsingSettings();
     }
     #region  ======================= Public : Start  =======================
@@ -117,7 +117,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         RoomManager.Instance.SetSeparationControlsState(rulesBtn.GetComponent<Toggle>().isOn);
 
-        PhotonNetwork.LoadLevel("MultiplayerGameScene");
+        PhotonNetwork.LoadLevel(1);
     }
 
     #endregion  ======================= Public : end  =======================
@@ -152,7 +152,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Master");
         PhotonNetwork.JoinLobby();
         PhotonNetwork.AutomaticallySyncScene = true;
     }
@@ -160,7 +159,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         MenuManager.Instance.OpenMenu(MenuType.Title);
-        Debug.Log("Joined Lobby");
         //En attendant la saisie du joueur
         PhotonNetwork.NickName = "Player#" + Random.Range(0, 10000).ToString("0000");
     }
@@ -179,7 +177,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         errorText.text = "Room Creation Failed: " + message;
-        Debug.LogError("Room Creation Failed: " + message);
+        Debug.LogError("Room Creation Failed: " + message, this);
         MenuManager.Instance.OpenMenu(MenuType.Error);
     }
 

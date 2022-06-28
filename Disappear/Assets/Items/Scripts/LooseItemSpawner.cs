@@ -20,7 +20,7 @@ public class LooseItemSpawner : ItemSpawner
         return nbToSpawn.Value;
     }    
 
-    protected override Vector3 SpawnCoordinate()
+    public override Vector3 SpawnCoordinate()
     {
         Vector2 pos = Random.insideUnitCircle * spawnRadius;
         

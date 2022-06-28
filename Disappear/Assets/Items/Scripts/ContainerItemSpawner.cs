@@ -31,7 +31,7 @@ public class ContainerItemSpawner : ItemSpawner
         return nbItemToSpawn;
     }
 
-    protected override Vector3 SpawnCoordinate()
+    public override Vector3 SpawnCoordinate()
     {
         Vector3 pos = Vector3.zero;
         if (spawnPoints.Count > 0)
