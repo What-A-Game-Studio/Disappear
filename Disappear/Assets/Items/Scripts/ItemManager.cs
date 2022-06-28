@@ -17,7 +17,7 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
     
-     private ItemSpawner[] spawners;
+    private ItemSpawner[] spawners;
 
     private int TotalItems, theoryItems;
 
@@ -67,7 +67,26 @@ public class ItemManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Find index of item in children
+    /// </summary>
+    /// <param name="item">item ton find</param>
+    /// <returns>null if not found</returns>
+    protected int? FindIndexOfItem(ItemController item)
+    {
+        int? indexInChildren = null;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.TryGetComponent(out ItemController ic) && ic == item)
+            {
+                indexInChildren = i;
+                break;
+            }
+        }
 
+        return indexInChildren;
+    }
     /// <summary>
     /// Get array of items of type passed in parameter
     /// </summary>
@@ -125,25 +144,16 @@ public class ItemManager : MonoBehaviour
     /// <param name="item">Item to store</param>
     public void StoreItem(ItemController item)
     {
-        int? indexInChildren = null;
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            Transform child = transform.GetChild(i);
-            if (child.TryGetComponent(out ItemController ic) && ic == item)
-            {
-                    indexInChildren = i;
-                    break; 
-            }
-        }
-        
-        if(!indexInChildren.HasValue)
-            return;
+        int? indexInChildren = FindIndexOfItem(item);
 
+        if (!indexInChildren.HasValue)
+            return;
+        
         pv.RPC(nameof(RPC_StoreItem),
             RpcTarget.All,
             indexInChildren.Value);
-
     }
+
 
     /// <summary>
     /// Get one item by his position in array
@@ -171,10 +181,9 @@ public class ItemManager : MonoBehaviour
         Transform child = transform.GetChild(indexInChildren);
         child.gameObject.SetActive(false);
         child.localPosition = Vector3.zero;
-
     }
     
-    
+ 
     [PunRPC] // Remote Procedure Calls
     protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
     {

@@ -11,13 +11,12 @@ public class PlayerInventory : MonoBehaviour
     private bool inventoryOpened = false;
     private PlayerController pc;
 
-    [SerializeField] private GameObject GameUI;
     private InventoryUIManager inventoryUI;
     private Animator inventoryAnimation;
 
-    private void Awake()
+    public void Init(GameObject gameUI)
     {
-        GameObject uiGO = Instantiate(GameUI, transform);
+        GameObject uiGO = Instantiate(gameUI, transform);
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
