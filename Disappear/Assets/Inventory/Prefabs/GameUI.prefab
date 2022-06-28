@@ -778,7 +778,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemContainer: {fileID: 1592219434}
   <itemDraggedContainer>k__BackingField: {fileID: 127274035446219449}
-  itemUIPrefab: {fileID: 0}
+  itemUIPrefab: {fileID: 4504472659133232085, guid: 378dfdfa33761bc408de64e42855c588,
+    type: 3}
 --- !u!1 &1019939020
 GameObject:
   m_ObjectHideFlags: 0

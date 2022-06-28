@@ -11,15 +11,21 @@ public class PlayerInventory : MonoBehaviour
     private bool inventoryOpened = false;
     private PlayerController pc;
 
-    [SerializeField] private InventoryUIManager inventoryUI;
-    [SerializeField] private Animator inventoryAnimation;
+    [SerializeField] private GameObject GameUI;
+    private InventoryUIManager inventoryUI;
+    private Animator inventoryAnimation;
 
     private void Awake()
     {
+        GameObject uiGO = Instantiate(GameUI, transform);
+        if (!uiGO.TryGetComponent(out inventoryAnimation))
+            Debug.LogError("Could not find Animator Component on GameUI GameObject");
+
+        if (!uiGO.transform.GetChild(0).GetChild(0).GetChild(0).TryGetComponent(out inventoryUI))
+            Debug.LogError("Could not find InventoryUIManager Component on GameUI Children");
+
         if (!TryGetComponent(out pc))
-        {
-            Debug.LogError("Could not find PlayerController Component");
-        }
+            Debug.LogError("Could not find PlayerController Script on PlayerController GameObject ");
     }
 
     private void Update()

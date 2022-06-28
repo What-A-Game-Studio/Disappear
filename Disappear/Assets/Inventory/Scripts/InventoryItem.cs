@@ -7,10 +7,17 @@ using UnityEngine.UI;
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
     IPointerEnterHandler, IPointerExitHandler
 {
-    public Vector2Int ItemSize => ItemController.ItemData.Size;
+    private Vector2Int itemSize;
+
+    public Vector2Int ItemSize
+    {
+        get => itemSize;
+        set => itemSize = value;
+    }
+
     public ItemController ItemController { get; set; }
     private Vector2Int selectedPart;
-    
+
     public Vector2Int SelectedPart
     {
         get { return selectedPart; }
@@ -18,7 +25,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private RectTransform itemTransform;
     private Transform originalParent;
-    
+
     private Vector2 mousePosition;
     private Vector2 startPosition;
     private Vector2 differencePoint;
@@ -42,6 +49,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             Debug.Log("Couldn't find component RectTransform on " + gameObject.name);
         }
+
         originalParent = itemTransform.parent;
 
 
@@ -101,14 +109,15 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         selectedPosition.x += itemTransform.sizeDelta.x / 2;
         selectedPosition.y += itemTransform.sizeDelta.y / 2;
         selectedPart.x = Mathf.FloorToInt(selectedPosition.x / 100);
-        selectedPart.y = ItemController.ItemData.Size.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
+        selectedPart.y = itemSize.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
         oldPosition = itemTransform.position;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         img.raycastTarget = false;
-        transform.parent = InventoryUIManager.Instance.itemDraggedContainer;
+        transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
+        ;
         InventoryUIManager.Instance.DraggingItem = this;
         InventoryUIManager.Instance.IsDragging = true;
     }
@@ -122,7 +131,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         InventoryUIManager.Instance.DraggingItem = null;
         InventoryUIManager.Instance.IsDragging = false;
-        transform.parent = originalParent;
+        transform.SetParent(originalParent, false);
 
         if (!canDrop)
         {
@@ -163,5 +172,16 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     public void OnPointerExit(PointerEventData eventData)
     {
         isMouseOver = false;
+    }
+
+    public void RotateItemPositionOnZAxis()
+    {
+        if (transform.rotation.z == 0)
+            transform.Rotate(0, 0, -90);
+        else
+            transform.Rotate(0, 0, 90);
+        differencePoint = Vector2.zero;
+        itemTransform.position = mousePosition;
+        (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
     }
 }
