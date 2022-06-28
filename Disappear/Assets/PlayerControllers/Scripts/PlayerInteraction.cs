@@ -35,9 +35,9 @@ public class PlayerInteraction : MonoBehaviour
 
     #region Unity Functions
 
-    private void Awake()
+    public void Init(GameObject pgo)
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = pgo;
         cam = transform.parent;
     }
 

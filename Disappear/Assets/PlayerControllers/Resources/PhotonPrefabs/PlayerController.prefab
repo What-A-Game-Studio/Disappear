@@ -121,8 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b4c00fe9ae0e0540a74e53f3def118d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraObject: {fileID: 8444057675903429607, guid: 155c67809591d3d4591120748144564f,
-    type: 3}
   cameraSpeed: 250
   speed: 5
   drag: 5

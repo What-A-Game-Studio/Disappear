@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour, Groundable
 {
     public static PlayerController MainPlayer { get; protected set; }
 
-    [Header("Camera")] [SerializeField] private GameObject cameraObject;
+    [Header("Camera")]
     [SerializeField] private float cameraSpeed = 300f;
 
     [Header("Walking")] [SerializeField] protected float speed;
@@ -69,8 +69,6 @@ public class PlayerController : MonoBehaviour, Groundable
     private void Init()
     {
         MainPlayer = this;
-        if (cameraObject == null)
-            throw new Exception("PlayerController required CameraHolderPrefab !");
 
         OrientationTransform = transform.Find("CameraHolder");
         if (OrientationTransform == null)
@@ -79,11 +77,13 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI);
 
-        GameObject cameraHolder = Instantiate(cameraObject);
-        CameraController = cameraHolder.GetComponent<CameraController>();
-        CameraController.Orientation = OrientationTransform;
+        
+        CameraController = Camera.main.transform.parent.GetComponent<CameraController>();
+        CameraController.SetOrientation(OrientationTransform);
         CameraController.Speed = cameraSpeed;
-
+        Camera.main.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject);
+        
+        
         collider = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour, Groundable
             rb.drag = drag;
         else
             rb.drag = 0;
-        transform.rotation = CameraController.Orientation.rotation;
+        transform.rotation = CameraController.GetOrientationRotation();
     }
 
     private void FixedUpdate()
