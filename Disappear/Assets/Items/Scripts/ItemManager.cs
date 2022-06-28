@@ -33,15 +33,21 @@ public class ItemManager : MonoBehaviour
             return;
         }
 
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-        
+        pv = GetComponent<PhotonView>();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CreateItems();
+        }
+    }
 
-        Debug.Log("I'm master client !");
-        
+    /// <summary>
+    /// Create all items in all spawn
+    /// </summary>
+    private void CreateItems()
+    {
         totalRate = RarityTiers.Sum(tier => tier.Rate);
         spawners = GameObject.FindObjectsOfType<ItemSpawner>();
-        
+
         foreach (ItemSpawner spawn in spawners)
         {
             ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
@@ -52,7 +58,10 @@ public class ItemManager : MonoBehaviour
                 ItemDataSO item = GetTierToSpawn(goodTypeItem);
                 if (item != null)
                 {
-                    spawn.InstantiateItem(Array.IndexOf(itemsData,item));
+                    pv.RPC(nameof(RPC_InstantiateItem),
+                        RpcTarget.All,
+                        spawn.SpawnCoordinate(),
+                        Array.IndexOf(itemsData, item));
                     ++TotalItems;
                 }
             }
@@ -110,16 +119,30 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-    public void SpawnItem(string itemName, Vector3 spawnPosition)
-    {
-        // if (itemsChildren.ContainsKey(itemName))
-        //     itemsChildren[itemName].transform.position = spawnPosition;
-    }
+    /// <summary>
+    /// Store item for inventory
+    /// </summary>
+    /// <param name="item">Item to store</param>
     public void StoreItem(ItemController item)
     {
-        item.gameObject.SetActive(false);
-        item.transform.parent = transform;
-        item.transform.localPosition = Vector3.zero;
+        int? indexInChildren = null;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.TryGetComponent(out ItemController ic) && ic == item)
+            {
+                    indexInChildren = i;
+                    break; 
+            }
+        }
+        
+        if(!indexInChildren.HasValue)
+            return;
+
+        pv.RPC(nameof(RPC_StoreItem),
+            RpcTarget.All,
+            indexInChildren.Value);
+
     }
 
     /// <summary>
@@ -136,4 +159,35 @@ public class ItemManager : MonoBehaviour
 
         return null;
     }
+
+    #region ====================== Photon : Start ======================
+
+    [PunRPC]
+    private void RPC_StoreItem(int indexInChildren)
+    {
+        if (indexInChildren > transform.childCount)
+            return;
+        
+        Transform child = transform.GetChild(indexInChildren);
+        child.gameObject.SetActive(false);
+        child.localPosition = Vector3.zero;
+
+    }
+    
+    
+    [PunRPC] // Remote Procedure Calls
+    protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
+    {
+        ItemDataSO item = GetItemById(itemToSpawn);
+        if(item == null)
+            return;
+        
+        GameObject go = Instantiate(item.Model, position, Quaternion.identity);
+        go.transform.parent = transform;
+        go.layer = LayerMask.NameToLayer("Interactable");
+        ItemController ic = go.AddComponent<ItemController>();
+        ic.ItemData = item;
+        
+    }
+    #endregion ====================== Photon : End ====================== 
 }

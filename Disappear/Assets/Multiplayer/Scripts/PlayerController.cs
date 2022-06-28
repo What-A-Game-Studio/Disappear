@@ -71,7 +71,6 @@ public class PlayerController : MonoBehaviour, Groundable
             return;
         
         MainPlayer = this;
-        
         if (cameraObject == null)
             throw new Exception("PlayerController required CameraHolderPrefab !");
         

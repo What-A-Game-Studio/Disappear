@@ -8,7 +8,7 @@ public class ItemController : MonoBehaviour
     [SerializeField] private float forceAtSpawn = 1.2f;
     private Rigidbody rb;
     [SerializeField] private float timeToCheckIfItemStill = 1f;
-    [SerializeField] private float minimalAngularVelocityMagnitude = 1f;
+    // [SerializeField] private float minimalAngularVelocityMagnitude = 1f;
     [SerializeField] private float currentAngularVelocityMagnitude;
     public ItemDataSO ItemData { get; set; }
 
