@@ -923,6 +923,7 @@ GameObject:
   m_Component:
   - component: {fileID: 880283763}
   - component: {fileID: 880283762}
+  - component: {fileID: 880283764}
   m_Layer: 0
   m_Name: ItemManager
   m_TagString: Untagged
@@ -956,7 +957,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 91ec9d7b759cc1c42964ebdc2c0e613c, type: 2}
   - {fileID: 11400000, guid: ae3ca0b8c9a40c9498dd11417180ce30, type: 2}
   - {fileID: 11400000, guid: 9eb1cf2139b824e4db67195959d5b9b4, type: 2}
-  spawners: []
 --- !u!4 &880283763
 Transform:
   m_ObjectHideFlags: 0
@@ -972,6 +972,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &880283764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880283761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1130699013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,32 +1347,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2049306419}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1582449021 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6340818707564689328, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
-    type: 3}
-  m_PrefabInstance: {fileID: 2075396466687497218}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &1582449023
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1582449021}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 70efa9837c60de346b7ffdd13fca8c30, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1686398756
 GameObject:
   m_ObjectHideFlags: 0
