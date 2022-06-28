@@ -13,6 +13,9 @@ public class PlayerInventory : MonoBehaviour
 
     private InventoryUIManager inventoryUI;
     private Animator inventoryAnimation;
+    
+    private static readonly int Close = Animator.StringToHash("Close");
+    private static readonly int Open = Animator.StringToHash("Open");
 
     public void Init(GameObject gameUI)
     {
@@ -46,7 +49,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void OpenInventory()
     {
-        inventoryAnimation.SetTrigger("Open");
+        inventoryAnimation.SetTrigger(Open);
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
         pc.enabled = false;
@@ -55,7 +58,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void CloseInventory()
     {
-        inventoryAnimation.SetTrigger("Close");
+        inventoryAnimation.SetTrigger(Close);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         pc.enabled = true;
@@ -76,7 +79,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void DropItem(ItemController item)
     {
-        item.Activate();
+        ItemManager.Instance.DropItem(item);
         itemsInInventory.Remove(item);
     }
 }

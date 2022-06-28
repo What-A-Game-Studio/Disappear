@@ -154,7 +154,20 @@ public class ItemManager : MonoBehaviour
             indexInChildren.Value);
     }
 
+    public void DropItem(ItemController item)
+    {
+        int? indexInChildren = FindIndexOfItem(item);
 
+        if (!indexInChildren.HasValue)
+            return;
+        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
+        pv.RPC(nameof(RPC_DropItem),
+            RpcTarget.All,
+            indexInChildren.Value,
+            orientationTransform.position,
+            orientationTransform.forward);
+    }
+    
     /// <summary>
     /// Get one item by his position in array
     /// </summary>
@@ -182,7 +195,16 @@ public class ItemManager : MonoBehaviour
         child.gameObject.SetActive(false);
         child.localPosition = Vector3.zero;
     }
-    
+
+    [PunRPC]
+    private void RPC_DropItem(int indexInChildren,Vector3 spawnPos, Vector3 forwardOrientation)
+    {
+        if (indexInChildren > transform.childCount)
+            return;
+        
+        Transform child = transform.GetChild(indexInChildren);
+        child.GetComponent<ItemController>()?.Activate(spawnPos,forwardOrientation);
+    }
  
     [PunRPC] // Remote Procedure Calls
     protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)

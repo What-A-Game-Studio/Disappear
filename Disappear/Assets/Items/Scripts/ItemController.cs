@@ -46,16 +46,16 @@ public class ItemController : MonoBehaviour
             Random.Range(min, max),
             Random.Range(min, max));
     }
-
     /// <summary>
     /// Reactivate item at main camera position
     ///  at forward direction
     /// </summary>
-    public void Activate()
+    /// <param name="spawnPos"></param>
+    /// <param name="forwardOrientation"></param>
+    public void Activate(Vector3 spawnPos, Vector3 forwardOrientation)
     {
-        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
-        transform.position = orientationTransform.position + orientationTransform.forward;
-        rb.AddForce(orientationTransform.forward*forceAtSpawn);
+        transform.position = spawnPos + forwardOrientation;
+        rb.AddForce(forwardOrientation*forceAtSpawn);
         gameObject.SetActive(true);
     }
 }
