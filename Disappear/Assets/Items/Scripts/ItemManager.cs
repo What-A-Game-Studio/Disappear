@@ -1,27 +1,30 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Photon.Pun;
 using Random = UnityEngine.Random;
 /// <summary>
 /// ItemManager 
 /// </summary>
+[RequireComponent(typeof(PhotonView))]
 public class ItemManager : MonoBehaviour
 {
     
+    PhotonView pv;
     public static ItemManager Instance { get; private set; }
     
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
     
-    
-    [Header("DEBUG")]
-    [SerializeField] private ItemSpawner[] spawners;
+    private ItemSpawner[] spawners;
 
     private int TotalItems, theoryItems;
 
     private int totalRate;
     private void Awake()
     {		
+        
         if(Instance == null)
             Instance = this;
         else
@@ -29,11 +32,22 @@ public class ItemManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        Debug.Log("ItemManager awaked");
-        
+
+        pv = GetComponent<PhotonView>();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CreateItems();
+        }
+    }
+
+    /// <summary>
+    /// Create all items in all spawn
+    /// </summary>
+    private void CreateItems()
+    {
         totalRate = RarityTiers.Sum(tier => tier.Rate);
         spawners = GameObject.FindObjectsOfType<ItemSpawner>();
+
         foreach (ItemSpawner spawn in spawners)
         {
             ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
@@ -44,14 +58,35 @@ public class ItemManager : MonoBehaviour
                 ItemDataSO item = GetTierToSpawn(goodTypeItem);
                 if (item != null)
                 {
-                    spawn.InstantiateItem(item);
+                    pv.RPC(nameof(RPC_InstantiateItem),
+                        RpcTarget.All,
+                        spawn.SpawnCoordinate(),
+                        Array.IndexOf(itemsData, item));
                     ++TotalItems;
                 }
             }
         }
-        Debug.Log(TotalItems + " / " + theoryItems);
     }
+    /// <summary>
+    /// Find index of item in children
+    /// </summary>
+    /// <param name="item">item ton find</param>
+    /// <returns>null if not found</returns>
+    protected int? FindIndexOfItem(ItemController item)
+    {
+        int? indexInChildren = null;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.TryGetComponent(out ItemController ic) && ic == item)
+            {
+                indexInChildren = i;
+                break;
+            }
+        }
 
+        return indexInChildren;
+    }
     /// <summary>
     /// Get array of items of type passed in parameter
     /// </summary>
@@ -103,15 +138,87 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
-    public void SpawnItem(string itemName, Vector3 spawnPosition)
-    {
-        // if (itemsChildren.ContainsKey(itemName))
-        //     itemsChildren[itemName].transform.position = spawnPosition;
-    }
+    /// <summary>
+    /// Store item for inventory
+    /// </summary>
+    /// <param name="item">Item to store</param>
     public void StoreItem(ItemController item)
     {
-        item.gameObject.SetActive(false);
-        item.transform.parent = transform;
-        item.transform.localPosition = Vector3.zero;
+        int? indexInChildren = FindIndexOfItem(item);
+
+        if (!indexInChildren.HasValue)
+            return;
+        
+        pv.RPC(nameof(RPC_StoreItem),
+            RpcTarget.All,
+            indexInChildren.Value);
     }
+
+    public void DropItem(ItemController item)
+    {
+        int? indexInChildren = FindIndexOfItem(item);
+
+        if (!indexInChildren.HasValue)
+            return;
+        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
+        pv.RPC(nameof(RPC_DropItem),
+            RpcTarget.All,
+            indexInChildren.Value,
+            orientationTransform.position,
+            orientationTransform.forward);
+    }
+    
+    /// <summary>
+    /// Get one item by his position in array
+    /// </summary>
+    /// <param name="indexItem">item's index</param>
+    /// <returns>return null if indexItem is greater than array lenght or less than 0</returns>
+    public ItemDataSO GetItemById(int indexItem)
+    {
+        if (indexItem >= 0 && indexItem < itemsData.Length)
+        {
+            return itemsData[indexItem];
+        }
+
+        return null;
+    }
+
+    #region ====================== Photon : Start ======================
+
+    [PunRPC]
+    private void RPC_StoreItem(int indexInChildren)
+    {
+        if (indexInChildren > transform.childCount)
+            return;
+        
+        Transform child = transform.GetChild(indexInChildren);
+        child.gameObject.SetActive(false);
+        child.localPosition = Vector3.zero;
+    }
+
+    [PunRPC]
+    private void RPC_DropItem(int indexInChildren,Vector3 spawnPos, Vector3 forwardOrientation)
+    {
+        if (indexInChildren > transform.childCount)
+            return;
+        
+        Transform child = transform.GetChild(indexInChildren);
+        child.GetComponent<ItemController>()?.Activate(spawnPos,forwardOrientation);
+    }
+ 
+    [PunRPC] // Remote Procedure Calls
+    protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
+    {
+        ItemDataSO item = GetItemById(itemToSpawn);
+        if(item == null)
+            return;
+        
+        GameObject go = Instantiate(item.Model, position, Quaternion.identity);
+        go.transform.parent = transform;
+        go.layer = LayerMask.NameToLayer("Interactable");
+        ItemController ic = go.AddComponent<ItemController>();
+        ic.ItemData = item;
+        
+    }
+    #endregion ====================== Photon : End ====================== 
 }

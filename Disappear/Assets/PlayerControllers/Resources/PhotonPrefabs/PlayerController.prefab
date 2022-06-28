@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 2930072519294234951}
   - component: {fileID: 405707022988291170}
   - component: {fileID: 2075396466868102050}
-  - component: {fileID: 2075396466687497221}
   m_Layer: 3
   m_Name: PlayerController
   m_TagString: Player
@@ -138,19 +137,7 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 1
---- !u!114 &2075396466687497221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2968944649093107022}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7804c006321bf1142b2a7a51e4a46079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
+  gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
 --- !u!1 &3305526283022994802
 GameObject:
   m_ObjectHideFlags: 0

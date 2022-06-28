@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; set; }
+    public static GameManager Instance { get; private set; }
     private MenuController pauseMenu;
     private void Awake()
     {
@@ -14,6 +14,12 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+        else
+        {
+            Destroy(this);
+            return;
+        }
+        
     }
 
     public void Start()
@@ -43,8 +49,7 @@ public class GameManager : MonoBehaviour
     {
 #if UNITY_WEBPLAYER
      public static string webplayerQuitURL = "http://ronan-dhersignerie.fr/";
-#endif
-#if UNITY_EDITOR
+#elif UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBPLAYER
          Application.OpenURL(webplayerQuitURL);
