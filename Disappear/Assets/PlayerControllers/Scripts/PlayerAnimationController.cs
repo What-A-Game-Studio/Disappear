@@ -11,32 +11,39 @@ public class PlayerAnimationController : MonoBehaviour
     private bool isCrouching;
     private Vector3 velocity;
     private static readonly int IsCrouching = Animator.StringToHash("isCrouching");
+    private static readonly int IsJumping = Animator.StringToHash("isJumping");
     private static readonly int VelocityXHash = Animator.StringToHash("Velocity X");
     private static readonly int VelocityZHash = Animator.StringToHash("Velocity Z");
-    
+    private bool hasJumped = false;
+
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         if (!TryGetComponent(out pc))
         {
             throw new Exception("PlayerAnimationController required PlayerController");
-
         }
-        
+
         if (!transform.GetChild(0).GetChild(0).TryGetComponent(out Animator pa))
         {
             throw new Exception("PlayerAnimationController required Animator on mesh");
         }
-        playerAnimator = pa;
 
+        playerAnimator = pa;
     }
-    
+
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        hasJumped = playerAnimator.GetBool(IsJumping);
         velocity = transform.InverseTransformVector(pc.PlayerVelocity);
         playerAnimator.SetFloat(VelocityXHash, velocity.x);
         playerAnimator.SetFloat(VelocityZHash, velocity.z);
+        if (!hasJumped && !pc.Grounded)
+            playerAnimator.SetBool(IsJumping, true);
+        if (hasJumped && pc.Grounded)
+            playerAnimator.SetBool(IsJumping, false);
 
+        
     }
 }
