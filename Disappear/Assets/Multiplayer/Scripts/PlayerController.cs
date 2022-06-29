@@ -60,10 +60,21 @@ public class PlayerController : MonoBehaviour, Groundable
         if (pv == null)
             throw new Exception("PlayerController required PhotonView !");
 
+        InitModel();
+
         if (!pv.IsMine)
             return;
-        
         Init();
+    }
+
+    private void InitModel()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
+        name = PhotonNetwork.LocalPlayer.NickName;
+        TeamController tc = GetComponent<TeamController>();
+        tc.SetTeamData(PhotonNetwork.IsMasterClient, pac);
     }
 
     private void Init()
@@ -85,8 +96,6 @@ public class PlayerController : MonoBehaviour, Groundable
         
         
         collider = GetComponent<CapsuleCollider>();
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
     }
 
     // Start is called before the first frame update

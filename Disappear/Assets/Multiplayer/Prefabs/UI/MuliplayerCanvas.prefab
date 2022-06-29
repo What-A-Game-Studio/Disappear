@@ -803,7 +803,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &484177642
@@ -1638,7 +1638,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1181835961}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.6957046}
   m_AnchorMax: {x: 0, y: 0.6957046}
@@ -2889,8 +2889,8 @@ RectTransform:
   - {fileID: 2124419083}
   - {fileID: 860092893}
   - {fileID: 410643791}
-  - {fileID: 1200873820}
   - {fileID: 979942986}
+  - {fileID: 1200873820}
   - {fileID: 1101603842}
   m_Father: {fileID: 1767506389235356383}
   m_RootOrder: 3
@@ -2999,7 +2999,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1181835961}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.6957046}
   m_AnchorMax: {x: 0, y: 0.6957046}
@@ -4474,7 +4474,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &155400854647781739
@@ -5410,7 +5410,7 @@ GameObject:
   - component: {fileID: 2065269781}
   - component: {fileID: 7049416971682792105}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: MuliplayerCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

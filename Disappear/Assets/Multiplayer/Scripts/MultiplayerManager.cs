@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
@@ -63,7 +64,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         else
             roomName += Random.Range(0, 10000).ToString("0000");
 
-        PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 2 });
+        PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 5, BroadcastPropsChangeToAll = true});
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
     public void LeaveRoom()
@@ -126,7 +127,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     private GameObject CreatePlayer(Player player)
     {
         GameObject playerGo = Instantiate(playerListItemPrefab, playerListContent);
-        playerGo.GetComponent<PlayerListItemController>().Init(player);
+        playerGo.GetComponent<PlayerListItemController>().Init(player, this);
         return playerGo;
     }
 
@@ -219,4 +220,5 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
     }
     #endregion  ======================= Photon Override : End  =======================
+    
 }

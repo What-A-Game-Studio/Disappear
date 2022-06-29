@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 405707022988291170}
   - component: {fileID: 2075396466868102050}
   - component: {fileID: 1664771162179113637}
+  - component: {fileID: 1808498519580888173}
   m_Layer: 3
   m_Name: PlayerController
   m_TagString: Player
@@ -149,6 +150,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e18fc40147a68e145bd65dcd482c9f18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1808498519580888173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2968944649093107022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8db1284903754ba478cbf86af09665f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seeker: {fileID: 11400000, guid: 565072a44b02f6c459a00a2e5d8f2cef, type: 2}
+  hider: {fileID: 11400000, guid: 318c9f85cbfc0c049a10a3edb18d05f5, type: 2}
+  meshContainer: {fileID: 8166667921074782656}
 --- !u!1 &5107836297004573018
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,7 +306,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a832f63e65347f347bbb7e5913325556,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.8569999
+      value: -0.85
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a832f63e65347f347bbb7e5913325556,
         type: 3}

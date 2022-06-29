@@ -67,3 +67,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341716f176acf2043a312ea1dea3e9e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  seeker: {fileID: 11400000, guid: 565072a44b02f6c459a00a2e5d8f2cef, type: 2}
+  hider: {fileID: 11400000, guid: 318c9f85cbfc0c049a10a3edb18d05f5, type: 2}
