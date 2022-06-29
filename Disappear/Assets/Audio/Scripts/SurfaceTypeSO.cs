@@ -2,14 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum SurfaceType
-{
-    Concret,
-    Dirt,
-    Snow,
-    Water
-}
-
 [CreateAssetMenu(fileName = "New Surface", menuName = "SO/Surface")]
 public class SurfaceTypeSO : ScriptableObject
 {
