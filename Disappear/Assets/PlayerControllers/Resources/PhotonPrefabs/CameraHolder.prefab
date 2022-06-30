@@ -169,6 +169,11 @@ MonoBehaviour:
     m_Bits: 64
   interactMaxDistance: 1
   interactCubeSize: {x: 1, y: 1, z: 1}
+  catchMaxDistance: 1
+  catchLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  isSeeker: 0
 --- !u!1 &8444057675903429607
 GameObject:
   m_ObjectHideFlags: 0

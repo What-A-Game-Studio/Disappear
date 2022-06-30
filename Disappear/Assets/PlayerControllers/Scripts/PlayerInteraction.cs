@@ -103,6 +103,12 @@ public class PlayerInteraction : MonoBehaviour
             //Draw a cube at the maximum distance
             Gizmos.DrawWireCube(transform.position + cam.forward * interactMaxDistance, interactCubeSize);
         }
+
+        if (isSeeker)
+        {
+            Gizmos.DrawRay(cam.position, cam.forward * catchMaxDistance);
+
+        }
     }
 
     #endregion
