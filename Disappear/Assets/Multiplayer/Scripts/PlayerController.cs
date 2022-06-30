@@ -48,7 +48,15 @@ public class PlayerController : MonoBehaviour, Groundable
 
     PhotonView pv;
     private Rigidbody rb;
-    public Vector3 PlayerVelocity => rb.velocity;
+    public Vector3 PlayerVelocity
+    {
+        get
+        {
+            return pv.IsMine ? rb.velocity : distVelocity;
+        }
+    }
+
+    private Vector3 distVelocity;
     private CapsuleCollider collider;
     public PlayerInventory PlayerInventory { get; protected set; }
     public CameraController CameraController { get; protected set; }
@@ -125,9 +133,14 @@ public class PlayerController : MonoBehaviour, Groundable
         if (!pv.IsMine)
             return;
         Move();
+        pv.RPC(nameof(RPC_Velocity),RpcTarget.All, rb.velocity);
     }
 
-
+    [PunRPC]
+    private void RPC_Velocity(Vector3 vel)
+    {
+        distVelocity = vel;
+    }
     /// <summary>
     /// Handle user input
     /// </summary>
