@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class FootstepEvent : MonoBehaviour
 {
-    [Header("Footstep Sound Parameters")] [SerializeField]
+    [Header("Footstep Sound Parameters")] 
+    
+    [SerializeField]
     private float pitchVariation;
 
+    [SerializeField] private AudioClip defaultFootStep;
     private SurfaceTypeSO surfaceType;
 
     private Transform feet;
@@ -22,8 +25,12 @@ public class FootstepEvent : MonoBehaviour
 
     public void PlayFootstepSound()
     {
+        AudioClip toPlay = (surfaceType && surfaceType.FootstepOnSurface.Count > 0)
+            ? surfaceType.FootstepOnSurface[Random.Range(0, surfaceType.FootstepOnSurface.Count)]
+            : defaultFootStep;
+        
         AudioManager.Instance.PlaySpatializedSoundOnce(
-            surfaceType.FootstepOnSurface[Random.Range(0, surfaceType.FootstepOnSurface.Count)], feet.position,
+            toPlay, feet.position,
             1 + Random.Range(-pitchVariation, pitchVariation));
     }
 

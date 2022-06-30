@@ -10,7 +10,7 @@ public class TeamController : MonoBehaviour
     [SerializeField] private TeamData hider;
     [SerializeField] private Transform meshContainer;
     private TeamData teamData;
-
+    public FootstepEvent FootstepEvent { get; protected set; }
     private void Awake()
     {
         if (seeker == null)
@@ -64,14 +64,11 @@ public class TeamController : MonoBehaviour
         {
             item.updateWhenOffscreen = true;
         }
-
+        pac.SetAnimator(go.GetComponent<Animator>());
         go.transform.localPosition = teamData.ModelOffset;
-        Animator animator = go.AddComponent<Animator>();
-        pac.SetAnimator(animator);
-        animator.runtimeAnimatorController = teamData.AnimatorController;
-
-        FootstepEvent fse = go.AddComponent<FootstepEvent>();
-        fse.Init(meshContainer.GetChild(1));
+        FootstepEvent = go.GetComponent<FootstepEvent>();
+        FootstepEvent.Init(meshContainer.GetChild(1));
+        
     }
 
     private void SetHider()

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class SurfaceController : MonoBehaviour
 {
-    [field: SerializeField] public SurfaceTypeSO SurfaceType { get; set; }
+    [field: SerializeField] public SurfaceTypeSO SurfaceType { get; protected set; }
 }
