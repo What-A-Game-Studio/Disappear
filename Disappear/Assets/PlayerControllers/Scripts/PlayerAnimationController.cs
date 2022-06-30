@@ -25,14 +25,6 @@ public class PlayerAnimationController : MonoBehaviour
            return;
 
         }
-
-        if (!transform.GetChild(0).GetChild(0).TryGetComponent(out Animator pa))
-        {
-            Debug.LogError("PlayerAnimationController required Animator on mesh", this);
-            return;
-        }
-
-        playerAnimator = pa;
     }
 
     public void SetAnimator(Animator animator)

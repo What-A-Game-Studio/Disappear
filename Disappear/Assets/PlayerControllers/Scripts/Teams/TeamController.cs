@@ -64,7 +64,9 @@ public class TeamController : MonoBehaviour
         {
             item.updateWhenOffscreen = true;
         }
-        pac.SetAnimator(go.GetComponent<Animator>());
+
+        Animator anim= go.GetComponent<Animator>();
+        pac.SetAnimator(anim);
         go.transform.localPosition = teamData.ModelOffset;
         FootstepEvent = go.GetComponent<FootstepEvent>();
         FootstepEvent.Init(meshContainer.GetChild(1));
