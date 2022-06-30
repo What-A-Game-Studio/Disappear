@@ -138,6 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
+  isSeeker: 1
 --- !u!114 &1664771162179113637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1201,5 +1202,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fd1ba76e76c5c48a83459f60ae785c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkClip: {fileID: 8300000, guid: d16ab184b04d4fc4693226f82d0021b8, type: 3}
-  feet: {fileID: 1176313426771125753}
+  pitchVariation: 0

@@ -53,13 +53,16 @@ public class PlayerController : MonoBehaviour, Groundable
     private CapsuleCollider collider;
     public PlayerInventory PlayerInventory { get; protected set; }
     public CameraController CameraController { get; protected set; }
-    
+    [Header("DEBUG")] public bool isSeeker = true;
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
         if (pv == null)
             throw new Exception("PlayerController required PhotonView !");
 
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        
         InitModel();
 
         if (!pv.IsMine)
@@ -69,12 +72,10 @@ public class PlayerController : MonoBehaviour, Groundable
 
     private void InitModel()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
         PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(PhotonNetwork.IsMasterClient, pac);
+        tc.SetTeamData(isSeeker, pac);
     }
 
     private void Init()
