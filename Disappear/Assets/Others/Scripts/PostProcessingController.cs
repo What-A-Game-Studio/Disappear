@@ -23,7 +23,7 @@ public class PostProcessingController : MonoBehaviour
             Debug.LogError("PostProcessingController need UnityEngine.Rendering.Volume", this); 
             return;   
         }
-        volume = vol;
+        volume = vol; 
     }
 
     public void SetPostProcessing(VolumeProfile profileVolume)
