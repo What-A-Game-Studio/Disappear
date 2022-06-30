@@ -48,12 +48,10 @@ public class PlayerController : MonoBehaviour, Groundable
 
     PhotonView pv;
     private Rigidbody rb;
+
     public Vector3 PlayerVelocity
     {
-        get
-        {
-            return pv.IsMine ? rb.velocity : distVelocity;
-        }
+        get { return pv.IsMine ? rb.velocity : distVelocity; }
     }
 
     private Vector3 distVelocity;
@@ -70,6 +68,8 @@ public class PlayerController : MonoBehaviour, Groundable
 
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        Debug.Log("owner" + pv.Owner);
+        Debug.Log("master" + PhotonNetwork.MasterClient);
 
         InitModel();
 
@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(isSeeker, pac);
+        tc.SetTeamData(PhotonNetwork.MasterClient == pv.Owner, pac);
     }
 
     private void Init()
@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour, Groundable
         CameraController = Camera.main.transform.parent.GetComponent<CameraController>();
         CameraController.SetOrientation(OrientationTransform);
         CameraController.Speed = cameraSpeed;
-        Camera.main.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject);
+        Camera.main.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, isSeeker);
 
 
         collider = GetComponent<CapsuleCollider>();
@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour, Groundable
         if (!pv.IsMine)
             return;
         Move();
-        pv.RPC(nameof(RPC_Velocity),RpcTarget.All, rb.velocity);
+        pv.RPC(nameof(RPC_Velocity), RpcTarget.All, rb.velocity);
     }
 
     [PunRPC]
@@ -141,6 +141,7 @@ public class PlayerController : MonoBehaviour, Groundable
     {
         distVelocity = vel;
     }
+
     /// <summary>
     /// Handle user input
     /// </summary>

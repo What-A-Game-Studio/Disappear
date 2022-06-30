@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Vector3 = UnityEngine.Vector3;
 
@@ -21,12 +22,17 @@ public class PlayerInteraction : MonoBehaviour
     [Tooltip("The size of the cube for detecting interactable objects")] [SerializeField]
     private Vector3 interactCubeSize;
 
-
+    // General parameters
     private Interactable interactableObject;
     private RaycastHit hit;
-    private Vector3 camRay;
     private GameObject player;
 
+    [Header("Seeker Parameters")] [SerializeField]
+    private int catchMaxDistance;
+
+    [SerializeField] private LayerMask catchLayer;
+    private Ray camRay;
+    public bool isSeeker;
     bool m_HitDetect;
 
     // Start is called before the first frame update
@@ -35,9 +41,10 @@ public class PlayerInteraction : MonoBehaviour
 
     #region Unity Functions
 
-    public void Init(GameObject pgo)
+    public void Init(GameObject pgo, bool seeker)
     {
         player = pgo;
+        isSeeker = seeker;
         cam = transform.parent;
     }
 
@@ -64,6 +71,15 @@ public class PlayerInteraction : MonoBehaviour
         else
         {
             interactableObject = null;
+        }
+
+        camRay = new Ray(cam.position, cam.forward);
+        if (isSeeker && Input.GetButtonDown("Catch") && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
+        {
+            if (hit.collider.TryGetComponent(out Interactable interactableHider))
+            {
+                interactableHider.onInteract?.Invoke(player);
+            }
         }
     }
 

@@ -1607,6 +1607,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 855536662753785796, guid: 155c67809591d3d4591120748144564f,
+        type: 3}
+      propertyPath: catchMaxDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 855536662753785796, guid: 155c67809591d3d4591120748144564f,
+        type: 3}
+      propertyPath: catchLayer.m_Bits
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1661099350543888113, guid: 155c67809591d3d4591120748144564f,
         type: 3}
       propertyPath: m_RootOrder
@@ -2288,7 +2298,7 @@ PrefabInstance:
     - target: {fileID: 2075396466868102050, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}
       propertyPath: isSeeker
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2930072519294234951, guid: b94ba26fe3f0ddb4e865ebc15f48b198,
         type: 3}

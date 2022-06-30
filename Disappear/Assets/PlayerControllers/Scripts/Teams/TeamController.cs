@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class TeamController : MonoBehaviour
+public class TeamController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private TeamData seeker;
     [SerializeField] private TeamData hider;
@@ -76,6 +77,13 @@ public class TeamController : MonoBehaviour
     private void SetHider()
     {
         HiderController hc = transform.AddComponent<HiderController>();
+        transform.AddComponent<HiderInteractable>();
         hc.Init(teamData.TeamMaterial,7f, 0.2f);
+        
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        throw new NotImplementedException();
     }
 }
