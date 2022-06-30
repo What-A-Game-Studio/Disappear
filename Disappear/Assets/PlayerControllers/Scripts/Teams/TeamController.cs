@@ -18,6 +18,7 @@ public class TeamController : MonoBehaviour
             Debug.LogError("Seeker can not be null", this);
             return;
         }
+
         if (hider == null)
         {
             Debug.LogError("Hider can not be null", this);
@@ -27,7 +28,15 @@ public class TeamController : MonoBehaviour
 
     public void SetTeamData(bool isSeeker, PlayerAnimationController pac)
     {
-        teamData = isSeeker? seeker : hider;
+        if (isSeeker)
+        {
+            teamData = seeker;
+        }
+        else
+        {
+            teamData = hider;
+            SetHider();
+        }
 
         SetModel(pac);
 
@@ -55,5 +64,11 @@ public class TeamController : MonoBehaviour
         Animator animator = go.AddComponent<Animator>();
         pac.SetAnimator(animator);
         animator.runtimeAnimatorController = teamData.AnimatorController;
+    }
+
+    private void SetHider()
+    {
+        HiderController hc = transform.AddComponent<HiderController>();
+        hc.Init(teamData.TeamMaterial,7f, 0.2f);
     }
 }

@@ -11,8 +11,7 @@ public class PlayerController : MonoBehaviour, Groundable
 {
     public static PlayerController MainPlayer { get; protected set; }
 
-    [Header("Camera")]
-    [SerializeField] private float cameraSpeed = 300f;
+    [Header("Camera")] [SerializeField] private float cameraSpeed = 300f;
 
     [Header("Walking")] [SerializeField] protected float speed;
     [SerializeField] protected float drag;
@@ -44,9 +43,8 @@ public class PlayerController : MonoBehaviour, Groundable
     private RaycastHit slopeHit;
     private float angle;
 
-    [Header("Inventory")]
-    [SerializeField] private GameObject gameUI;
-    
+    [Header("Inventory")] [SerializeField] private GameObject gameUI;
+
     PhotonView pv;
     private Rigidbody rb;
     public Vector3 PlayerVelocity => rb.velocity;
@@ -54,6 +52,7 @@ public class PlayerController : MonoBehaviour, Groundable
     public PlayerInventory PlayerInventory { get; protected set; }
     public CameraController CameraController { get; protected set; }
     [Header("DEBUG")] public bool isSeeker = true;
+
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
@@ -62,7 +61,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        
+
         InitModel();
 
         if (!pv.IsMine)
@@ -89,13 +88,13 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI);
 
-        
+
         CameraController = Camera.main.transform.parent.GetComponent<CameraController>();
         CameraController.SetOrientation(OrientationTransform);
         CameraController.Speed = cameraSpeed;
         Camera.main.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject);
-        
-        
+
+
         collider = GetComponent<CapsuleCollider>();
     }
 

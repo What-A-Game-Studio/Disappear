@@ -14,6 +14,9 @@ public class TeamData : ScriptableObject
 
     [field:SerializeField]
     public GameObject Model { get; protected set; }
+    
+    [field:SerializeField]
+    public Material TeamMaterial { get; protected set; }
 
     [field: SerializeField] 
     public Vector3 ModelOffset { get; protected set; } = new Vector3(.0f,-0.85f,.0f);
