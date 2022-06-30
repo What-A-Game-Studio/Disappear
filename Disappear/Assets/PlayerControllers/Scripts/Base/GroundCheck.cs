@@ -7,10 +7,12 @@ using UnityEngine;
 public class GroundCheck<T> : MonoBehaviour where T : MonoBehaviour, Groundable
 {
     private T controller;
-
+    private FootstepEvent stepEvent;
+    
     void Awake()
     {
         controller = GetComponentInParent<T>();
+        stepEvent = transform.parent.GetComponentInChildren<FootstepEvent>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -18,6 +20,10 @@ public class GroundCheck<T> : MonoBehaviour where T : MonoBehaviour, Groundable
         if (other.gameObject == controller.gameObject)
             return;
         controller.Grounded = true;
+        if (other.TryGetComponent(out SurfaceController sc))
+        {
+            stepEvent.ChangeSurfaceType(sc.SurfaceType);
+        }
     }
 
     private void OnTriggerExit(Collider other)
