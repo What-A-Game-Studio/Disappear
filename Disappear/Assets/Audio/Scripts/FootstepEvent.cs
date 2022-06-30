@@ -12,7 +12,12 @@ public class FootstepEvent : MonoBehaviour
 
     private void Awake()
     {
-        feet = transform.parent.GetChild(transform.GetSiblingIndex() + 1);
+     //   feet = transform.parent.GetChild(transform.GetSiblingIndex() + 1);
+    }
+
+    public void Init(Transform f)
+    {
+        feet = f;
     }
 
     public void PlayFootstepSound()

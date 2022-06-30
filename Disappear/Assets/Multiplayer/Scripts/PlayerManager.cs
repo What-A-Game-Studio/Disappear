@@ -12,8 +12,6 @@ public class PlayerManager : MonoBehaviour
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
-
-
     }
 
     // Start is called before the first frame update

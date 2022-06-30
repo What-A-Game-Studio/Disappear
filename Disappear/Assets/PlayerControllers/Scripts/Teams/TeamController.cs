@@ -38,16 +38,15 @@ public class TeamController : MonoBehaviour
             SetHider();
         }
 
+
         SetModel(pac);
-
         SetPostProcessingVolume();
-
         SetSpeedModifier();
     }
 
     private void SetSpeedModifier()
     {
-        PlayerController.MainPlayer.SetTeamSpeedModifier(teamData.SpeedModifier);
+        gameObject.GetComponent<PlayerController>().SetTeamSpeedModifier(teamData.SpeedModifier);
     }
 
     private void SetPostProcessingVolume()
@@ -57,8 +56,7 @@ public class TeamController : MonoBehaviour
 
     private void SetModel(PlayerAnimationController pac)
     {
-        for (int i = 0; i < meshContainer.childCount; i++)
-            Destroy(meshContainer.GetChild(i).gameObject);
+        Destroy(meshContainer.GetChild(0).gameObject);
 
         GameObject go = Instantiate(teamData.Model, meshContainer);
         SkinnedMeshRenderer[] smr = go.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -71,6 +69,9 @@ public class TeamController : MonoBehaviour
         Animator animator = go.AddComponent<Animator>();
         pac.SetAnimator(animator);
         animator.runtimeAnimatorController = teamData.AnimatorController;
+
+        FootstepEvent fse = go.AddComponent<FootstepEvent>();
+        fse.Init(meshContainer.GetChild(1));
     }
 
     private void SetHider()
