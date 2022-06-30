@@ -29,6 +29,11 @@ public class TeamController : MonoBehaviour
     {
         teamData = isSeeker? seeker : hider;
 
+        SetModel(pac);
+    }
+
+    private void SetModel(PlayerAnimationController pac)
+    {
         for (int i = 0; i < meshContainer.childCount; i++)
             Destroy(meshContainer.GetChild(i).gameObject);
 
@@ -38,6 +43,7 @@ public class TeamController : MonoBehaviour
         {
             item.updateWhenOffscreen = true;
         }
+
         go.transform.localPosition = teamData.ModelOffset;
         Animator animator = go.AddComponent<Animator>();
         pac.SetAnimator(animator);
