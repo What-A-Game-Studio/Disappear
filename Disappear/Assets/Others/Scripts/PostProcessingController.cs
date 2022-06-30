@@ -25,4 +25,9 @@ public class PostProcessingController : MonoBehaviour
         }
         volume = vol;
     }
+
+    public void SetPostProcessing(VolumeProfile profileVolume)
+    {
+        volume.profile = profileVolume;
+    }
 }

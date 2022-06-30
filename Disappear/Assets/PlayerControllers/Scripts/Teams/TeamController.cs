@@ -30,6 +30,13 @@ public class TeamController : MonoBehaviour
         teamData = isSeeker? seeker : hider;
 
         SetModel(pac);
+
+        SetPostProcessingVolume();
+    }
+
+    private void SetPostProcessingVolume()
+    {
+        PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
     private void SetModel(PlayerAnimationController pac)

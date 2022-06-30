@@ -138,7 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
-  isSeeker: 1
+  isSeeker: 0
 --- !u!114 &1664771162179113637
 MonoBehaviour:
   m_ObjectHideFlags: 0
