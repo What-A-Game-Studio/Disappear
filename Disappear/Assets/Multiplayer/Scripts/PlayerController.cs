@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour, Groundable
     [SerializeField] private float cameraSpeed = 300f;
 
     [Header("Walking")] [SerializeField] protected float speed;
+    protected float teamSpeedModifier;
     [SerializeField] protected float drag;
     private float horizontalInput, verticalInput;
     private Vector3 moveDirection;
@@ -233,7 +234,7 @@ public class PlayerController : MonoBehaviour, Groundable
             resultSpeed = 0f;
         }
 
-        return resultSpeed;
+        return resultSpeed * teamSpeedModifier;
     }
 
     /// <summary>
@@ -283,5 +284,10 @@ public class PlayerController : MonoBehaviour, Groundable
     private Vector3 GetSlopeMoveDirection()
     {
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
+
+    public void SetTeamSpeedModifier(float teamDataSpeedModifier)
+    {
+        teamSpeedModifier = teamDataSpeedModifier;
     }
 }

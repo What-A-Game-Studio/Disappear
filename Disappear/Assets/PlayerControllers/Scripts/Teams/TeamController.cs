@@ -32,6 +32,13 @@ public class TeamController : MonoBehaviour
         SetModel(pac);
 
         SetPostProcessingVolume();
+
+        SetSpeedModifier();
+    }
+
+    private void SetSpeedModifier()
+    {
+        PlayerController.MainPlayer.SetTeamSpeedModifier(teamData.SpeedModifier);
     }
 
     private void SetPostProcessingVolume()
