@@ -11,7 +11,9 @@ public class TeamController : MonoBehaviourPun, IPunObservable
     [SerializeField] private TeamData hider;
     [SerializeField] private Transform meshContainer;
     private TeamData teamData;
+    private SkinnedMeshRenderer[] hiderRenderer;
     public FootstepEvent FootstepEvent { get; protected set; }
+
     private void Awake()
     {
         if (seeker == null)
@@ -29,20 +31,17 @@ public class TeamController : MonoBehaviourPun, IPunObservable
 
     public void SetTeamData(bool isSeeker, PlayerAnimationController pac)
     {
-        if (isSeeker)
-        {
-            teamData = seeker;
-        }
-        else
-        {
-            teamData = hider;
-            SetHider();
-        }
+        teamData = isSeeker ? seeker : hider;
 
 
         SetModel(pac);
         SetPostProcessingVolume();
         SetSpeedModifier();
+
+        if (!isSeeker)
+        {
+            SetHider();
+        }
     }
 
     private void SetSpeedModifier()
@@ -66,20 +65,20 @@ public class TeamController : MonoBehaviourPun, IPunObservable
             item.updateWhenOffscreen = true;
         }
 
-        Animator anim= go.GetComponent<Animator>();
+        hiderRenderer = smr;
+        Animator anim = go.GetComponent<Animator>();
         pac.SetAnimator(anim);
         go.transform.localPosition = teamData.ModelOffset;
         FootstepEvent = go.GetComponent<FootstepEvent>();
         FootstepEvent.Init(meshContainer.GetChild(1));
-        
     }
 
     private void SetHider()
     {
         HiderController hc = transform.AddComponent<HiderController>();
         transform.AddComponent<HiderInteractable>();
-        hc.Init(teamData.TeamMaterial,7f, 0.2f);
-        
+        hc.Init(7f, 0.2f);
+        hc.SetMaterial(hiderRenderer);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
