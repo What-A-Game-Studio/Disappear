@@ -37,7 +37,6 @@ public class PlayerSpawnerManager : MonoBehaviour
     {
         int rand = Random.Range(0, playerSpawnPositionList.Count);
         Vector3 newPos = playerSpawnPositionList[rand];
-        playerSpawnPositionList.RemoveAt(rand);
         return newPos;
     }
 }

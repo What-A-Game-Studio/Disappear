@@ -43,6 +43,8 @@ MonoBehaviour:
   - RPC_StoreItem
   - RPC_DropItem
   - RPC_Velocity
+  - RPC_Teleport
+  - RPC_Defeat
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

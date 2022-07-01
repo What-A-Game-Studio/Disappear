@@ -303,4 +303,30 @@ public class PlayerController : MonoBehaviour, Groundable
     {
         teamSpeedModifier = teamDataSpeedModifier;
     }
+
+    public void Teleport()
+    {
+        pv.RPC("RPC_Teleport", RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_Teleport()
+    {
+        if (!pv.IsMine)
+            return;
+        transform.position = PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition();
+    }
+
+    public void Defeat()
+    {
+        pv.RPC("RPC_Defeat", RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_Defeat()
+    {
+        if (!pv.IsMine)
+            return;
+        MenuManager.Instance.OpenMenu(MenuType.Pause);
+    }
 }
