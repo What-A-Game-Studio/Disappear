@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -57,4 +59,12 @@ public class GameManager : MonoBehaviour
          Application.Quit();
 #endif
     }
+
+    public void HiderExit(HiderController hc)
+    {
+        if (hc.IsMine())
+            SceneManager.LoadScene("PostGameScene");
+    }
+    
+    
 }

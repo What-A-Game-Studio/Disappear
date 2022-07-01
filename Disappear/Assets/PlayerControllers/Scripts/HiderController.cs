@@ -17,6 +17,11 @@ public class HiderController : MonoBehaviour
     private float oldTransparency = 0;
     private static readonly int Opacity = Shader.PropertyToID("_Opacity");
 
+    public bool IsMine()
+    {
+        return pc.IsMine();
+    }
+
     private void Awake()
     {
         pc = GetComponent<PlayerController>();

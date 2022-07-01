@@ -9,5 +9,6 @@ public enum MenuType
     Error,
     Victory,
     Pause,
-    Game
+    Game,
+    None,
 }
