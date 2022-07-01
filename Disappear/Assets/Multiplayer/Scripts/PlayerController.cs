@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(PhotonNetwork.MasterClient == pv.Owner, pac);
+        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, pv.Owner), pac);
     }
 
     private void Init()
@@ -328,5 +328,10 @@ public class PlayerController : MonoBehaviour, Groundable
         if (!pv.IsMine)
             return;
         MenuManager.Instance.OpenMenu(MenuType.Pause);
+    }
+    
+    public bool IsMine()
+    {
+        return pv.IsMine;
     }
 }

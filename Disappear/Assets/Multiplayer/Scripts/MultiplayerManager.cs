@@ -3,6 +3,7 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -12,6 +13,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
+    [SerializeField] private MenuType defaultMenu = MenuType.Loading;
+
     [Header("Inputs")]
     [SerializeField]
     TMP_InputField roomNameInput;
@@ -50,7 +53,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     }
     void Start()
     {
-        MenuManager.Instance.OpenMenu(MenuType.Loading);
+        if(defaultMenu != MenuType.None)
+            MenuManager.Instance.OpenMenu(defaultMenu);
         
         PhotonNetwork.ConnectUsingSettings();
     }

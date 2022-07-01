@@ -53,7 +53,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _DitherSize: 0
-    - _Opacity: 1
+    - _Opacity: 0.9
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
