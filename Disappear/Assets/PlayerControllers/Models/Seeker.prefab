@@ -1119,7 +1119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pitchVariation: 0
-  defaultFootStep: {fileID: 8300000, guid: d16ab184b04d4fc4693226f82d0021b8, type: 3}
+  defaultFootStep: {fileID: 8300000, guid: 8a1d5b63b17d39c498caa5d4d5e5ffc2, type: 3}
 --- !u!1 &3084408735010502845
 GameObject:
   m_ObjectHideFlags: 0

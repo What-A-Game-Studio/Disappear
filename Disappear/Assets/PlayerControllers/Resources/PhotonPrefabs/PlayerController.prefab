@@ -331,7 +331,7 @@ PrefabInstance:
         type: 3}
       propertyPath: defaultFootStep
       value: 
-      objectReference: {fileID: 8300000, guid: d16ab184b04d4fc4693226f82d0021b8, type: 3}
+      objectReference: {fileID: 8300000, guid: 8a1d5b63b17d39c498caa5d4d5e5ffc2, type: 3}
     - target: {fileID: 7015089048156884012, guid: 4ffa6a2514872924fb293e3492bccbcb,
         type: 3}
       propertyPath: m_RootOrder
