@@ -68,8 +68,6 @@ public class PlayerController : MonoBehaviour, Groundable
 
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        Debug.Log("owner" + pv.Owner);
-        Debug.Log("master" + PhotonNetwork.MasterClient);
 
         InitModel();
 

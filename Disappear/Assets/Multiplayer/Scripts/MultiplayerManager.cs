@@ -2,9 +2,11 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -45,11 +47,17 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        DontDestroyOnLoad(this);
         if (Instance == null)
         {
             Instance = this;
         }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
     }
     void Start()
     {
@@ -73,8 +81,15 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     }
     public void LeaveRoom()
     {
+        
+        object[] content = new object[] { PhotonNetwork.NickName }; 
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+        PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
         PhotonNetwork.LeaveRoom();
-        MenuManager.Instance.OpenMenu(MenuType.Loading);
+        PhotonNetwork.LoadLevel("MultiplayerMenuScene");
+        // PhotonNetwork.LeaveRoom();
+        // MenuManager.Instance.OpenMenu(MenuType.Loading);
+        // SceneManager.LoadScene(0);
     }
 
     public void JoinRoom(RoomInfo info)
@@ -224,5 +239,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
     }
     #endregion  ======================= Photon Override : End  =======================
-    
+
+
 }

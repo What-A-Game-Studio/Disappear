@@ -17,22 +17,22 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
     #endregion
 
     private static RoomManager instance;
-    public static RoomManager Instance
-    {
-        get
-        {
-            if (instance == null) instance = FindObjectOfType<RoomManager>();
-            return instance;
-        }
-        set { instance = value; }
-    }
+
     private const byte playerQuitEventCode = 1;
     private string leavingPlayer;
+    public static RoomManager Instance { get;  private set; }
 
-    private void Awake()
+    void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        // DontDestroyOnLoad(gameObject);
     }
+
 
     public override void OnEnable()
     {
