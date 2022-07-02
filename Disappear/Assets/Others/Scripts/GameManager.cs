@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -60,11 +62,14 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
-    public void HiderExit(HiderController hc)
+    public void HiderQuit(HiderController hc, bool success)
     {
         if (hc.IsMine())
             SceneManager.LoadScene("PostGameScene");
+        else
+        {
+            Destroy(hc.gameObject);
+        }
     }
-    
     
 }

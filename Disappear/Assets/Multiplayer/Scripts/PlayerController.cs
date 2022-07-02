@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
     [Header("Inventory")] [SerializeField] private GameObject gameUI;
 
-    PhotonView pv;
+    private PhotonView pv;
     private Rigidbody rb;
 
     public Vector3 PlayerVelocity
@@ -304,7 +304,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
     public void Teleport()
     {
-        pv.RPC("RPC_Teleport", RpcTarget.All);
+        pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
     }
 
     [PunRPC]
@@ -317,7 +317,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
     public void Defeat()
     {
-        pv.RPC("RPC_Defeat", RpcTarget.All);
+        pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
     }
 
     [PunRPC]
@@ -327,7 +327,7 @@ public class PlayerController : MonoBehaviour, Groundable
             return;
         MenuManager.Instance.OpenMenu(MenuType.Pause);
     }
-    
+
     public bool IsMine()
     {
         return pv.IsMine;

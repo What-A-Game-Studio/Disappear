@@ -16,6 +16,6 @@ public abstract class ExitController : MonoBehaviour
 
     protected void ExitHider(HiderController hc)
     {
-        GameManager.Instance.HiderExit(hc);
+        GameManager.Instance.HiderQuit(hc, true);
     }
 }
