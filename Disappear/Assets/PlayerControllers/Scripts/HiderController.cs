@@ -4,15 +4,15 @@ using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
 
-public class HiderController : MonoBehaviour
+public class HiderController : Interactable
 {
-    private float transparencyThreshold;
-    private float maxVelocity;
+    private int HiderLife;
 
-    private PlayerController pc;
+    public PlayerController pc { get; private set; }
     private List<Material> hiderMaterial = new List<Material>();
 
-
+    private float transparencyThreshold;
+    private float maxVelocity;
     private float transparency;
     private float oldTransparency = 0;
     private static readonly int Opacity = Shader.PropertyToID("_Opacity");
@@ -22,13 +22,15 @@ public class HiderController : MonoBehaviour
         return pc.IsMine();
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         pc = GetComponent<PlayerController>();
     }
-
-    public void Init(float maxSpeed, float threshold)
+    
+    public void Init(int maxLife, float maxSpeed, float threshold)
     {
+        HiderLife = maxLife;
         maxVelocity = maxSpeed;
         transparencyThreshold = threshold;
     }
@@ -44,13 +46,25 @@ public class HiderController : MonoBehaviour
 
     private void Update()
     {
-        
         transparency = Mathf.Floor(10 * pc.PlayerVelocity.magnitude / maxVelocity) / 10.0f;
         if (Mathf.Abs(transparency - oldTransparency) > transparencyThreshold)
         {
             foreach (Material mat in hiderMaterial)
                 mat.SetFloat(Opacity, Mathf.Clamp(1 - transparency, 0, 1));
             oldTransparency = transparency;
+        }
+    }
+    
+    protected override void ActionOnInteract(GameObject sender)
+    {
+        HiderLife--;
+        if (HiderLife > 0)
+        {
+            pc.Teleport();
+        }
+        else
+        {
+            GameManager.Instance.HiderQuit(this, false);
         }
     }
 }

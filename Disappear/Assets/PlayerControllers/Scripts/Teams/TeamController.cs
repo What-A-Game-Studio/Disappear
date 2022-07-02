@@ -76,9 +76,7 @@ public class TeamController : MonoBehaviour
     private void SetHider()
     {
         HiderController hc = transform.AddComponent<HiderController>();
-        HiderHealthSystem hhs = transform.AddComponent<HiderHealthSystem>();
-        hc.Init(7f, 0.2f);
+        hc.Init(3, 7f, 0.2f);
         hc.SetMaterial(hiderRenderer);
-        hhs.Init(3);
     }
 }
