@@ -10,6 +10,7 @@ public class TeamController : MonoBehaviour
     [SerializeField] private TeamData seeker;
     [SerializeField] private TeamData hider;
     [SerializeField] private Transform meshContainer;
+    private PhotonView pv;
     private TeamData teamData;
     private SkinnedMeshRenderer[] hiderRenderer;
     public FootstepEvent FootstepEvent { get; protected set; }
@@ -29,10 +30,10 @@ public class TeamController : MonoBehaviour
         }
     }
 
-    public void SetTeamData(bool isSeeker, PlayerAnimationController pac)
+    public void SetTeamData(bool isSeeker, PlayerAnimationController pac,PhotonView photonView)
     {
         teamData = isSeeker ? seeker : hider;
-
+        pv = photonView;
 
         SetModel(pac);
         SetPostProcessingVolume();
@@ -57,8 +58,12 @@ public class TeamController : MonoBehaviour
     private void SetModel(PlayerAnimationController pac)
     {
         Destroy(meshContainer.GetChild(0).gameObject);
-
-        GameObject go = Instantiate(teamData.Model, meshContainer);
+        GameObject go = null;
+            if(pv.IsMine)
+                go = Instantiate(teamData.LocalModel, meshContainer);
+            else
+                go = Instantiate(teamData.Model, meshContainer);
+            
         SkinnedMeshRenderer[] smr = go.GetComponentsInChildren<SkinnedMeshRenderer>();
         foreach (SkinnedMeshRenderer item in smr)
         {

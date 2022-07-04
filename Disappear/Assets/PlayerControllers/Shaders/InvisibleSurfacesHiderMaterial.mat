@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: InvisibleHider
+  m_Name: InvisibleSurfacesHiderMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 49722ec589a9dde469ff41bc65e83b51,
     type: 3}
   m_ValidKeywords: []

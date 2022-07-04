@@ -17,9 +17,9 @@ MonoBehaviour:
     type: 2}
   <Model>k__BackingField: {fileID: 7642972500723209878, guid: 4ffa6a2514872924fb293e3492bccbcb,
     type: 3}
-  <TeamMaterial>k__BackingField: {fileID: 2100000, guid: 3e5de8e5d95a866498696d24dc5eed92,
-    type: 2}
-  <ModelOffset>k__BackingField: {x: 0, y: -0.85, z: 0}
+  <LocalModel>k__BackingField: {fileID: 2438753365362500637, guid: 95269faf31074f8488d4ae00e8c46c49,
+    type: 3}
+  <ModelOffset>k__BackingField: {x: 0, y: -1.05, z: 0}
   <AnimatorController>k__BackingField: {fileID: 9100000, guid: 70efa9837c60de346b7ffdd13fca8c30,
     type: 2}
   <SpeedModifier>k__BackingField: 1
