@@ -79,10 +79,15 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 5, BroadcastPropsChangeToAll = true});
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
+
     public void LeaveRoom()
     {
-        
-        object[] content = new object[] { PhotonNetwork.NickName }; 
+        LeaveRoom(QuitEnum.Quit);
+    }
+    
+    public void LeaveRoom(QuitEnum reasonToQuit = QuitEnum.Quit)
+    {
+        object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit }; 
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
         PhotonNetwork.LeaveRoom();

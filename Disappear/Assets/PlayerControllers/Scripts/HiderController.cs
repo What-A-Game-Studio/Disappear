@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
 public class HiderController : Interactable
 {
-    private int HiderLife;
+    [SerializeField] private int HiderLife;
 
     public PlayerController pc { get; private set; }
     private List<Material> hiderMaterial = new List<Material>();
@@ -27,7 +28,7 @@ public class HiderController : Interactable
         base.Awake();
         pc = GetComponent<PlayerController>();
     }
-    
+
     public void Init(int maxLife, float maxSpeed, float threshold)
     {
         HiderLife = maxLife;
@@ -54,17 +55,26 @@ public class HiderController : Interactable
             oldTransparency = transparency;
         }
     }
-    
+
     protected override void ActionOnInteract(GameObject sender)
     {
-        HiderLife--;
-        if (HiderLife > 0)
+        pc.Pv.RPC(nameof(RPC_ActionOnInteract), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_ActionOnInteract()
+    {
+        if (IsMine())
         {
-            pc.Teleport();
-        }
-        else
-        {
-            GameManager.Instance.HiderQuit(this, false);
+            HiderLife--;
+            if (HiderLife > 0)
+            {
+                pc.Teleport();
+            }
+            else
+            {
+                GameManager.Instance.HiderQuit(QuitEnum.Dead);
+            }
         }
     }
 }

@@ -23,7 +23,6 @@ public class FootstepEvent : MonoBehaviour
 
     public void PlayFootstepSound()
     {
-        Debug.Log("Trying to make sound");
         if (!IsPlaying)
         {
             IsPlaying = true;

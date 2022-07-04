@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     private MenuController pauseMenu;
+
     private void Awake()
     {
         //Singleton pattern
@@ -23,7 +24,6 @@ public class GameManager : MonoBehaviour
             Destroy(this);
             return;
         }
-        
     }
 
     public void Start()
@@ -33,8 +33,8 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) 
-            && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game 
+        if (Input.GetKeyDown(KeyCode.Escape)
+            && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game
                 || MenuManager.Instance.GetCurrentMenu() == MenuType.Pause))
         {
             if (pauseMenu.IsOpen)
@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
                 MenuManager.Instance.OpenMenu(pauseMenu);
         }
     }
+
     public void QuitRoom()
     {
         RoomManager.Instance.OnPlayerLeave();
@@ -62,14 +63,8 @@ public class GameManager : MonoBehaviour
 #endif
     }
 
-    public void HiderQuit(HiderController hc, bool success)
+    public void HiderQuit(QuitEnum reasonToQuit)
     {
-        if (hc.IsMine())
-            SceneManager.LoadScene("PostGameScene");
-        else
-        {
-            Destroy(hc.gameObject);
-        }
+        MultiplayerManager.Instance.LeaveRoom(reasonToQuit);
     }
-    
 }

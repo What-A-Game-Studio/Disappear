@@ -10,5 +10,6 @@ public enum MenuType
     Victory,
     Pause,
     Game,
+    Notification,
     None,
 }

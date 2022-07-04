@@ -46,12 +46,12 @@ public class PlayerController : MonoBehaviour, Groundable
 
     [Header("Inventory")] [SerializeField] private GameObject gameUI;
 
-    private PhotonView pv;
+    public PhotonView Pv { get; private set; }
     private Rigidbody rb;
 
     public Vector3 PlayerVelocity
     {
-        get { return pv.IsMine ? rb.velocity : distVelocity; }
+        get { return Pv.IsMine ? rb.velocity : distVelocity; }
     }
 
     private Vector3 distVelocity;
@@ -62,8 +62,8 @@ public class PlayerController : MonoBehaviour, Groundable
 
     private void Awake()
     {
-        pv = GetComponent<PhotonView>();
-        if (pv == null)
+        Pv = GetComponent<PhotonView>();
+        if (Pv == null)
             throw new Exception("PlayerController required PhotonView !");
 
         rb = GetComponent<Rigidbody>();
@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour, Groundable
 
         InitModel();
 
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
         Init();
     }
@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, pv.Owner), pac);
+        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), pac);
     }
 
     private void Init()
@@ -114,7 +114,7 @@ public class PlayerController : MonoBehaviour, Groundable
     // Update is called once per frame
     private void Update()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
 
         InputsControls();
@@ -128,10 +128,10 @@ public class PlayerController : MonoBehaviour, Groundable
 
     private void FixedUpdate()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
         Move();
-        pv.RPC(nameof(RPC_Velocity), RpcTarget.All, rb.velocity);
+        Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, rb.velocity);
     }
 
     [PunRPC]
@@ -304,32 +304,32 @@ public class PlayerController : MonoBehaviour, Groundable
 
     public void Teleport()
     {
-        pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
+        Pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
     }
 
     [PunRPC]
     private void RPC_Teleport()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
         transform.position = PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition();
     }
 
     public void Defeat()
     {
-        pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
+        Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
     }
 
     [PunRPC]
     private void RPC_Defeat()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
         MenuManager.Instance.OpenMenu(MenuType.Pause);
     }
 
     public bool IsMine()
     {
-        return pv.IsMine;
+        return Pv.IsMine;
     }
 }
