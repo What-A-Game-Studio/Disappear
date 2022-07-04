@@ -30,7 +30,7 @@ public class TeamController : MonoBehaviour
         }
     }
 
-    public void SetTeamData(bool isSeeker, PlayerAnimationController pac,PhotonView photonView)
+    public void SetTeamData(bool isSeeker, PlayerAnimationController pac, PhotonView photonView)
     {
         teamData = isSeeker ? seeker : hider;
         pv = photonView;
@@ -52,18 +52,19 @@ public class TeamController : MonoBehaviour
 
     private void SetPostProcessingVolume()
     {
-        PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
+        if (pv.IsMine)
+            PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
     private void SetModel(PlayerAnimationController pac)
     {
         Destroy(meshContainer.GetChild(0).gameObject);
         GameObject go = null;
-            if(pv.IsMine)
-                go = Instantiate(teamData.LocalModel, meshContainer);
-            else
-                go = Instantiate(teamData.Model, meshContainer);
-            
+        if (pv.IsMine)
+            go = Instantiate(teamData.LocalModel, meshContainer);
+        else
+            go = Instantiate(teamData.Model, meshContainer);
+
         SkinnedMeshRenderer[] smr = go.GetComponentsInChildren<SkinnedMeshRenderer>();
         foreach (SkinnedMeshRenderer item in smr)
         {
