@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, pv.Owner), pac, pv);
+        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), pac, Pv);
     }
 
     private void Init()
