@@ -88,7 +88,6 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
             QuitEnum quit = (QuitEnum)data[1];
             if (leavingPlayer != PhotonNetwork.NickName)
             {
-                MenuController notificationMenu = MenuManager.Instance.GetMenu(MenuType.Notification);
                 string quitReason;
                 switch (quit)
                 {
@@ -104,9 +103,7 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
                         break;
                 }
 
-                notificationMenu.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
-                    leavingPlayer + " " + quitReason;
-                MenuManager.Instance.OpenMenu(notificationMenu);
+                NotificationManager.Instance.DisplayNotification(leavingPlayer + " " + quitReason);
             }
         }
     }
