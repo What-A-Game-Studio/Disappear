@@ -64,7 +64,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2968944649093107022}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: a95bb6cf5950fba408bbcdf3e789836a, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.3
@@ -238,12 +238,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3705860309108114893}
-  - component: {fileID: 9128346735600263587}
   - component: {fileID: 7407527231557578911}
+  - component: {fileID: 2986753640752917896}
   m_Layer: 3
   m_Name: GroundChecker
   m_TagString: Untagged
-  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -255,26 +255,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7698142622724479570}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.96, z: 0}
+  m_LocalPosition: {x: 0, y: -0.872, z: 0}
   m_LocalScale: {x: 0.6, y: 0.1, z: 0.6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2968944649093107016}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &9128346735600263587
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7698142622724479570}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7407527231557578911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,6 +274,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: decd8c4eba572e24088064e1028a6cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!136 &2986753640752917896
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7698142622724479570}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.32
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7917961196919444487
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +346,7 @@ PrefabInstance:
     - target: {fileID: 7015089048156884012, guid: 4ffa6a2514872924fb293e3492bccbcb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.85
+      value: -1.05
       objectReference: {fileID: 0}
     - target: {fileID: 7015089048156884012, guid: 4ffa6a2514872924fb293e3492bccbcb,
         type: 3}

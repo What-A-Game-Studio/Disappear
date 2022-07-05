@@ -42,6 +42,7 @@ public class PostProcessingController : MonoBehaviour
         {
             Debug.Log("Volume needs Depth Of Field");
         }
+        dof.focalLength.value = 1.0f;
     }
 
     public void ActivateBlur()
