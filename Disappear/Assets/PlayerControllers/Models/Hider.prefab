@@ -2343,6 +2343,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pitchVariation: 0
   defaultFootStep: {fileID: 8300000, guid: 8a1d5b63b17d39c498caa5d4d5e5ffc2, type: 3}
+  defaultFootprint: {fileID: 2100000, guid: 8a9cbf4bb62677943b412320941652ab, type: 2}
   footprintsPrefab: {fileID: 2573662491423804351, guid: 2e49b773f5accab49b937585a0357a64,
     type: 3}
 --- !u!1 &8147117022164769612

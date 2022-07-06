@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class FootstepEvent : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class FootstepEvent : MonoBehaviour
     private float pitchVariation;
 
     [SerializeField] private AudioClip defaultFootStep;
+    [SerializeField] private Material defaultFootprint;
     private SurfaceTypeSO surfaceType;
     public bool IsPlaying { get; set; } = false;
     private Transform feet;
@@ -31,12 +33,16 @@ public class FootstepEvent : MonoBehaviour
             AudioClip toPlay = (surfaceType && surfaceType.FootstepOnSurface.Count > 0)
                 ? surfaceType.FootstepOnSurface[Random.Range(0, surfaceType.FootstepOnSurface.Count)]
                 : defaultFootStep;
-
+            
             AudioManager.Instance.PlaySpatializeSoundOnce(this,
                 toPlay, feet.position,
                 1 + Random.Range(-pitchVariation, pitchVariation));
-            decalRotation.eulerAngles = new Vector3(90, transform.root.rotation.eulerAngles.y, 0);
-            Instantiate(footprintsPrefab, feet.position, decalRotation);
+
+            if (surfaceType && surfaceType.PrintsOnSurface)
+            {
+                decalRotation.eulerAngles = new Vector3(90, transform.root.rotation.eulerAngles.y, 0);
+                GameObject fpGO = Instantiate(footprintsPrefab, feet.position, decalRotation);
+            }
         }
     }
 

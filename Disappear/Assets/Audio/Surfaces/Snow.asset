@@ -15,3 +15,4 @@ MonoBehaviour:
   <Type>k__BackingField: 2
   <FootstepOnSurface>k__BackingField:
   - {fileID: 8300000, guid: 6071c69f7b3ec0c46bafd9cd9b9d32da, type: 3}
+  <PrintsOnSurface>k__BackingField: 1

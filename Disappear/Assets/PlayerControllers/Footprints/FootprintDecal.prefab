@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3221093585678986588}
   - component: {fileID: 5360250180430190627}
+  - component: {fileID: 4729756700217761279}
   m_Layer: 0
   m_Name: FootprintDecal
   m_TagString: Untagged
@@ -45,8 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 8a9cbf4bb62677943b412320941652ab, type: 2}
-  m_DrawDistance: 999.43
-  m_FadeScale: 0.9
+  m_DrawDistance: 1000
+  m_FadeScale: 0.929
   m_StartAngleFade: 180
   m_EndAngleFade: 180
   m_UVScale: {x: 1, y: 1}
@@ -54,4 +55,17 @@ MonoBehaviour:
   m_ScaleMode: 0
   m_Offset: {x: 0, y: 0, z: 0.5}
   m_Size: {x: 0.1, y: 0.25, z: 1}
-  m_FadeFactor: 0.967
+  m_FadeFactor: 1
+--- !u!114 &4729756700217761279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2573662491423804351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4949ce2696740a64db96b3ab2390539c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  destroyDelay: 60

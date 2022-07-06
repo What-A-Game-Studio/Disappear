@@ -62,6 +62,8 @@ public class PlayerInventory : MonoBehaviour
     {
         PostProcessingController.Instance.DeactivateBlur();
         inventoryAnimation.SetTrigger(Close);
+        Debug.Log("Locked by ", this);
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         pc.enabled = true;
