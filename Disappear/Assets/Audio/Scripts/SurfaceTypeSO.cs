@@ -8,6 +8,7 @@ public class SurfaceTypeSO : ScriptableObject
     [field: SerializeField] public SurfaceType Type { get; private set; }
 
     [field: SerializeField] public List<AudioClip> FootstepOnSurface { get; private set; }
+    [field: SerializeField] public bool PrintsOnSurface { get; private set; }
     // [field: SerializeField] public List<AudioClip> JumpOnSurface { get; private set; }
     // [field: SerializeField] public List<AudioClip> LandOnSurface { get; private set; }
 }

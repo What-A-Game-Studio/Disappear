@@ -27,6 +27,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         cam = GetComponentInChildren<Camera>();
+        Debug.Log("Locked by ", this);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
