@@ -18,8 +18,6 @@ public class LockController : MonoBehaviour
     {
         if (PlayerController.MainPlayer)
         {
-            Debug.Log("Locked by ", this);
-
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             PlayerController.MainPlayer.enabled = true;
