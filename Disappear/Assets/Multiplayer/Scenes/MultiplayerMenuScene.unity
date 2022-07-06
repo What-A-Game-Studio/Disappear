@@ -268,7 +268,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2065269781, guid: 405d1a409fee9bb4fb66a69986297f0f, type: 3}
       propertyPath: menus.Array.size
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2065269781, guid: 405d1a409fee9bb4fb66a69986297f0f, type: 3}
       propertyPath: menus.Array.data[8]
