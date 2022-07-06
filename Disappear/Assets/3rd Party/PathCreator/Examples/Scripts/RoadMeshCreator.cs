@@ -141,6 +141,16 @@ namespace PathCreation.Examples {
             if (mesh == null) {
                 mesh = new Mesh ();
             }
+
+            if (meshHolder.TryGetComponent(out MeshCollider mc))
+            {
+                DestroyImmediate(mc);
+                meshHolder.AddComponent<MeshCollider>();
+            }
+            else
+            {
+                meshHolder.AddComponent<MeshCollider>();
+            }
             meshFilter.sharedMesh = mesh;
         }
 
