@@ -23,17 +23,17 @@ public class AudioManager : MonoBehaviour
         usedAudioContainer = transform.GetChild(1);
     }
 
-    public void PlaySpatializedSoundOnce(AudioClip spatializedClip, Vector3 position, float pitch)
+    public void PlaySpatializeSoundOnce(FootstepEvent fse, AudioClip spatializeClip, Vector3 position, float pitch)
     {
         if (freeAudioContainer.childCount > 0)
         {
             AudioSource sound = freeAudioContainer.GetChild(0).GetComponent<AudioSource>();
-            sound.clip = spatializedClip;
+            sound.clip = spatializeClip;
             sound.transform.position = position;
             sound.pitch = pitch;
             sound.transform.parent = usedAudioContainer;
             sound.Play();
-            StartCoroutine(ResetAudioSource(sound, sound.clip.length));
+            StartCoroutine(ResetAudioSource(fse, sound, sound.clip.length));
         }
         else
         {
@@ -41,8 +41,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private IEnumerator ResetAudioSource(AudioSource source, float soundDuration)
+    private IEnumerator ResetAudioSource(FootstepEvent fse, AudioSource source, float soundDuration)
     {
+        yield return new WaitForSeconds(0.1f);
+        fse.IsPlaying = false;
         yield return new WaitForSeconds(soundDuration);
         source.transform.parent = freeAudioContainer;
 

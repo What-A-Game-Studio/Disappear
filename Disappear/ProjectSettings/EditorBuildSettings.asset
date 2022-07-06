@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PlayerControllers/Scenes/PlayerControllerScene.unity
     guid: 1b3707c5afeddf04b87dc377d291a808
+  - enabled: 1
+    path: Assets/PostGame/PostGameScene.unity
+    guid: 968298b3fd7f86d41bc80dc9f6bf0e8c
   m_configObjects: {}

@@ -11,10 +11,10 @@ public class PlayerController : MonoBehaviour, Groundable
 {
     public static PlayerController MainPlayer { get; protected set; }
 
-    [Header("Camera")] [SerializeField] private GameObject cameraObject;
-    [SerializeField] private float cameraSpeed = 300f;
+    [Header("Camera")] [SerializeField] private float cameraSpeed = 300f;
 
     [Header("Walking")] [SerializeField] protected float speed;
+    protected float teamSpeedModifier;
     [SerializeField] protected float drag;
     private float horizontalInput, verticalInput;
     private Vector3 moveDirection;
@@ -44,33 +44,49 @@ public class PlayerController : MonoBehaviour, Groundable
     private RaycastHit slopeHit;
     private float angle;
 
-    [Header("Inventory")]
-    [SerializeField] private GameObject gameUI;
-    
-    PhotonView pv;
+    [Header("Inventory")] [SerializeField] private GameObject gameUI;
+
+    public PhotonView Pv { get; private set; }
     private Rigidbody rb;
-    public Vector3 PlayerVelocity => rb.velocity;
+
+    public Vector3 PlayerVelocity
+    {
+        get { return Pv.IsMine ? rb.velocity : distVelocity; }
+    }
+
+    private Vector3 distVelocity;
     private CapsuleCollider collider;
     public PlayerInventory PlayerInventory { get; protected set; }
     public CameraController CameraController { get; protected set; }
-    
+    [Header("DEBUG")] public bool isSeeker = true;
+
     private void Awake()
     {
-        pv = GetComponent<PhotonView>();
-        if (pv == null)
+        Pv = GetComponent<PhotonView>();
+        if (Pv == null)
             throw new Exception("PlayerController required PhotonView !");
 
-        if (!pv.IsMine)
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+
+        InitModel();
+
+        if (!Pv.IsMine)
             return;
-        
         Init();
+    }
+
+    private void InitModel()
+    {
+        PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
+        name = PhotonNetwork.LocalPlayer.NickName;
+        TeamController tc = GetComponent<TeamController>();
+        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), pac, Pv);
     }
 
     private void Init()
     {
         MainPlayer = this;
-        if (cameraObject == null)
-            throw new Exception("PlayerController required CameraHolderPrefab !");
 
         OrientationTransform = transform.Find("CameraHolder");
         if (OrientationTransform == null)
@@ -79,14 +95,14 @@ public class PlayerController : MonoBehaviour, Groundable
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI);
 
-        GameObject cameraHolder = Instantiate(cameraObject);
-        CameraController = cameraHolder.GetComponent<CameraController>();
-        CameraController.Orientation = OrientationTransform;
+
+        CameraController = Camera.main.transform.parent.GetComponent<CameraController>();
+        CameraController.SetOrientation(OrientationTransform);
         CameraController.Speed = cameraSpeed;
+        Camera.main.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, isSeeker);
+
 
         collider = GetComponent<CapsuleCollider>();
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
     }
 
     // Start is called before the first frame update
@@ -98,7 +114,7 @@ public class PlayerController : MonoBehaviour, Groundable
     // Update is called once per frame
     private void Update()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
 
         InputsControls();
@@ -107,16 +123,22 @@ public class PlayerController : MonoBehaviour, Groundable
             rb.drag = drag;
         else
             rb.drag = 0;
-        transform.rotation = CameraController.Orientation.rotation;
+        transform.rotation = CameraController.GetOrientationRotation();
     }
 
     private void FixedUpdate()
     {
-        if (!pv.IsMine)
+        if (!Pv.IsMine)
             return;
         Move();
+        Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, rb.velocity);
     }
 
+    [PunRPC]
+    private void RPC_Velocity(Vector3 vel)
+    {
+        distVelocity = vel;
+    }
 
     /// <summary>
     /// Handle user input
@@ -223,7 +245,7 @@ public class PlayerController : MonoBehaviour, Groundable
             resultSpeed = 0f;
         }
 
-        return resultSpeed;
+        return resultSpeed * teamSpeedModifier;
     }
 
     /// <summary>
@@ -273,5 +295,41 @@ public class PlayerController : MonoBehaviour, Groundable
     private Vector3 GetSlopeMoveDirection()
     {
         return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
+
+    public void SetTeamSpeedModifier(float teamDataSpeedModifier)
+    {
+        teamSpeedModifier = teamDataSpeedModifier;
+    }
+
+    public void Teleport()
+    {
+        Pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_Teleport()
+    {
+        if (!Pv.IsMine)
+            return;
+        transform.position = PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition();
+    }
+
+    public void Defeat()
+    {
+        Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPC_Defeat()
+    {
+        if (!Pv.IsMine)
+            return;
+        MenuManager.Instance.OpenMenu(MenuType.Pause);
+    }
+
+    public bool IsMine()
+    {
+        return Pv.IsMine;
     }
 }

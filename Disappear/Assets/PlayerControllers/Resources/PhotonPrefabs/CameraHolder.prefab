@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9061365612105522227}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -169,6 +169,11 @@ MonoBehaviour:
     m_Bits: 64
   interactMaxDistance: 1
   interactCubeSize: {x: 1, y: 1, z: 1}
+  catchMaxDistance: 1
+  catchLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  isSeeker: 0
 --- !u!1 &8444057675903429607
 GameObject:
   m_ObjectHideFlags: 0

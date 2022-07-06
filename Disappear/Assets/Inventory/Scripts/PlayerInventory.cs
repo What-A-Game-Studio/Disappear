@@ -11,15 +11,16 @@ public class PlayerInventory : MonoBehaviour
     private bool inventoryOpened = false;
     private PlayerController pc;
 
+    private GameObject uiGO;
     private InventoryUIManager inventoryUI;
     private Animator inventoryAnimation;
-    
+
     private static readonly int Close = Animator.StringToHash("Close");
     private static readonly int Open = Animator.StringToHash("Open");
 
     public void Init(GameObject gameUI)
     {
-        GameObject uiGO = Instantiate(gameUI, transform);
+        uiGO = Instantiate(gameUI, transform);
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
@@ -49,6 +50,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void OpenInventory()
     {
+        PostProcessingController.Instance.ActivateBlur();
         inventoryAnimation.SetTrigger(Open);
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
@@ -58,6 +60,7 @@ public class PlayerInventory : MonoBehaviour
 
     private void CloseInventory()
     {
+        PostProcessingController.Instance.DeactivateBlur();
         inventoryAnimation.SetTrigger(Close);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

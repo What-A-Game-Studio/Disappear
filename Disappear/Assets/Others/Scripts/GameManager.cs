@@ -1,12 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
+using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     private MenuController pauseMenu;
+
     private void Awake()
     {
         //Singleton pattern
@@ -19,7 +24,6 @@ public class GameManager : MonoBehaviour
             Destroy(this);
             return;
         }
-        
     }
 
     public void Start()
@@ -29,8 +33,8 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) 
-            && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game 
+        if (Input.GetKeyDown(KeyCode.Escape)
+            && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game
                 || MenuManager.Instance.GetCurrentMenu() == MenuType.Pause))
         {
             if (pauseMenu.IsOpen)
@@ -39,6 +43,7 @@ public class GameManager : MonoBehaviour
                 MenuManager.Instance.OpenMenu(pauseMenu);
         }
     }
+
     public void QuitRoom()
     {
         RoomManager.Instance.OnPlayerLeave();
@@ -56,5 +61,10 @@ public class GameManager : MonoBehaviour
 #else
          Application.Quit();
 #endif
+    }
+
+    public void HiderQuit(QuitEnum reasonToQuit)
+    {
+        MultiplayerManager.Instance.LeaveRoom(reasonToQuit);
     }
 }

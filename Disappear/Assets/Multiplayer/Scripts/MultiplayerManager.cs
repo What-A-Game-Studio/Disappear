@@ -2,20 +2,29 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using ExitGames.Client.Photon;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
 
     public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
+    [SerializeField] private MenuType defaultMenu = MenuType.Loading;
+
     [Header("Inputs")]
     [SerializeField]
     TMP_InputField roomNameInput;
 
     [Header("Text")]
+    [SerializeField]
+    TMP_Text titleText;
+
     [SerializeField]
     TMP_Text errorText;
     [SerializeField]
@@ -41,15 +50,22 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        DontDestroyOnLoad(this);
         if (Instance == null)
         {
             Instance = this;
         }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+
     }
     void Start()
     {
-        MenuManager.Instance.OpenMenu(MenuType.Loading);
+        if(defaultMenu != MenuType.None)
+            MenuManager.Instance.OpenMenu(defaultMenu);
         
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -63,13 +79,25 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         else
             roomName += Random.Range(0, 10000).ToString("0000");
 
-        PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 2 });
+        PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 5, BroadcastPropsChangeToAll = true});
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
+
     public void LeaveRoom()
     {
+        LeaveRoom(QuitEnum.Quit);
+    }
+    
+    public void LeaveRoom(QuitEnum reasonToQuit = QuitEnum.Quit)
+    {
+        object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit }; 
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+        PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
         PhotonNetwork.LeaveRoom();
-        MenuManager.Instance.OpenMenu(MenuType.Loading);
+        PhotonNetwork.LoadLevel("MultiplayerMenuScene");
+        // PhotonNetwork.LeaveRoom();
+        // MenuManager.Instance.OpenMenu(MenuType.Loading);
+        // SceneManager.LoadScene(0);
     }
 
     public void JoinRoom(RoomInfo info)
@@ -120,13 +148,18 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel(1);
     }
 
+    public void SetGameTitle(string name)
+    {
+        titleText.text = name;
+    }
+
     #endregion  ======================= Public : end  =======================
 
     #region  ======================= Private : Start  =======================
     private GameObject CreatePlayer(Player player)
     {
         GameObject playerGo = Instantiate(playerListItemPrefab, playerListContent);
-        playerGo.GetComponent<PlayerListItemController>().Init(player);
+        playerGo.GetComponent<PlayerListItemController>().Init(player, this);
         return playerGo;
     }
 
@@ -219,4 +252,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
     }
     #endregion  ======================= Photon Override : End  =======================
+
+
 }

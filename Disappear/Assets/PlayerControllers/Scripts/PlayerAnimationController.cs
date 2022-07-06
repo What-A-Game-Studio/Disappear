@@ -21,20 +21,23 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if (!TryGetComponent(out pc))
         {
-            throw new Exception("PlayerAnimationController required PlayerController");
-        }
+           Debug.LogError("PlayerAnimationController required PlayerController", this);
+           return;
 
-        if (!transform.GetChild(0).GetChild(0).TryGetComponent(out Animator pa))
-        {
-            throw new Exception("PlayerAnimationController required Animator on mesh");
         }
+    }
 
-        playerAnimator = pa;
+    public void SetAnimator(Animator animator)
+    {
+        playerAnimator = animator;
     }
 
     // Update is called once per frame
     private void Update()
     {
+        if(!playerAnimator)
+            return;
+            
         hasJumped = playerAnimator.GetBool(IsJumping);
         velocity = transform.InverseTransformVector(pc.PlayerVelocity);
         playerAnimator.SetFloat(VelocityXHash, velocity.x);

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7f48bb8ee29df247a62de97f789436a, type: 3}
+  m_Name: HiderData
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: Hider
+  <PostProcessingVolume>k__BackingField: {fileID: 11400000, guid: ca74dcdf16291494b82eeacffdaa6c41,
+    type: 2}
+  <Model>k__BackingField: {fileID: 7642972500723209878, guid: 4ffa6a2514872924fb293e3492bccbcb,
+    type: 3}
+  <LocalModel>k__BackingField: {fileID: 2438753365362500637, guid: 95269faf31074f8488d4ae00e8c46c49,
+    type: 3}
+  <ModelOffset>k__BackingField: {x: 0, y: -1.05, z: 0}
+  <AnimatorController>k__BackingField: {fileID: 9100000, guid: 70efa9837c60de346b7ffdd13fca8c30,
+    type: 2}
+  <SpeedModifier>k__BackingField: 1

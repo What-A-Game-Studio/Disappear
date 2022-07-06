@@ -13,26 +13,29 @@ using ExitGames.Client.Photon;
 public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCallback
 {
     #region Rules parameters
+
     public bool separateControls { get; private set; }
+
     #endregion
 
     private static RoomManager instance;
-    public static RoomManager Instance
-    {
-        get
-        {
-            if (instance == null) instance = FindObjectOfType<RoomManager>();
-            return instance;
-        }
-        set { instance = value; }
-    }
+
     private const byte playerQuitEventCode = 1;
     private string leavingPlayer;
+    public static RoomManager Instance { get; private set; }
 
-    private void Awake()
+    void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        // DontDestroyOnLoad(gameObject);
     }
+
 
     public override void OnEnable()
     {
@@ -45,10 +48,10 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
     {
         base.OnDisable();
         SceneManager.sceneLoaded -= OnSceneLoaded;
-
     }
 
-    #region  ======================= Public : Start  =======================
+    #region ======================= Public : Start  =======================
+
     public void SetSeparationControlsState(bool state)
     {
         separateControls = state;
@@ -68,7 +71,7 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
 
     public void OnPlayerLeave()
     {
-        object[] content = new object[] { PhotonNetwork.NickName }; 
+        object[] content = new object[] { PhotonNetwork.NickName };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(playerQuitEventCode, content, raiseEventOptions, SendOptions.SendReliable);
         PhotonNetwork.LeaveRoom();
@@ -82,25 +85,42 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
         {
             object[] data = (object[])photonEvent.CustomData;
             leavingPlayer = (string)data[0];
-            if(leavingPlayer != PhotonNetwork.NickName)
+            QuitEnum quit = (QuitEnum)data[1];
+            if (leavingPlayer != PhotonNetwork.NickName)
             {
-                MenuManager.Instance.GetMenu(MenuType.Victory).transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = leavingPlayer + " has left the game.";
-                MenuManager.Instance.OpenMenu(MenuType.Victory);
+                string quitReason;
+                switch (quit)
+                {
+                    case QuitEnum.Dead:
+                        quitReason = "has been captured";
+                        break;
+                    case QuitEnum.Escape:
+                        quitReason = "has escaped";
+                        break;
+                    case QuitEnum.Quit:
+                    default:
+                        quitReason = "has left the game";
+                        break;
+                }
+
+                NotificationManager.Instance.DisplayNotification(leavingPlayer + " " + quitReason);
             }
         }
     }
 
-
     #endregion ======================= Public : Start  =======================
 
-    #region  ======================= Private : Start  =======================
+    #region ======================= Private : Start  =======================
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
         if (scene.buildIndex == 1) //if game secene 
         {
             //Instantiate RoomMangar at (0,0,0) because it's a Empty
-            PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, "PlayerManager"), Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate(Path.Combine(MultiplayerManager.PhotonPrefabPath, "PlayerManager"), Vector3.zero,
+                Quaternion.identity);
         }
-    }   
+    }
+
     #endregion ======================= Private : Start  =======================
 }

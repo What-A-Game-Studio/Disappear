@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Photon.Pun;
 using UnityEngine;
 
@@ -13,7 +14,14 @@ public class CameraController : MonoBehaviour
     public bool CanRotate { get; set; } = true;
     
     private Camera cam;
-    public Transform Orientation { get; set; }
+    private Transform orientation;
+    private bool hasOrientatin = false;
+
+    public void SetOrientation(Transform o)
+    {
+        orientation = o;
+        hasOrientatin = true;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +34,10 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = Orientation.position;
+        if(!hasOrientatin)
+            return;
+        
+        transform.position = orientation.position;
         
         if(!CanRotate)
             return;
@@ -37,7 +48,11 @@ public class CameraController : MonoBehaviour
         xRot = Mathf.Clamp(xRot, minX, maxX);
 
         cam.transform.rotation = Quaternion.Euler(xRot, yRot,0);
-        Orientation.rotation = Quaternion.Euler(0, yRot,0);
+        orientation.rotation = Quaternion.Euler(0, yRot,0);
     }
 
+    public Quaternion GetOrientationRotation()
+    {
+        return orientation.rotation;
+    }
 }
