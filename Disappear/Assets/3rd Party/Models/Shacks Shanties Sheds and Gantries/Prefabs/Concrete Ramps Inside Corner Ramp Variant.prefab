@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3754558916719141390
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -18.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4197970635297326901, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5596914483190483839, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_Name
+      value: Concrete Ramps Inside Corner Ramp Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 5596914483190483839, guid: b99c966a0d61f8342ab7d0d95feef089,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b99c966a0d61f8342ab7d0d95feef089, type: 3}
+--- !u!1 &8770447328753428849 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5596914483190483839, guid: b99c966a0d61f8342ab7d0d95feef089,
+    type: 3}
+  m_PrefabInstance: {fileID: 3754558916719141390}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &611684425
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8770447328753428849}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -8587686627028407734, guid: 81210d51a29844c448be336805a284c0, type: 3}
