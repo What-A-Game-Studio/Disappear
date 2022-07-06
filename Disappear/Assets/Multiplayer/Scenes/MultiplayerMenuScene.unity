@@ -274,6 +274,10 @@ PrefabInstance:
       propertyPath: menus.Array.data[8]
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2124419082, guid: 405d1a409fee9bb4fb66a69986297f0f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 155400856662910899, guid: 405d1a409fee9bb4fb66a69986297f0f,
         type: 3}
       propertyPath: m_IsActive
