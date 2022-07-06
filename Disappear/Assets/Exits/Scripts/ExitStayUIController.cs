@@ -16,9 +16,13 @@ public class ExitStayUIController : MonoBehaviour
     
     public void StartTimer(float time,Action onEnd)
     {
+        
         onEndTimer = onEnd;
         exitTime = time;
         gameObject.SetActive(true);
+        Vector3 v = greenImage.rectTransform.localScale;
+        v.x = 0;
+        greenImage.rectTransform.localScale = v;
     }
     
     public void CancelTimer()
