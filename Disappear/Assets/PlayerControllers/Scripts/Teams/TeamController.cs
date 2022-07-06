@@ -44,7 +44,12 @@ public class TeamController : MonoBehaviour
 
         if (!isSeeker)
         {
+            MultiplayerManager.Instance.SetGameTitle("Hider");
             SetHider(hiderRenderers, hiderShadow);
+        }
+        else
+        {
+            MultiplayerManager.Instance.SetGameTitle("Seeker");
         }
     }
 

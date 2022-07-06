@@ -5297,6 +5297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultMenu: 0
   roomNameInput: {fileID: 1164498930}
+  titleText: {fileID: 1767506390117442146}
   errorText: {fileID: 295058523}
   roomNameText: {fileID: 2145195132}
   roomListContent: {fileID: 1334461050}

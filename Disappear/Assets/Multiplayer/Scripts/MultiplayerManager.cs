@@ -23,6 +23,9 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     [Header("Text")]
     [SerializeField]
+    TMP_Text titleText;
+
+    [SerializeField]
     TMP_Text errorText;
     [SerializeField]
     TMP_Text roomNameText;
@@ -143,6 +146,11 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         RoomManager.Instance.SetSeparationControlsState(rulesBtn.GetComponent<Toggle>().isOn);
 
         PhotonNetwork.LoadLevel(1);
+    }
+
+    public void SetGameTitle(string name)
+    {
+        titleText.text = name;
     }
 
     #endregion  ======================= Public : end  =======================
