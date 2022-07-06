@@ -204,7 +204,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         FillPlayerRoomList();
 
         StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
-        rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
+       // rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
