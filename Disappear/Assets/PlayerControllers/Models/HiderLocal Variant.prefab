@@ -182,10 +182,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fd1ba76e76c5c48a83459f60ae785c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pitchVariation: 0
+  pitchVariation: 0.2
   defaultFootStep: {fileID: 8300000, guid: 8a1d5b63b17d39c498caa5d4d5e5ffc2, type: 3}
-  defaultFootprint: {fileID: 2100000, guid: 8a9cbf4bb62677943b412320941652ab, type: 2}
-  footprintsPrefab: {fileID: 2573662491423804351, guid: 2e49b773f5accab49b937585a0357a64,
+  footprintsPrefab: {fileID: 1020478973853268161, guid: 7ffe4b0740445254384283e2eeda9431,
     type: 3}
 --- !u!4 &3068044189385637543 stripped
 Transform:

@@ -8,7 +8,6 @@ public class FootstepEvent : MonoBehaviour
     private float pitchVariation;
 
     [SerializeField] private AudioClip defaultFootStep;
-    [SerializeField] private Material defaultFootprint;
     private SurfaceTypeSO surfaceType;
     public bool IsPlaying { get; set; } = false;
     private Transform feet;

@@ -328,6 +328,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8166667921074782656}
     m_Modifications:
+    - target: {fileID: 165408971598805392, guid: 4ffa6a2514872924fb293e3492bccbcb,
+        type: 3}
+      propertyPath: pitchVariation
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7015089048156884012, guid: 4ffa6a2514872924fb293e3492bccbcb,
         type: 3}
       propertyPath: m_RootOrder
