@@ -78,7 +78,7 @@ public class InventoryUIManager : MonoBehaviour
 
         if (IsDragging && Input.GetButtonDown("RotateItemLeft"))
             DraggingItem.RotateItemPositionOnZAxis();
-        
+
         previousState = IsDragging;
     }
 
@@ -202,9 +202,9 @@ public class InventoryUIManager : MonoBehaviour
         int x = baseCaseIndex - (y * gridWidth);
         bool allCaseFree = true;
 
-        int startY = y - DraggingItem.SelectedPart.y;
+        int startY = y - Mathf.FloorToInt(DraggingItem.ItemSize.y/2);
         int endY = startY + DraggingItem.ItemSize.y;
-        int startX = x - DraggingItem.SelectedPart.x;
+        int startX = x - Mathf.FloorToInt(DraggingItem.ItemSize.x/2);
         int endX = startX + DraggingItem.ItemSize.x;
 
 
