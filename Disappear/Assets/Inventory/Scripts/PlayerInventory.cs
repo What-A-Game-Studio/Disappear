@@ -24,7 +24,7 @@ public class PlayerInventory : MonoBehaviour
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
-        if (!uiGO.transform.GetChild(0).GetChild(0).GetChild(0).TryGetComponent(out inventoryUI))
+        if (!uiGO.transform.Find("InventoryScreen").Find("BackgroundInventory").Find("Inventory").TryGetComponent(out inventoryUI))
             Debug.LogError("Could not find InventoryUIManager Component on GameUI Children");
 
         if (!TryGetComponent(out pc))
