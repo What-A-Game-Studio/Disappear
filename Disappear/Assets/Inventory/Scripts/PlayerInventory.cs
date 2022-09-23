@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using UnityEngine;
 using WebSocketSharp;
+
 public class PlayerInventory : MonoBehaviour
 {
-    private List<ItemController> itemsInInventory = new List<ItemController>();
+    public List<ItemController> itemsInInventory = new List<ItemController>();
     private bool inventoryOpened = false;
     private PlayerController pc;
 
@@ -23,7 +24,8 @@ public class PlayerInventory : MonoBehaviour
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
-        if (!uiGO.transform.Find("InventoryScreen").Find("BackgroundInventory").Find("Inventory").TryGetComponent(out inventoryUI))
+        if (!uiGO.transform.Find("InventoryScreen").Find("BackgroundInventory").Find("Inventory")
+            .TryGetComponent(out inventoryUI))
             Debug.LogError("Could not find InventoryUIManager Component on GameUI Children");
 
         if (!TryGetComponent(out pc))
@@ -70,13 +72,20 @@ public class PlayerInventory : MonoBehaviour
 
     public bool AddItemToInventory(ItemController item)
     {
-        if (inventoryUI.StockNewItem(item))
+        if (item.ItemData.ItemType != ItemType.Usable)
         {
+            if (!inventoryUI.StockNewItem(item)) return false;
             itemsInInventory.Add(item);
             return true;
+
         }
 
-        return false;
+        inventoryUI.StockNewUsable(item, out ItemController previousItem);
+        itemsInInventory.Add(item);
+        Debug.Log("Previous item null ? : " + previousItem);
+        if (previousItem != null)
+            DropItem(previousItem);
+        return true;
     }
 
     public void DropItem(ItemController item)

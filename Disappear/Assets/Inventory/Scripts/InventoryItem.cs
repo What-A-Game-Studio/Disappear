@@ -16,8 +16,14 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     }
 
     public ItemController ItemController { get; set; }
-   
+
     private RectTransform itemTransform;
+
+    public Vector2 ItemTransform
+    {
+        set => itemTransform.position = value;
+    }
+
     private Transform originalParent;
 
     private Vector2 mousePosition;
@@ -54,12 +60,12 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         {
             UpdateMousePosition();
         }
-        
+
         if (Input.GetMouseButtonUp(0))
         {
             img.raycastTarget = true;
         }
-
+        
         if (Input.GetButtonDown("Discard item") && isMouseOver)
         {
             isMouseOver = false;
@@ -77,33 +83,45 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        UpdateMousePosition();
-        oldPosition = itemTransform.position;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            UpdateMousePosition();
+            oldPosition = itemTransform.position;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        img.raycastTarget = false;
-        transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
-        ;
-        InventoryUIManager.Instance.DraggingItem = this;
-        InventoryUIManager.Instance.IsDragging = true;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            img.raycastTarget = false;
+            transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
+            ;
+            InventoryUIManager.Instance.DraggingItem = this;
+            InventoryUIManager.Instance.IsDragging = true;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        itemTransform.position = mousePosition;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            itemTransform.position = mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        InventoryUIManager.Instance.DraggingItem = null;
-        InventoryUIManager.Instance.IsDragging = false;
-        transform.SetParent(originalParent, false);
-
-        if (!canDrop)
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
-            itemTransform.position = oldPosition;
+            InventoryUIManager.Instance.DraggingItem = null;
+            InventoryUIManager.Instance.IsDragging = false;
+            transform.SetParent(originalParent, false);
+
+            if (!canDrop)
+            {
+                itemTransform.position = oldPosition;
+            }
         }
     }
 
