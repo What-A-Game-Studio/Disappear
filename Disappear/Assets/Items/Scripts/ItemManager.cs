@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Random = UnityEngine.Random;
+using n;
 /// <summary>
 /// ItemManager 
 /// </summary>
@@ -160,7 +161,7 @@ public class ItemManager : MonoBehaviour
 
         if (!indexInChildren.HasValue)
             return;
-        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
+        Transform orientationTransform = PlayerController.MainPlayer.transform;
         pv.RPC(nameof(RPC_DropItem),
             RpcTarget.All,
             indexInChildren.Value,

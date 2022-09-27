@@ -47,6 +47,10 @@ MonoBehaviour:
   - RPC_Defeat
   - RPC_HiderQuit
   - RPC_ActionOnInteract
+  - RPC_Crouch
+  - RPC_Interact
+  - RPC_InventoryStatus
+  - RPC_Ground
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -33,7 +33,7 @@ public class PlayerManager : MonoBehaviour
         Debug.Log("CreateController");
         GameObject player = PhotonNetwork.Instantiate(
             Path.Combine(MultiplayerManager.PhotonPrefabPath,
-                nameof(PlayerController)),
+                "PlayerController"),
             PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition(), Quaternion.identity);
     }
 }
