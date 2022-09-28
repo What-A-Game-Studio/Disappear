@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Audio.Scripts;
+using Audio.Scripts.Footsteps;
 using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using n;
 public class TeamController : MonoBehaviour
 {
     [SerializeField] private TeamData seeker;

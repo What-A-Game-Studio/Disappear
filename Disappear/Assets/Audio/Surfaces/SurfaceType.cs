@@ -1,6 +1,6 @@
 public enum SurfaceType
 {
-    Concret,
+    Concrete,
     Dirt,
     Snow,
     Water

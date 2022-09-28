@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Concret
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 0
-  <FootstepOnSurface>k__BackingField:
-  - {fileID: 8300000, guid: 8a1d5b63b17d39c498caa5d4d5e5ffc2, type: 3}
-  <PrintsOnSurface>k__BackingField: {fileID: 2100000, guid: 8a9cbf4bb62677943b412320941652ab,
+  <Footstep>k__BackingField: {fileID: 11400000, guid: e5dfe5170e4ba0b4fbb728503a2c1458,
     type: 2}
+  <PrintsOnSurface>k__BackingField: 0

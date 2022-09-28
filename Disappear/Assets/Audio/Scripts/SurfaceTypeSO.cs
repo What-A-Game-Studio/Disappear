@@ -1,14 +1,14 @@
-using System.Collections;
 using System.Collections.Generic;
+using Audio.Footstep.Scriptable_Object;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Surface", menuName = "SO/Surface")]
-public class SurfaceTypeSO : ScriptableObject
+namespace Audio.Scripts
 {
-    [field: SerializeField] public SurfaceType Type { get; private set; }
-
-    [field: SerializeField] public List<AudioClip> FootstepOnSurface { get; private set; }
-    [field: SerializeField] public bool PrintsOnSurface { get; private set; }
-    // [field: SerializeField] public List<AudioClip> JumpOnSurface { get; private set; }
-    // [field: SerializeField] public List<AudioClip> LandOnSurface { get; private set; }
+    [CreateAssetMenu(fileName = "New Surface", menuName = "SO/Surface")]
+    public class SurfaceTypeSO : ScriptableObject
+    {
+        [field: SerializeField] public SurfaceType Type { get; private set; }
+        [field: SerializeField] public FootstepSoundData Footstep { get; private set; }
+        [field: SerializeField] public bool PrintsOnSurface { get; private set; }
+    }
 }

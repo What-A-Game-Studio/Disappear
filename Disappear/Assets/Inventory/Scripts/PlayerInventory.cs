@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
-using WebSocketSharp;
-using n;
 public class PlayerInventory : MonoBehaviour
 {
     private List<ItemController> itemsInInventory = new List<ItemController>();

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Water
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 3
-  <FootstepOnSurface>k__BackingField:
-  - {fileID: 8300000, guid: bf037baa73e471a4ab05dcfbb4eb4fb3, type: 3}
+  <Footstep>k__BackingField: {fileID: 11400000, guid: 680eb74af3ea25349920045dd0b4546f,
+    type: 2}
   <PrintsOnSurface>k__BackingField: 0

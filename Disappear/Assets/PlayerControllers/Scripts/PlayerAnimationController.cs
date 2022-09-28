@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using n;
 using UnityEngine;
 public class PlayerAnimationController : MonoBehaviour
 {        
@@ -45,7 +41,6 @@ public class PlayerAnimationController : MonoBehaviour
 
     public void InteractTrigger()
     {
-        
         animator.SetTrigger(PlayerAnimationController.Interact);
     }
     

@@ -1,8 +1,9 @@
 using System;
 using System.Collections;
+using Audio.Scripts.Footsteps;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
+namespace Audio.Scripts {
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
@@ -49,4 +50,5 @@ public class AudioManager : MonoBehaviour
         source.transform.parent = freeAudioContainer;
 
     }
+}
 }

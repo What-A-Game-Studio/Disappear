@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using n;
+
 public class HiderController : Interactable
 {
     [SerializeField] private int HiderLife;

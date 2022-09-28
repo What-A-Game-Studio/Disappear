@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03b01e24eedb44148980b87c9a3b23a6, type: 3}
+  m_Name: MetalGridFootstepSoundData
+  m_EditorClassIdentifier: Assembly-CSharp::SoundType
+  defaultClip: {fileID: 8300000, guid: fd8800c6882f10643ae28be0f6eb928f, type: 3}
+  walks:
+  - {fileID: 8300000, guid: fd8800c6882f10643ae28be0f6eb928f, type: 3}
+  - {fileID: 8300000, guid: 574fb61335e2f0f4094848c013b37ca9, type: 3}
+  - {fileID: 8300000, guid: 88e27a985fc9ede498de3dcf3baf15c0, type: 3}
+  - {fileID: 8300000, guid: cea5749b4739b704b8795c7bc6c3155d, type: 3}
+  - {fileID: 8300000, guid: 06b8c37f1c8d1b447a852e1d41448226, type: 3}
+  - {fileID: 8300000, guid: d59126def3b0f794aa8eba50d74d3d46, type: 3}
+  - {fileID: 8300000, guid: dc2aa2b769b3e1940a0fc6d99d42274a, type: 3}
+  - {fileID: 8300000, guid: 64a5b5ac08b29994ebb7dd635f416b86, type: 3}
+  - {fileID: 8300000, guid: 5b3a3de96cff5d640bbdf9f9c349cb85, type: 3}
+  - {fileID: 8300000, guid: 274d6321ea5cd9f44b83c5e7963fa805, type: 3}
+  runs:
+  - {fileID: 8300000, guid: eddcede55a5b86d489abde4a32670119, type: 3}
+  - {fileID: 8300000, guid: e0b11ad32f74cfc43a45dfc6f9b207e7, type: 3}
+  - {fileID: 8300000, guid: 6c2b9b30a904fc7479b7a8ff151d37dd, type: 3}
+  - {fileID: 8300000, guid: 49ea5a5822daa814fa494573b9a1e56a, type: 3}
+  - {fileID: 8300000, guid: d891be11e78489945a5116278c506a47, type: 3}
+  - {fileID: 8300000, guid: 5ba3dade7c81b90499a834d01058a202, type: 3}
+  - {fileID: 8300000, guid: e786ac8710b8f1a40a8bd3662100826f, type: 3}
+  - {fileID: 8300000, guid: 28ab1753cd9776048aa5d58b323e983b, type: 3}
+  - {fileID: 8300000, guid: ba442238d6672b648b1d510c82dc371c, type: 3}
+  - {fileID: 8300000, guid: 63dbc65c868525e4ea4e8317c043617a, type: 3}
+  lands:
+  - {fileID: 8300000, guid: fd8800c6882f10643ae28be0f6eb928f, type: 3}
+  - {fileID: 8300000, guid: 574fb61335e2f0f4094848c013b37ca9, type: 3}
+  - {fileID: 8300000, guid: 88e27a985fc9ede498de3dcf3baf15c0, type: 3}
+  - {fileID: 8300000, guid: cea5749b4739b704b8795c7bc6c3155d, type: 3}
+  - {fileID: 8300000, guid: 06b8c37f1c8d1b447a852e1d41448226, type: 3}
+  - {fileID: 8300000, guid: d59126def3b0f794aa8eba50d74d3d46, type: 3}
+  - {fileID: 8300000, guid: dc2aa2b769b3e1940a0fc6d99d42274a, type: 3}
+  - {fileID: 8300000, guid: 64a5b5ac08b29994ebb7dd635f416b86, type: 3}
+  - {fileID: 8300000, guid: 5b3a3de96cff5d640bbdf9f9c349cb85, type: 3}
+  - {fileID: 8300000, guid: 274d6321ea5cd9f44b83c5e7963fa805, type: 3}

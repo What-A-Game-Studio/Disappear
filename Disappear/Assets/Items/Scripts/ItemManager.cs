@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using Photon.Pun;
 using Random = UnityEngine.Random;
-using n;
 /// <summary>
 /// ItemManager 
 /// </summary>
