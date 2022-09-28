@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Audio.Scripts
 {
-    [CreateAssetMenu(fileName = "New Surface", menuName = "SO/Surface")]
+    [CreateAssetMenu(fileName = "SurfaceData", menuName = "SO/Surface")]
     public class SurfaceTypeSO : ScriptableObject
     {
         [field: SerializeField] public SurfaceType Type { get; private set; }

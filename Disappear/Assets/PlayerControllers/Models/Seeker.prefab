@@ -888,7 +888,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pitchVariation: 0
   defaultSurfaceType: {fileID: 11400000, guid: 32ef387d098ebed498f3b5a86dd06bed, type: 2}
-  maxRayDistance: 0.1
   mask:
     serializedVersion: 2
     m_Bits: 247
@@ -1545,10 +1544,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pitchVariation: 0
   defaultSurfaceType: {fileID: 11400000, guid: 32ef387d098ebed498f3b5a86dd06bed, type: 2}
-  maxRayDistance: 0.1
   mask:
     serializedVersion: 2
-    m_Bits: 247
+    m_Bits: 213
   footprintsPrefab: {fileID: 1020478973853268161, guid: 7ffe4b0740445254384283e2eeda9431,
     type: 3}
 --- !u!65 &3403971632451080910
