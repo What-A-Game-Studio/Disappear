@@ -244,6 +244,11 @@ public class PlayerController : MonoBehaviour
             out RaycastHit hitInfos,
             dis2Ground + 0.2f,
             groundCheck);
+        if (!grounded)
+        {   
+            currentVelocity.y = rb.velocity.y;
+        }
+        
     }
 
     #endregion Private
