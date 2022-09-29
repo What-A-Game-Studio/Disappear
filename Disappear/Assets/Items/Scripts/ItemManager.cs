@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using Photon.Pun;
 using Random = UnityEngine.Random;
@@ -16,6 +17,7 @@ public class ItemManager : MonoBehaviour
 
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
+    [SerializeField] private GameObject[] usablesPrefabs;
 
     private ItemSpawner[] spawners;
 
@@ -41,7 +43,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Create all items in all spawn
+    /// Create all items in all spawns
     /// </summary>
     private void CreateItems()
     {
@@ -162,6 +164,10 @@ public class ItemManager : MonoBehaviour
             indexInChildren.Value);
     }
 
+    /// <summary>
+    /// drop item from inventory
+    /// </summary>
+    /// <param name="item">Item to drop</param>
     public void DropItem(ItemController item)
     {
         int? indexInChildren = FindIndexOfItem(item);
@@ -186,6 +192,26 @@ public class ItemManager : MonoBehaviour
         if (indexItem >= 0 && indexItem < itemsData.Length)
         {
             return itemsData[indexItem];
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Find the prefab for usable item 
+    /// </summary>
+    /// <param name="item">The item to find</param>
+    /// <returns>The usable item if it exists, null otherwise</returns>
+    [CanBeNull]
+    public GameObject GetUsable(ItemController item)
+    {
+        foreach (GameObject go in usablesPrefabs)
+        {
+            string itemName = item.ItemData.ShortName.Split("_")[0];
+            if (go.name.Contains(itemName))
+            {
+                return go;
+            }
         }
 
         return null;

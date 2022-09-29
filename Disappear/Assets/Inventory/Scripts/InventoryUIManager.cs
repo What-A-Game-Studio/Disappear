@@ -85,7 +85,7 @@ public class InventoryUIManager : MonoBehaviour
             CatchItemOnCase();
         }
 
-        if (IsDragging && Input.GetButtonDown("RotateItemLeft"))
+        if (IsDragging && Input.GetButtonDown("RotateItem"))
             DraggingItem.RotateItemPositionOnZAxis();
 
         previousState = IsDragging;

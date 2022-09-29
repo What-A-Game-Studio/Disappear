@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour, Groundable
             throw new Exception("PlayerController required CameraHolder GameObject in theres children!");
 
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
-        PlayerInventory.Init(gameUI);
+        PlayerInventory.Init(gameUI, gameObject);
 
 
         CameraController = Camera.main.transform.parent.GetComponent<CameraController>();

@@ -7,7 +7,11 @@ using WebSocketSharp;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public List<ItemController> itemsInInventory = new List<ItemController>();
+    private List<ItemController> itemsInInventory = new List<ItemController>();
+    private GameObject player;
+    private Transform usableAnchor;
+    private GameObject currentUsableGO;
+    private Interactable currentUsable;
     private bool inventoryOpened = false;
     private PlayerController pc;
 
@@ -18,9 +22,10 @@ public class PlayerInventory : MonoBehaviour
     private static readonly int Close = Animator.StringToHash("Close");
     private static readonly int Open = Animator.StringToHash("Open");
 
-    public void Init(GameObject gameUI)
+    public void Init(GameObject gameUI, GameObject playerGO)
     {
         uiGO = Instantiate(gameUI, transform);
+        player = playerGO;
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
@@ -30,6 +35,8 @@ public class PlayerInventory : MonoBehaviour
 
         if (!TryGetComponent(out pc))
             Debug.LogError("Could not find PlayerController Script on PlayerController GameObject ");
+
+        usableAnchor = transform.Find("UsableAnchor");
     }
 
     private void Update()
@@ -47,8 +54,16 @@ public class PlayerInventory : MonoBehaviour
                 inventoryOpened = false;
             }
         }
+
+        if (Input.GetButtonDown("ActivateItem") && currentUsable != null)
+        {
+            currentUsable.onInteract?.Invoke(player);
+        }
     }
 
+    /// <summary>
+    /// Display the UI for the inventory
+    /// </summary>
     private void OpenInventory()
     {
         PostProcessingController.Instance.ActivateBlur();
@@ -59,6 +74,9 @@ public class PlayerInventory : MonoBehaviour
         pc.CameraController.CanRotate = false;
     }
 
+    /// <summary>
+    /// Close the UI of the inventory 
+    /// </summary>
     private void CloseInventory()
     {
         PostProcessingController.Instance.DeactivateBlur();
@@ -69,7 +87,13 @@ public class PlayerInventory : MonoBehaviour
         pc.CameraController.CanRotate = true;
     }
 
-
+    /// <summary>
+    /// Save an item in the inventory.
+    /// If the item is a usable, save its function in currentUsable
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    /// <returns>true if there is there is enough room in the inventory for the item,
+    /// false otherwise</returns>
     public bool AddItemToInventory(ItemController item)
     {
         if (item.ItemData.ItemType != ItemType.Usable)
@@ -77,17 +101,26 @@ public class PlayerInventory : MonoBehaviour
             if (!inventoryUI.StockNewItem(item)) return false;
             itemsInInventory.Add(item);
             return true;
-
         }
 
         inventoryUI.StockNewUsable(item, out ItemController previousItem);
         itemsInInventory.Add(item);
-        Debug.Log("Previous item null ? : " + previousItem);
+        currentUsableGO = ItemManager.Instance.GetUsable(item);
+        currentUsableGO = Instantiate(currentUsableGO, usableAnchor.position, Quaternion.identity, usableAnchor);
+        if (!currentUsableGO.TryGetComponent(out currentUsable))
+        {
+            Debug.LogError("Can't find Usable component");
+        }
+
         if (previousItem != null)
             DropItem(previousItem);
         return true;
     }
 
+    /// <summary>
+    /// Delete an item from the inventory and respawn its game object in the world
+    /// </summary>
+    /// <param name="item">The item to drop</param>
     public void DropItem(ItemController item)
     {
         ItemManager.Instance.DropItem(item);
