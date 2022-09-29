@@ -33,15 +33,15 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)
-            && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game
-                || MenuManager.Instance.GetCurrentMenu() == MenuType.Pause))
-        {
-            if (pauseMenu.IsOpen)
-                MenuManager.Instance.CloseMenu(pauseMenu);
-            else
-                MenuManager.Instance.OpenMenu(pauseMenu);
-        }
+        // if (Input.GetKeyDown(KeyCode.Escape)
+        //     && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game
+        //         || MenuManager.Instance.GetCurrentMenu() == MenuType.Pause))
+        // {
+        //     if (pauseMenu.IsOpen)
+        //         MenuManager.Instance.CloseMenu(pauseMenu);
+        //     else
+        //         MenuManager.Instance.OpenMenu(pauseMenu);
+        // }
     }
 
     public void QuitRoom()

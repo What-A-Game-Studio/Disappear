@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using UnityEngine;
-using WebSocketSharp;
-
 public class PlayerInventory : MonoBehaviour
 {
     private List<ItemController> itemsInInventory = new List<ItemController>();
@@ -41,18 +36,16 @@ public class PlayerInventory : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Inventory"))
+        if (!InputManager.Instance.Inventory) return;
+        if (!inventoryOpened)
         {
-            if (!inventoryOpened)
-            {
-                OpenInventory();
-                inventoryOpened = true;
-            }
-            else
-            {
-                CloseInventory();
-                inventoryOpened = false;
-            }
+            OpenInventory();
+            inventoryOpened = true;
+        }
+        else
+        {
+            CloseInventory();
+            inventoryOpened = false;
         }
 
         if (Input.GetButtonDown("ActivateItem") && currentUsable != null)
@@ -71,7 +64,7 @@ public class PlayerInventory : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
         pc.enabled = false;
-        pc.CameraController.CanRotate = false;
+        pc.CanMoveOrRotate = false;
     }
 
     /// <summary>
@@ -84,7 +77,7 @@ public class PlayerInventory : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         pc.enabled = true;
-        pc.CameraController.CanRotate = true;
+        pc.CanMoveOrRotate = true;
     }
 
     /// <summary>

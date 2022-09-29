@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
+using Audio.Scripts.Footsteps;
 using Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-
 public class TeamController : MonoBehaviour
 {
     [SerializeField] private TeamData seeker;
@@ -31,14 +29,14 @@ public class TeamController : MonoBehaviour
         }
     }
 
-    public void SetTeamData(bool isSeeker, PlayerAnimationController pac, PhotonView photonView)
+    public void SetTeamData(bool isSeeker, PhotonView photonView, ref Transform cameraRig)
     {
         teamData = isSeeker ? seeker : hider;
         pv = photonView;
 
         SkinnedMeshRenderer[] hiderRenderers;
         DecalProjector hiderShadow;
-        SetModel(pac, out hiderRenderers, out hiderShadow);
+        SetModel(out hiderRenderers, out hiderShadow, ref cameraRig);
         SetPostProcessingVolume();
         SetSpeedModifier();
 
@@ -66,19 +64,15 @@ public class TeamController : MonoBehaviour
             PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
-    private void SetModel(PlayerAnimationController pac, out SkinnedMeshRenderer[] hiderRenderers,
-        out DecalProjector hiderShadow)
+    private void SetModel(out SkinnedMeshRenderer[] hiderRenderers,
+        out DecalProjector hiderShadow, ref Transform cameraRig)
     {
         hiderRenderers = null;
         hiderShadow = null;
 
-        Destroy(meshContainer.GetChild(0).gameObject);
-        GameObject go = null;
-        if (pv.IsMine)
-            go = Instantiate(teamData.LocalModel, meshContainer);
-        else
-            go = Instantiate(teamData.Model, meshContainer);
-
+        // Destroy(meshContainer.GetChild(0).gameObject);
+        GameObject go = Instantiate(teamData.Model, meshContainer);
+        cameraRig = go.GetComponent<ModelInfos>().CameraRig;
         SkinnedMeshRenderer[] smr = go.GetComponentsInChildren<SkinnedMeshRenderer>();
 
         for (int i = 0; i < go.transform.childCount; i++)
@@ -101,11 +95,11 @@ public class TeamController : MonoBehaviour
         }
 
         hiderRenderers = smr;
-        Animator anim = go.GetComponent<Animator>();
-        pac.SetAnimator(anim);
-        go.transform.localPosition = teamData.ModelOffset;
-        FootstepEvent = go.GetComponent<FootstepEvent>();
-        FootstepEvent.Init(meshContainer.GetChild(1));
+        // Animator anim = go.GetComponent<Animator>();
+        // pac.SetAnimator(anim);
+        // go.transform.localPosition = teamData.ModelOffset;
+        // FootstepEvent = go.GetComponent<FootstepEvent>();
+        // FootstepEvent.Init(meshContainer.GetChild(1));
     }
 
     private void SetHider(SkinnedMeshRenderer[] hiderRenderers, DecalProjector hiderShadow)
