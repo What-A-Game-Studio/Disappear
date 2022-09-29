@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Snow
   m_EditorClassIdentifier: 
   <Type>k__BackingField: 2
-  <FootstepOnSurface>k__BackingField:
-  - {fileID: 8300000, guid: 6071c69f7b3ec0c46bafd9cd9b9d32da, type: 3}
+  <Footstep>k__BackingField: {fileID: 11400000, guid: 4031c127853e5b242a38076eb2e31140,
+    type: 2}
   <PrintsOnSurface>k__BackingField: 1

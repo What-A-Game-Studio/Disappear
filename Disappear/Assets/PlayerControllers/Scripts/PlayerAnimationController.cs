@@ -1,52 +1,47 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-[RequireComponent(typeof(PlayerController))]
 public class PlayerAnimationController : MonoBehaviour
-{
-    private Animator playerAnimator;
-    private PlayerController pc;
-    private bool isCrouching;
-    private Vector3 velocity;
-    private static readonly int IsCrouching = Animator.StringToHash("isCrouching");
-    private static readonly int IsJumping = Animator.StringToHash("isJumping");
-    private static readonly int VelocityXHash = Animator.StringToHash("Velocity X");
-    private static readonly int VelocityZHash = Animator.StringToHash("Velocity Z");
-    private bool hasJumped = false;
+{        
+    public static readonly int XVelHash = Animator.StringToHash("xVelocity");
+    public static readonly int ZVelHash = Animator.StringToHash("zVelocity");
+    public static readonly int YVelHash = Animator.StringToHash("yVelocity");
+    public static readonly int FallingHash = Animator.StringToHash("Falling");
+    public static readonly int GroundedHash = Animator.StringToHash("Grounded");
+    public static readonly int JumpHash = Animator.StringToHash("Jump");
+    public static readonly int CrouchHash = Animator.StringToHash("Crouch");
+    public static readonly int InventoryHash = Animator.StringToHash("Inventory");
+    public static readonly int Interact = Animator.StringToHash("Interact");
+    private Animator animator;
 
+    public PlayerController PC { private get; set; }
     // Start is called before the first frame update
     private void Awake()
     {
-        if (!TryGetComponent(out pc))
+        if (!TryGetComponent<Animator>(out animator))
         {
-           Debug.LogError("PlayerAnimationController required PlayerController", this);
-           return;
-
+            Debug.LogError("Need animator", this);
+            Debug.Break();
         }
     }
-
-    public void SetAnimator(Animator animator)
+    private void Start()
     {
-        playerAnimator = animator;
+        animator.Rebind();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        if(!playerAnimator)
-            return;
-            
-        hasJumped = playerAnimator.GetBool(IsJumping);
-        velocity = transform.InverseTransformVector(pc.PlayerVelocity);
-        playerAnimator.SetFloat(VelocityXHash, velocity.x);
-        playerAnimator.SetFloat(VelocityZHash, velocity.z);
-        if (!hasJumped && !pc.Grounded)
-            playerAnimator.SetBool(IsJumping, true);
-        if (hasJumped && pc.Grounded)
-            playerAnimator.SetBool(IsJumping, false);
-
-        
+        animator.SetFloat(PlayerAnimationController.XVelHash, PC.PlayerVelocity.x);
+        animator.SetFloat(PlayerAnimationController.ZVelHash, PC.PlayerVelocity.z);
+        animator.SetFloat(PlayerAnimationController.YVelHash, PC.PlayerVelocity.y);
+        animator.SetBool(PlayerAnimationController.CrouchHash, PC.Crouched);
+        animator.SetBool(PlayerAnimationController.InventoryHash, PC.InventoryStatus);
+        animator.SetBool(PlayerAnimationController.FallingHash, !PC.Grounded);
+        animator.SetBool(PlayerAnimationController.GroundedHash, PC.Grounded);
     }
+
+    public void InteractTrigger()
+    {
+        animator.SetTrigger(PlayerAnimationController.Interact);
+    }
+    
 }

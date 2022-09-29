@@ -160,7 +160,7 @@ public class ItemManager : MonoBehaviour
 
         if (!indexInChildren.HasValue)
             return;
-        Transform orientationTransform = PlayerController.MainPlayer.OrientationTransform;
+        Transform orientationTransform = PlayerController.MainPlayer.transform;
         pv.RPC(nameof(RPC_DropItem),
             RpcTarget.All,
             indexInChildren.Value,

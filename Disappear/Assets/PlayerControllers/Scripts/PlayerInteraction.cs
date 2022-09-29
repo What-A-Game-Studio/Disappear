@@ -51,7 +51,7 @@ public class PlayerInteraction : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetButtonDown("Interact") && interactableObject != null)
+        if (InputManager.Instance.Interact && interactableObject != null)
         {
             interactableObject.onInteract?.Invoke(player);
         }
@@ -74,7 +74,7 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         camRay = new Ray(cam.position, cam.forward);
-        if (isSeeker && Input.GetButtonDown("Catch") && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
+        if (isSeeker && InputManager.Instance.Catch && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
         {
             if (hit.collider.TryGetComponent(out Interactable interactableHider))
             {

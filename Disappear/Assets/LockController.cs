@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
+using UnityEngine;
 public class LockController : MonoBehaviour
 {
  
@@ -10,8 +7,7 @@ public class LockController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
-        PlayerController.MainPlayer.enabled = false;
-        PlayerController.MainPlayer.CameraController.CanRotate = false;
+        PlayerController.MainPlayer.CanMoveOrRotate = false;
     }
 
     private void OnDisable()
@@ -20,8 +16,7 @@ public class LockController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            PlayerController.MainPlayer.enabled = true;
-            PlayerController.MainPlayer.CameraController.CanRotate = true;
+            PlayerController.MainPlayer.CanMoveOrRotate = true;
         }
     }
 }

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 23fd1ba76e76c5c48a83459f60ae785c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - defaultSurfaceType: {fileID: 11400000, guid: 32ef387d098ebed498f3b5a86dd06bed,
+      type: 2}
+  - footprintsPrefab: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
