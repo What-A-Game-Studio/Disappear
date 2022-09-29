@@ -133,7 +133,7 @@ public class PlayerController : MonoBehaviour
         cam = Camera.main.transform;
         cam.parent = transform;
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
-        PlayerInventory.Init(gameUI);
+        PlayerInventory.Init(gameUI, gameObject);
 
         cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
     }
