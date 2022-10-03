@@ -51,7 +51,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         originalParent = itemTransform.parent;
         StoredIndex = new List<int>();
-        InputManager.Instance.AddCallbackAction(ActionsControls.Rotate, RotateItemPositionOnZAxis);
+
     }
 
     // Update is called once per frame
@@ -158,7 +158,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         isMouseOver = false;
     }
 
-    public void RotateItemPositionOnZAxis(InputAction.CallbackContext context)
+    public void RotateItemPositionOnZAxis()
     {
         if (transform.rotation.z == 0)
             transform.Rotate(0, 0, -90);

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using WaG.Input_System.Scripts;
 
 public class Case
 {
@@ -74,6 +76,17 @@ public class InventoryUIManager : MonoBehaviour
 
         gridWidth = grid.constraintCount;
         gridHeight = transform.childCount / gridWidth;
+        
+        InputManager.Instance.AddCallbackAction(ActionsControls.Rotate, RotateDraggingItem);
+
+    }
+
+    private void RotateDraggingItem(InputAction.CallbackContext context)
+    {
+        if (DraggingItem != null)
+        {
+            DraggingItem.RotateItemPositionOnZAxis();
+        }
     }
 
     private void Update()
