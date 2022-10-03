@@ -18,7 +18,6 @@ public class InputManager : MonoBehaviour
     public bool Run { get; private set; }
     public bool Jump { get; private set; }
     public bool Crouch { get; private set; }
-    public bool Interact { get; private set; }
     public bool Catch { get; private set; }
     public bool Use { get; private set; }
 
