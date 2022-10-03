@@ -42,9 +42,9 @@ public class PostProcessingController : MonoBehaviour
         dof.focalLength.value = 1.0f;
     }
 
-    public void ActivateBlur()
+    public void AdaptBlur(float blurValue)
     {
-        StartCoroutine(LerpBlur(100.0f, 0.5f));
+        StartCoroutine(LerpBlur(blurValue, 0.5f));
     }
 
     public void DeactivateBlur()

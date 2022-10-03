@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
@@ -48,37 +49,33 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
 
         originalParent = itemTransform.parent;
-
-
         StoredIndex = new List<int>();
+        InputManager.Instance.AddCallbackAction("Rotate", RotateItemPositionOnZAxis);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (InputManager.Instance.LeftMouse)
         {
             UpdateMousePosition();
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (InputManager.Instance.ReleaseLeftMouse)
         {
             img.raycastTarget = true;
         }
-        
-        if (Input.GetButtonDown("Discard item") && isMouseOver)
-        {
-            isMouseOver = false;
-            InventoryUIManager.Instance.FreeCases(StoredIndex);
-            PlayerController.MainPlayer.PlayerInventory.DropItem(ItemController);
-            Destroy(gameObject);
-        }
+
+        if (!InputManager.Instance.Discard || !isMouseOver) return;
+        isMouseOver = false;
+        InventoryUIManager.Instance.FreeCases(StoredIndex);
+        PlayerController.MainPlayer.PlayerInventory.DropItem(ItemController);
+        Destroy(gameObject);
     }
 
     private void UpdateMousePosition()
     {
-        mousePosition.x = Input.mousePosition.x;
-        mousePosition.y = Input.mousePosition.y;
+        mousePosition = Mouse.current.position.ReadValue();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -160,7 +157,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         isMouseOver = false;
     }
 
-    public void RotateItemPositionOnZAxis()
+    public void RotateItemPositionOnZAxis(InputAction.CallbackContext context)
     {
         if (transform.rotation.z == 0)
             transform.Rotate(0, 0, -90);

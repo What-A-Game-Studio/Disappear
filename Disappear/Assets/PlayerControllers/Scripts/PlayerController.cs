@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     [Header("Others")] [SerializeField] private float animBlendSpeed = 8.9f;
     [SerializeField] private float dis2Ground = 0.8f;
 
-    [Header("Inventory")] [SerializeField] private GameObject gameUI;
+    [Header("OpenInventory")] [SerializeField] private GameObject gameUI;
     private bool inventoryStatus;
     private bool rpcInventoryStatus;
     public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInventory()
     {
-        if (!InputManager.Instance.Inventory)
+        if (!InputManager.Instance.OpenInventory)
             return;
         inventoryStatus = !inventoryStatus;
         Pv.RPC(nameof(RPC_InventoryStatus), RpcTarget.All, Grounded);
@@ -328,7 +328,6 @@ public class PlayerController : MonoBehaviour
     [PunRPC]
     private void RPC_Interact()
     {
-        Debug.Log("Interact");
         pac.InteractTrigger();
     }
 

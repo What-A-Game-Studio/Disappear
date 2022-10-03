@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 public class PlayerInventory : MonoBehaviour
 {
     private List<ItemController> itemsInInventory = new List<ItemController>();
@@ -7,7 +9,6 @@ public class PlayerInventory : MonoBehaviour
     private Transform usableAnchor;
     private GameObject currentUsableGO;
     private Interactable currentUsable;
-    private bool inventoryOpened = false;
     private PlayerController pc;
 
     private GameObject uiGO;
@@ -32,52 +33,54 @@ public class PlayerInventory : MonoBehaviour
             Debug.LogError("Could not find PlayerController Script on PlayerController GameObject ");
 
         usableAnchor = transform.Find("UsableAnchor");
+
+        InputManager.Instance.AddCallbackAction("OpenInventory", OpenInventory);
+        InputManager.Instance.AddCallbackAction("CloseInventory", CloseInventory);
+        InputManager.Instance.AddCallbackAction("Use", ActivateCurrentUsable);
     }
 
     private void Update()
     {
-        if (!InputManager.Instance.Inventory) return;
-        if (!inventoryOpened)
-        {
-            OpenInventory();
-            inventoryOpened = true;
-        }
-        else
-        {
-            CloseInventory();
-            inventoryOpened = false;
-        }
+    }
 
-        if (Input.GetButtonDown("ActivateItem") && currentUsable != null)
+    private void ActivateCurrentUsable(InputAction.CallbackContext context)
+    {
+        if (currentUsable != null)
         {
             currentUsable.onInteract?.Invoke(player);
         }
     }
 
     /// <summary>
-    /// Display the UI for the inventory
+    /// Action to open the inventory UI
     /// </summary>
-    private void OpenInventory()
+    private void OpenInventory(InputAction.CallbackContext context)
     {
-        PostProcessingController.Instance.ActivateBlur();
-        inventoryAnimation.SetTrigger(Open);
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
-        pc.enabled = false;
-        pc.CanMoveOrRotate = false;
+        ChangeInventoryState(100.0f, "Open", CursorLockMode.Confined, true);
     }
 
     /// <summary>
-    /// Close the UI of the inventory 
+    /// Action to close the inventory UI
     /// </summary>
-    private void CloseInventory()
+    private void CloseInventory(InputAction.CallbackContext context)
     {
-        PostProcessingController.Instance.DeactivateBlur();
-        inventoryAnimation.SetTrigger(Close);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        pc.enabled = true;
-        pc.CanMoveOrRotate = true;
+        ChangeInventoryState(1.0f, "Close", CursorLockMode.Locked, false);
+    }
+
+
+    /// <summary>
+    /// Generic function to update inventory UI display according to player's actions
+    /// </summary>
+    /// <param name="blurValue"> How much the screen should be blured behind the interface</param>
+    /// <param name="animation"> Launch the corresponding animation for opening or closing inventory</param>
+    /// <param name="cursorLock"> state of CursorLockMode </param>
+    /// <param name="cursorVisible"> Visibility of cursor </param>
+    private void ChangeInventoryState(float blurValue, string animation, CursorLockMode cursorLock, bool cursorVisible)
+    {
+        PostProcessingController.Instance.AdaptBlur(blurValue);
+        inventoryAnimation.SetTrigger(animation);
+        Cursor.lockState = cursorLock;
+        Cursor.visible = cursorVisible;
     }
 
     /// <summary>

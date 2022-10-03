@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -84,10 +82,6 @@ public class InventoryUIManager : MonoBehaviour
         {
             CatchItemOnCase();
         }
-
-        if (IsDragging && Input.GetButtonDown("RotateItem"))
-            DraggingItem.RotateItemPositionOnZAxis();
-
         previousState = IsDragging;
     }
 

@@ -8,7 +8,7 @@ public class PlayerAnimationController : MonoBehaviour
     public static readonly int GroundedHash = Animator.StringToHash("Grounded");
     public static readonly int JumpHash = Animator.StringToHash("Jump");
     public static readonly int CrouchHash = Animator.StringToHash("Crouch");
-    public static readonly int InventoryHash = Animator.StringToHash("Inventory");
+    public static readonly int InventoryHash = Animator.StringToHash("OpenInventory");
     public static readonly int Interact = Animator.StringToHash("Interact");
     private Animator animator;
 
