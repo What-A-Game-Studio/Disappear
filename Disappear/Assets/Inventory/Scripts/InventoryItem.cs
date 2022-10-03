@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using WaG.Input_System.Scripts;
 
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
     IPointerEnterHandler, IPointerExitHandler
@@ -50,7 +51,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         originalParent = itemTransform.parent;
         StoredIndex = new List<int>();
-        InputManager.Instance.AddCallbackAction("Rotate", RotateItemPositionOnZAxis);
+        InputManager.Instance.AddCallbackAction(ActionsControls.Rotate, RotateItemPositionOnZAxis);
     }
 
     // Update is called once per frame

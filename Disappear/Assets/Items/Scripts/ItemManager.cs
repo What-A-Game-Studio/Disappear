@@ -52,9 +52,9 @@ public class ItemManager : MonoBehaviour
 
         foreach (ItemSpawner spawn in spawners)
         {
-            Debug.Log("Spawn Item Type : " + spawn.ItemType);
+            // Debug.Log("Spawn Item Type : " + spawn.ItemType);
             ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
-            Debug.Log("Item type count : " + goodTypeItem.Length);
+            // Debug.Log("Item type count : " + goodTypeItem.Length);
 
             int nbItems = spawn.GetNbItemToSpawn();
             theoryItems += nbItems;
@@ -243,7 +243,7 @@ public class ItemManager : MonoBehaviour
     [PunRPC] // Remote Procedure Calls
     protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
     {
-        Debug.Log("Item To Spawn : " + itemToSpawn);
+        // Debug.Log("Item To Spawn : " + itemToSpawn);
         ItemDataSO item = GetItemById(itemToSpawn);
         if (item == null)
             return;

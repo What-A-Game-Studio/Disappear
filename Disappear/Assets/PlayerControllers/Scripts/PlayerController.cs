@@ -1,6 +1,8 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
+using UnityEngine.InputSystem;
+using WaG.Input_System.Scripts;
 
 [RequireComponent(
     typeof(Rigidbody),
@@ -45,7 +47,9 @@ public class PlayerController : MonoBehaviour
     [Header("Others")] [SerializeField] private float animBlendSpeed = 8.9f;
     [SerializeField] private float dis2Ground = 0.8f;
 
-    [Header("OpenInventory")] [SerializeField] private GameObject gameUI;
+    [Header("OpenInventory")] [SerializeField]
+    private GameObject gameUI;
+
     private bool inventoryStatus;
     private bool rpcInventoryStatus;
     public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
@@ -96,8 +100,6 @@ public class PlayerController : MonoBehaviour
         {
             Move();
             HandleJump();
-            HandleInventory();
-            HandleInteract();
         }
 
         Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, currentVelocity);
@@ -134,7 +136,18 @@ public class PlayerController : MonoBehaviour
         cam.parent = transform;
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
-
+        
+        InputManager.Instance.AddCallbackAction(
+            ActionsControls.OpenInventory,
+            (context) => HandleInventory()
+        );
+        InputManager.Instance.AddCallbackAction(
+            ActionsControls.CloseInventory,
+            (context) => HandleInventory()
+        );
+        InputManager.Instance.AddCallbackAction(
+            ActionsControls.Interact,
+            (context) => HandleInteract() );
         cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
     }
 
@@ -146,18 +159,12 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInventory()
     {
-        if (!InputManager.Instance.OpenInventory)
-            return;
         inventoryStatus = !inventoryStatus;
-        Pv.RPC(nameof(RPC_InventoryStatus), RpcTarget.All, Grounded);
+        Pv.RPC(nameof(RPC_InventoryStatus), RpcTarget.All, inventoryStatus);
     }
 
     private void HandleInteract()
     {
-        Debug.Log("HandleInteract");
-        if (!InputManager.Instance.Interact)
-            return;
-
         Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
     }
 
@@ -245,10 +252,9 @@ public class PlayerController : MonoBehaviour
             dis2Ground + 0.2f,
             groundCheck);
         if (!grounded)
-        {   
+        {
             currentVelocity.y = rb.velocity.y;
         }
-        
     }
 
     #endregion Private

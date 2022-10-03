@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using WaG.Input_System.Scripts;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -34,14 +35,11 @@ public class PlayerInventory : MonoBehaviour
 
         usableAnchor = transform.Find("UsableAnchor");
 
-        InputManager.Instance.AddCallbackAction("OpenInventory", OpenInventory);
-        InputManager.Instance.AddCallbackAction("CloseInventory", CloseInventory);
-        InputManager.Instance.AddCallbackAction("Use", ActivateCurrentUsable);
+        InputManager.Instance.AddCallbackAction(ActionsControls.OpenInventory, OpenInventory);
+        InputManager.Instance.AddCallbackAction(ActionsControls.CloseInventory, CloseInventory);
+        InputManager.Instance.AddCallbackAction(ActionsControls.Use, ActivateCurrentUsable);
     }
-
-    private void Update()
-    {
-    }
+    
 
     private void ActivateCurrentUsable(InputAction.CallbackContext context)
     {
