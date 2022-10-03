@@ -1,31 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using Photon.Pun;
 using Random = UnityEngine.Random;
+
 /// <summary>
 /// ItemManager 
 /// </summary>
 [RequireComponent(typeof(PhotonView))]
 public class ItemManager : MonoBehaviour
 {
-    
     PhotonView pv;
     public static ItemManager Instance { get; private set; }
-    
+
     [SerializeField] private RarityTierSO[] RarityTiers;
     [SerializeField] private ItemDataSO[] itemsData;
-    
+    [SerializeField] private GameObject[] usablesPrefabs;
+
     private ItemSpawner[] spawners;
 
     private int TotalItems, theoryItems;
 
     private int totalRate;
+
     private void Awake()
-    {		
-        
-        if(Instance == null)
+    {
+        if (Instance == null)
             Instance = this;
         else
         {
@@ -41,7 +43,7 @@ public class ItemManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Create all items in all spawn
+    /// Create all items in all spawns
     /// </summary>
     private void CreateItems()
     {
@@ -50,7 +52,10 @@ public class ItemManager : MonoBehaviour
 
         foreach (ItemSpawner spawn in spawners)
         {
+            // Debug.Log("Spawn Item Type : " + spawn.ItemType);
             ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
+            // Debug.Log("Item type count : " + goodTypeItem.Length);
+
             int nbItems = spawn.GetNbItemToSpawn();
             theoryItems += nbItems;
             for (int i = 0; i < nbItems; i++)
@@ -67,6 +72,7 @@ public class ItemManager : MonoBehaviour
             }
         }
     }
+
     /// <summary>
     /// Find index of item in children
     /// </summary>
@@ -87,6 +93,7 @@ public class ItemManager : MonoBehaviour
 
         return indexInChildren;
     }
+
     /// <summary>
     /// Get array of items of type passed in parameter
     /// </summary>
@@ -111,6 +118,7 @@ public class ItemManager : MonoBehaviour
             if (p < runningTotal)
                 return rt.Rarity;
         }
+
         return RarityTiersEnum.Common;
     }
 
@@ -126,15 +134,17 @@ public class ItemManager : MonoBehaviour
         List<ItemDataSO> filteredItems = new List<ItemDataSO>();
         foreach (ItemDataSO item in items)
         {
-            if(rte == item.TierEnum)
+            if (rte == item.TierEnum)
                 filteredItems.Add(item);
         }
+
         // ItemDataSO[] filteredTiers = items.Where(x => x.TierEnum == rte).ToArray();
         if (filteredItems.Count > 0)
         {
             int idx = Random.Range(0, filteredItems.Count);
             return filteredItems[idx];
         }
+
         return null;
     }
 
@@ -148,12 +158,16 @@ public class ItemManager : MonoBehaviour
 
         if (!indexInChildren.HasValue)
             return;
-        
+
         pv.RPC(nameof(RPC_StoreItem),
             RpcTarget.All,
             indexInChildren.Value);
     }
 
+    /// <summary>
+    /// drop item from inventory
+    /// </summary>
+    /// <param name="item">Item to drop</param>
     public void DropItem(ItemController item)
     {
         int? indexInChildren = FindIndexOfItem(item);
@@ -167,7 +181,7 @@ public class ItemManager : MonoBehaviour
             orientationTransform.position,
             orientationTransform.forward);
     }
-    
+
     /// <summary>
     /// Get one item by his position in array
     /// </summary>
@@ -183,6 +197,26 @@ public class ItemManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Find the prefab for usable item 
+    /// </summary>
+    /// <param name="item">The item to find</param>
+    /// <returns>The usable item if it exists, null otherwise</returns>
+    [CanBeNull]
+    public GameObject GetUsable(ItemController item)
+    {
+        foreach (GameObject go in usablesPrefabs)
+        {
+            string itemName = item.ItemData.ShortName.Split("_")[0];
+            if (go.name.Contains(itemName))
+            {
+                return go;
+            }
+        }
+
+        return null;
+    }
+
     #region ====================== Photon : Start ======================
 
     [PunRPC]
@@ -190,35 +224,36 @@ public class ItemManager : MonoBehaviour
     {
         if (indexInChildren > transform.childCount)
             return;
-        
+
         Transform child = transform.GetChild(indexInChildren);
         child.gameObject.SetActive(false);
         child.localPosition = Vector3.zero;
     }
 
     [PunRPC]
-    private void RPC_DropItem(int indexInChildren,Vector3 spawnPos, Vector3 forwardOrientation)
+    private void RPC_DropItem(int indexInChildren, Vector3 spawnPos, Vector3 forwardOrientation)
     {
         if (indexInChildren > transform.childCount)
             return;
-        
+
         Transform child = transform.GetChild(indexInChildren);
-        child.GetComponent<ItemController>()?.Activate(spawnPos,forwardOrientation);
+        child.GetComponent<ItemController>()?.Activate(spawnPos, forwardOrientation);
     }
- 
+
     [PunRPC] // Remote Procedure Calls
     protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
     {
+        // Debug.Log("Item To Spawn : " + itemToSpawn);
         ItemDataSO item = GetItemById(itemToSpawn);
-        if(item == null)
+        if (item == null)
             return;
-        
+
         GameObject go = Instantiate(item.Model, position, Quaternion.identity);
         go.transform.parent = transform;
         go.layer = LayerMask.NameToLayer("Interactable");
         ItemController ic = go.AddComponent<ItemController>();
         ic.ItemData = item;
-        
     }
-    #endregion ====================== Photon : End ====================== 
+
+    #endregion ====================== Photon : End ======================
 }

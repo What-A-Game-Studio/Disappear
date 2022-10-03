@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using WaG.Input_System.Scripts;
+
 public class PlayerInventory : MonoBehaviour
 {
     private List<ItemController> itemsInInventory = new List<ItemController>();
-    private bool inventoryOpened = false;
+    private GameObject player;
+    private Transform usableAnchor;
+    private GameObject currentUsableGO;
+    private Interactable currentUsable;
     private PlayerController pc;
 
     private GameObject uiGO;
@@ -13,66 +19,102 @@ public class PlayerInventory : MonoBehaviour
     private static readonly int Close = Animator.StringToHash("Close");
     private static readonly int Open = Animator.StringToHash("Open");
 
-    public void Init(GameObject gameUI)
+    public void Init(GameObject gameUI, GameObject playerGO)
     {
         uiGO = Instantiate(gameUI, transform);
+        player = playerGO;
         if (!uiGO.TryGetComponent(out inventoryAnimation))
             Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
-        if (!uiGO.transform.GetChild(0).GetChild(0).GetChild(0).TryGetComponent(out inventoryUI))
+        if (!uiGO.transform.Find("InventoryScreen").Find("BackgroundInventory").Find("Inventory")
+            .TryGetComponent(out inventoryUI))
             Debug.LogError("Could not find InventoryUIManager Component on GameUI Children");
 
         if (!TryGetComponent(out pc))
             Debug.LogError("Could not find PlayerController Script on PlayerController GameObject ");
-    }
 
-    private void Update()
+        usableAnchor = transform.GetChild(0).GetComponent<ModelInfos>().ObjectHolder;
+
+        InputManager.Instance.AddCallbackAction(ActionsControls.OpenInventory, OpenInventory);
+        InputManager.Instance.AddCallbackAction(ActionsControls.CloseInventory, CloseInventory);
+        InputManager.Instance.AddCallbackAction(ActionsControls.Use, ActivateCurrentUsable);
+    }
+    
+
+    private void ActivateCurrentUsable(InputAction.CallbackContext context)
     {
-        if (!InputManager.Instance.Inventory) return;
-        if (!inventoryOpened)
+        if (currentUsable != null)
         {
-            OpenInventory();
-            inventoryOpened = true;
-        }
-        else
-        {
-            CloseInventory();
-            inventoryOpened = false;
+            currentUsable.onInteract?.Invoke(player);
         }
     }
 
-    private void OpenInventory()
+    /// <summary>
+    /// Action to open the inventory UI
+    /// </summary>
+    private void OpenInventory(InputAction.CallbackContext context)
     {
-        PostProcessingController.Instance.ActivateBlur();
-        inventoryAnimation.SetTrigger(Open);
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
-        pc.enabled = false;
-        pc.CanMoveOrRotate = false;
+        ChangeInventoryState(100.0f, "Open", CursorLockMode.Confined, true);
     }
 
-    private void CloseInventory()
+    /// <summary>
+    /// Action to close the inventory UI
+    /// </summary>
+    private void CloseInventory(InputAction.CallbackContext context)
     {
-        PostProcessingController.Instance.DeactivateBlur();
-        inventoryAnimation.SetTrigger(Close);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        pc.enabled = true;
-        pc.CanMoveOrRotate = true;
+        ChangeInventoryState(1.0f, "Close", CursorLockMode.Locked, false);
     }
 
 
+    /// <summary>
+    /// Generic function to update inventory UI display according to player's actions
+    /// </summary>
+    /// <param name="blurValue"> How much the screen should be blured behind the interface</param>
+    /// <param name="animation"> Launch the corresponding animation for opening or closing inventory</param>
+    /// <param name="cursorLock"> state of CursorLockMode </param>
+    /// <param name="cursorVisible"> Visibility of cursor </param>
+    private void ChangeInventoryState(float blurValue, string animation, CursorLockMode cursorLock, bool cursorVisible)
+    {
+        PostProcessingController.Instance.AdaptBlur(blurValue);
+        inventoryAnimation.SetTrigger(animation);
+        Cursor.lockState = cursorLock;
+        Cursor.visible = cursorVisible;
+    }
+
+    /// <summary>
+    /// Save an item in the inventory.
+    /// If the item is a usable, save its function in currentUsable
+    /// </summary>
+    /// <param name="item">The item to add</param>
+    /// <returns>true if there is there is enough room in the inventory for the item,
+    /// false otherwise</returns>
     public bool AddItemToInventory(ItemController item)
     {
-        if (inventoryUI.StockNewItem(item))
+        if (item.ItemData.ItemType != ItemType.Usable)
         {
+            if (!inventoryUI.StockNewItem(item)) return false;
             itemsInInventory.Add(item);
             return true;
         }
 
-        return false;
+        inventoryUI.StockNewUsable(item, out ItemController previousItem);
+        itemsInInventory.Add(item);
+        currentUsableGO = ItemManager.Instance.GetUsable(item);
+        currentUsableGO = Instantiate(currentUsableGO, usableAnchor.position, Quaternion.identity, usableAnchor);
+        if (!currentUsableGO.TryGetComponent(out currentUsable))
+        {
+            Debug.LogError("Can't find Usable component");
+        }
+
+        if (previousItem != null)
+            DropItem(previousItem);
+        return true;
     }
 
+    /// <summary>
+    /// Delete an item from the inventory and respawn its game object in the world
+    /// </summary>
+    /// <param name="item">The item to drop</param>
     public void DropItem(ItemController item)
     {
         ItemManager.Instance.DropItem(item);

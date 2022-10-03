@@ -51,7 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Inventory",
+                    "name": "OpenInventory",
                     "type": "Button",
                     "id": "9effa61c-2b84-414b-acae-b3cbece58997",
                     "expectedControlType": "Button",
@@ -65,13 +65,22 @@
                     "id": "38fa14b5-04bb-4609-a028-90986030a152",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press",
                     "initialStateCheck": false
                 },
                 {
                     "name": "Catch",
                     "type": "Button",
                     "id": "8ca4afa6-2679-47af-941c-79177eb767ec",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Use",
+                    "type": "Button",
+                    "id": "a7dff445-4ec4-48cb-9eb4-c64a8292963a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -182,10 +191,10 @@
                     "name": "",
                     "id": "52a0cc95-0f5b-418d-a7fa-6ef35535dbcc",
                     "path": "<Keyboard>/tab",
-                    "interactions": "",
+                    "interactions": "Tap(duration=0.5)",
                     "processors": "",
                     "groups": "",
-                    "action": "Inventory",
+                    "action": "OpenInventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -210,6 +219,17 @@
                     "action": "Catch",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c37b7488-eae7-4e03-b525-7ce9804078cc",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Use",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -218,7 +238,7 @@
             "id": "5c9bd933-e03d-4000-a8c3-c59b40c7ff29",
             "actions": [
                 {
-                    "name": "Discard Item Inventory",
+                    "name": "Discard",
                     "type": "Button",
                     "id": "5466eef6-d4d5-4752-a188-762237a900e6",
                     "expectedControlType": "Button",
@@ -227,18 +247,36 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Mouse",
+                    "name": "LeftMouse",
                     "type": "Button",
                     "id": "b97e55ee-8e05-4d81-97f3-7bbb553911e1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ReleaseLeftMouse",
+                    "type": "Button",
+                    "id": "f99ecbfe-b68f-4ba6-968b-81de0f452ad5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Rotate Item Iventory",
+                    "name": "Rotate",
                     "type": "Button",
                     "id": "5186ffca-1a92-41e2-932f-df2ee4ccdeb6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CloseInventory",
+                    "type": "Button",
+                    "id": "26954b7d-d47f-44db-90af-21badc2e39cb",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -253,18 +291,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Discard Item Inventory",
+                    "action": "Discard",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "80532bf5-1ed4-4e1d-ae23-62f312e87cc1",
-                    "path": "<Mouse>/press",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Mouse",
+                    "action": "LeftMouse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -275,7 +313,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate Item Iventory",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ebfc7744-0ef7-4e69-87c0-552ae1f2e5da",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseInventory",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4eb032d4-7858-486c-a489-4ff54cfcf5f1",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ReleaseLeftMouse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

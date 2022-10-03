@@ -15,7 +15,7 @@ MonoBehaviour:
   <Name>k__BackingField: Seeker
   <PostProcessingVolume>k__BackingField: {fileID: 11400000, guid: f2836c3649710ed4dab61848182b340f,
     type: 2}
-  <Model>k__BackingField: {fileID: 7274322183547578914, guid: 7437026dd0572ca4bbdb3ea1d2e059b2,
+  <Model>k__BackingField: {fileID: 7844715782338087053, guid: 916c8395c9fc2f54fae991e50dcec459,
     type: 3}
   <ModelOffset>k__BackingField: {x: 0, y: -1.05, z: 0}
   <AnimatorController>k__BackingField: {fileID: 9100000, guid: 70efa9837c60de346b7ffdd13fca8c30,

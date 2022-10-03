@@ -1,30 +1,52 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using WaG.Input_System.Scripts;
+
 
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
     private PlayerInput playerInput;
+    private InputActionMap InGameMap;
+
+    #region In Game Controls
 
     public Vector2 Move { get; private set; }
     public Vector2 Look { get; private set; }
     public bool Run { get; private set; }
     public bool Jump { get; private set; }
     public bool Crouch { get; private set; }
-    public bool Inventory { get; private set; }
-    public bool Interact { get; private set; }
     public bool Catch { get; private set; }
+    public bool Use { get; private set; }
 
-    private InputActionMap currentMap;
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction runAction;
     private InputAction jumpAction;
     private InputAction couchAction;
-    private InputAction inventoryAction;
-    private InputAction interactAction;
+    private InputAction openInventoryAction;
     private InputAction catchAction;
+    private InputAction useAction;
+
+    #endregion In Game Controls
+
+    #region UI Controls
+
+    public bool Discard { get; private set; }
+    public bool LeftMouse { get; private set; }
+    public bool ReleaseLeftMouse { get; private set; }
+    public bool Rotate { get; private set; }
+    
+    private InputAction discardAction;
+    private InputAction leftMouseAction;
+    private InputAction releaseLeftMouseAction;
+    private InputAction rotateAction;
+    private InputAction closeInventoryAction;
+
+    #endregion UI Controls
+
 
     private void Awake()
     {
@@ -42,45 +64,64 @@ public class InputManager : MonoBehaviour
             Debug.LogError("PlayerInput required", this);
             Debug.Break();
         }
-
+        
         playerInput.SwitchCurrentActionMap("Player");
-        currentMap = playerInput.currentActionMap;
-        moveAction = currentMap.FindAction("Move");
-        lookAction = currentMap.FindAction("Look");
-        runAction = currentMap.FindAction("Run");
-        jumpAction = currentMap.FindAction("Jump");
-        couchAction = currentMap.FindAction("Crouch");
-        inventoryAction = currentMap.FindAction("Inventory");
-        interactAction = currentMap.FindAction("Interact");
-        catchAction = currentMap.FindAction("Catch");
+        InGameMap = playerInput.currentActionMap;
+        
+        moveAction = playerInput.actions[ActionsControls.Move.ToString()];
+        lookAction = playerInput.actions[ActionsControls.Look.ToString()];
+        runAction = playerInput.actions[ActionsControls.Run.ToString()];
+        jumpAction = playerInput.actions[ActionsControls.Jump.ToString()];
+        couchAction = playerInput.actions[ActionsControls.Crouch.ToString()];
+        openInventoryAction = playerInput.actions[ActionsControls.OpenInventory.ToString()];
+        catchAction = playerInput.actions[ActionsControls.Catch.ToString()];
+        useAction = playerInput.actions[ActionsControls.Use.ToString()];
+        discardAction = playerInput.actions[ActionsControls.Discard.ToString()];
+        leftMouseAction = playerInput.actions[ActionsControls.LeftMouse.ToString()];
+        releaseLeftMouseAction = playerInput.actions[ActionsControls.ReleaseLeftMouse.ToString()];
+        rotateAction = playerInput.actions[ActionsControls.Rotate.ToString()];
+        closeInventoryAction = playerInput.actions[ActionsControls.CloseInventory.ToString()];
 
         moveAction.performed += OnMove;
         lookAction.performed += OnLook;
         runAction.performed += OnRun;
         jumpAction.performed += OnJump;
         couchAction.performed += OnCrouch;
-        inventoryAction.performed += OnInventory;
-        interactAction.performed += OnInteract;
+        openInventoryAction.performed += OnOpenInventory;
         catchAction.performed += OnCatch;
+        useAction.performed += OnUse;
+        discardAction.performed += OnDiscard;
+        leftMouseAction.performed += OnLeftMousePress;
+        releaseLeftMouseAction.performed += OnReleaseLeftMousePress;
+        rotateAction.performed += OnRotate;
+        closeInventoryAction.performed += OnCloseInventory;
 
         moveAction.canceled += OnMove;
         lookAction.canceled += OnLook;
         runAction.canceled += OnRun;
         jumpAction.canceled += OnJump;
         couchAction.canceled += OnCrouch;
-        inventoryAction.canceled += OnInventory;
-        interactAction.canceled += OnInteract;
+        openInventoryAction.canceled += OnOpenInventory;
         catchAction.canceled += OnCatch;
+        useAction.canceled += OnUse;
+        discardAction.canceled += OnDiscard;
+        leftMouseAction.canceled += OnLeftMousePress;
+        releaseLeftMouseAction.performed += OnReleaseLeftMousePress;
+        rotateAction.canceled += OnRotate;
+        closeInventoryAction.canceled += OnCloseInventory;
+
     }
 
+    #region Private Callback Methods
+    
     private void OnEnable()
     {
-        currentMap.Enable();
+        InGameMap.Enable();
     }
 
     private void OnDisable()
     {
-        currentMap.Disable();
+        InGameMap.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -108,18 +149,57 @@ public class InputManager : MonoBehaviour
         Crouch = context.ReadValueAsButton();
     }
 
-    private void OnInventory(InputAction.CallbackContext context)
+    private void OnOpenInventory(InputAction.CallbackContext context)
     {
-        Inventory = context.ReadValueAsButton();
+        playerInput.SwitchCurrentActionMap("UI");
     }
-
-    private void OnInteract(InputAction.CallbackContext context)
+    
+    private void OnCloseInventory(InputAction.CallbackContext context)
     {
-        Interact = context.ReadValueAsButton();
+        playerInput.SwitchCurrentActionMap("Player");
     }
-
+    
     private void OnCatch(InputAction.CallbackContext context)
     {
         Catch = context.ReadValueAsButton();
     }
+    
+    private void OnUse(InputAction.CallbackContext context)
+    {
+        Use = context.ReadValueAsButton();
+    }
+
+    private void OnDiscard(InputAction.CallbackContext context)
+    {
+        Discard = context.ReadValueAsButton();
+    }
+    
+    private void OnRotate(InputAction.CallbackContext context)
+    {
+        Rotate = context.ReadValueAsButton();
+    }
+
+    private void OnLeftMousePress(InputAction.CallbackContext context)
+    {
+        LeftMouse = context.ReadValueAsButton();
+    }
+    
+    private void OnReleaseLeftMousePress(InputAction.CallbackContext context)
+    {
+        ReleaseLeftMouse = context.ReadValueAsButton();
+    }
+    
+    #endregion Private Callback Methods
+
+    #region Public Methods
+
+    public void AddCallbackAction(ActionsControls actionControl, Action<InputAction.CallbackContext> callback)
+    {
+        playerInput.actions[actionControl.ToString()].performed += callback;
+        // playerInput.actions[actionControl.ToString()].canceled += callback;
+    }
+    
+
+    #endregion Public Methods
+    
 }

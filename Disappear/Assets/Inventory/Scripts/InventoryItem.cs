@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using WaG.Input_System.Scripts;
 
 public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler,
     IPointerEnterHandler, IPointerExitHandler
@@ -16,21 +18,18 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     }
 
     public ItemController ItemController { get; set; }
-    private Vector2Int selectedPart;
-
-    public Vector2Int SelectedPart
-    {
-        get { return selectedPart; }
-    }
 
     private RectTransform itemTransform;
+
+    public Vector2 ItemTransform
+    {
+        set => itemTransform.position = value;
+    }
+
     private Transform originalParent;
 
     private Vector2 mousePosition;
-    private Vector2 startPosition;
-    private Vector2 differencePoint;
     private Vector2 oldPosition;
-    private Vector2 selectedPosition;
     private Image img;
 
     private bool isMouseOver = false;
@@ -51,91 +50,76 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
 
         originalParent = itemTransform.parent;
-
-
         StoredIndex = new List<int>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (InputManager.Instance.LeftMouse)
         {
             UpdateMousePosition();
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            UpdateStartPosition();
-            UpdateDifferencePoint();
-        }
-
-        if (Input.GetMouseButtonUp(0))
+        if (InputManager.Instance.ReleaseLeftMouse)
         {
             img.raycastTarget = true;
         }
 
-        if (Input.GetButtonDown("Discard item") && isMouseOver)
-        {
-            isMouseOver = false;
-            InventoryUIManager.Instance.FreeCases(StoredIndex);
-            PlayerController.MainPlayer.PlayerInventory.DropItem(ItemController);
-            Destroy(gameObject);
-        }
+        if (!InputManager.Instance.Discard || !isMouseOver) return;
+        isMouseOver = false;
+        InventoryUIManager.Instance.FreeCases(StoredIndex);
+        PlayerController.MainPlayer.PlayerInventory.DropItem(ItemController);
+        Destroy(gameObject);
     }
 
     private void UpdateMousePosition()
     {
-        mousePosition.x = Input.mousePosition.x;
-        mousePosition.y = Input.mousePosition.y;
+        mousePosition = Mouse.current.position.ReadValue();
     }
-
-    private void UpdateStartPosition()
-    {
-        startPosition.x = itemTransform.position.x;
-        startPosition.y = itemTransform.position.y;
-    }
-
-    private void UpdateDifferencePoint()
-    {
-        differencePoint = mousePosition - startPosition;
-    }
-
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        UpdateMousePosition();
-        selectedPosition = itemTransform.InverseTransformPoint(mousePosition);
-        selectedPosition.x += itemTransform.sizeDelta.x / 2;
-        selectedPosition.y += itemTransform.sizeDelta.y / 2;
-        selectedPart.x = Mathf.FloorToInt(selectedPosition.x / 100);
-        selectedPart.y = itemSize.y - Mathf.FloorToInt(selectedPosition.y / 100) - 1;
-        oldPosition = itemTransform.position;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            UpdateMousePosition();
+            oldPosition = itemTransform.position;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        img.raycastTarget = false;
-        transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
-        ;
-        InventoryUIManager.Instance.DraggingItem = this;
-        InventoryUIManager.Instance.IsDragging = true;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            img.raycastTarget = false;
+            transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
+            ;
+            InventoryUIManager.Instance.DraggingItem = this;
+            InventoryUIManager.Instance.IsDragging = true;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        itemTransform.position = mousePosition - differencePoint;
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
+        {
+            itemTransform.position = mousePosition;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        InventoryUIManager.Instance.DraggingItem = null;
-        InventoryUIManager.Instance.IsDragging = false;
-        transform.SetParent(originalParent, false);
-
-        if (!canDrop)
+        if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
-            itemTransform.position = oldPosition;
+            InventoryUIManager.Instance.DraggingItem = null;
+            InventoryUIManager.Instance.IsDragging = false;
+            transform.SetParent(originalParent, false);
+
+            if (!canDrop)
+            {
+                itemTransform.position = oldPosition;
+            }
         }
     }
 
@@ -180,7 +164,6 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
             transform.Rotate(0, 0, -90);
         else
             transform.Rotate(0, 0, 90);
-        differencePoint = Vector2.zero;
         itemTransform.position = mousePosition;
         (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
     }

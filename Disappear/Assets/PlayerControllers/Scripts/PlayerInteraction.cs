@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
 using UnityEngine.Serialization;
+using WaG.Input_System.Scripts;
 using Matrix4x4 = UnityEngine.Matrix4x4;
 using Vector3 = UnityEngine.Vector3;
 
@@ -46,16 +47,17 @@ public class PlayerInteraction : MonoBehaviour
         player = pgo;
         isSeeker = seeker;
         cam = transform.parent;
+        InputManager.Instance.AddCallbackAction(
+            ActionsControls.Interact,
+            (context) =>
+            {
+                if (interactableObject != null)
+                {
+                    interactableObject.onInteract?.Invoke(player);
+                }
+            });
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-        if (InputManager.Instance.Interact && interactableObject != null)
-        {
-            interactableObject.onInteract?.Invoke(player);
-        }
-    }
 
     private void FixedUpdate()
     {
@@ -107,7 +109,6 @@ public class PlayerInteraction : MonoBehaviour
         if (isSeeker)
         {
             Gizmos.DrawRay(cam.position, cam.forward * catchMaxDistance);
-
         }
     }
 
