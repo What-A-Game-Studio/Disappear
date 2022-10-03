@@ -33,7 +33,7 @@ public class PlayerInventory : MonoBehaviour
         if (!TryGetComponent(out pc))
             Debug.LogError("Could not find PlayerController Script on PlayerController GameObject ");
 
-        usableAnchor = transform.Find("UsableAnchor");
+        usableAnchor = transform.GetChild(0).GetComponent<ModelInfos>().ObjectHolder;
 
         InputManager.Instance.AddCallbackAction(ActionsControls.OpenInventory, OpenInventory);
         InputManager.Instance.AddCallbackAction(ActionsControls.CloseInventory, CloseInventory);
