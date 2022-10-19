@@ -35,13 +35,9 @@ public class InputManager : MonoBehaviour
     #region UI Controls
 
     public bool Discard { get; private set; }
-    public bool LeftMouse { get; private set; }
-    public bool ReleaseLeftMouse { get; private set; }
     public bool Rotate { get; private set; }
     
     private InputAction discardAction;
-    private InputAction leftMouseAction;
-    private InputAction releaseLeftMouseAction;
     private InputAction rotateAction;
     private InputAction closeInventoryAction;
 
@@ -77,8 +73,6 @@ public class InputManager : MonoBehaviour
         catchAction = playerInput.actions[ActionsControls.Catch.ToString()];
         useAction = playerInput.actions[ActionsControls.Use.ToString()];
         discardAction = playerInput.actions[ActionsControls.Discard.ToString()];
-        leftMouseAction = playerInput.actions[ActionsControls.LeftMouse.ToString()];
-        releaseLeftMouseAction = playerInput.actions[ActionsControls.ReleaseLeftMouse.ToString()];
         rotateAction = playerInput.actions[ActionsControls.Rotate.ToString()];
         closeInventoryAction = playerInput.actions[ActionsControls.CloseInventory.ToString()];
 
@@ -91,8 +85,6 @@ public class InputManager : MonoBehaviour
         catchAction.performed += OnCatch;
         useAction.performed += OnUse;
         discardAction.performed += OnDiscard;
-        leftMouseAction.performed += OnLeftMousePress;
-        releaseLeftMouseAction.performed += OnReleaseLeftMousePress;
         rotateAction.performed += OnRotate;
         closeInventoryAction.performed += OnCloseInventory;
 
@@ -105,8 +97,6 @@ public class InputManager : MonoBehaviour
         catchAction.canceled += OnCatch;
         useAction.canceled += OnUse;
         discardAction.canceled += OnDiscard;
-        leftMouseAction.canceled += OnLeftMousePress;
-        releaseLeftMouseAction.performed += OnReleaseLeftMousePress;
         rotateAction.canceled += OnRotate;
         closeInventoryAction.canceled += OnCloseInventory;
 
@@ -177,16 +167,6 @@ public class InputManager : MonoBehaviour
     private void OnRotate(InputAction.CallbackContext context)
     {
         Rotate = context.ReadValueAsButton();
-    }
-
-    private void OnLeftMousePress(InputAction.CallbackContext context)
-    {
-        LeftMouse = context.ReadValueAsButton();
-    }
-    
-    private void OnReleaseLeftMousePress(InputAction.CallbackContext context)
-    {
-        ReleaseLeftMouse = context.ReadValueAsButton();
     }
     
     #endregion Private Callback Methods

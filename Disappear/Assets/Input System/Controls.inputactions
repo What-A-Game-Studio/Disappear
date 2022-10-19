@@ -247,24 +247,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LeftMouse",
-                    "type": "Button",
-                    "id": "b97e55ee-8e05-4d81-97f3-7bbb553911e1",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "Hold",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ReleaseLeftMouse",
-                    "type": "Button",
-                    "id": "f99ecbfe-b68f-4ba6-968b-81de0f452ad5",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Rotate",
                     "type": "Button",
                     "id": "5186ffca-1a92-41e2-932f-df2ee4ccdeb6",
@@ -297,17 +279,6 @@
                 },
                 {
                     "name": "",
-                    "id": "80532bf5-1ed4-4e1d-ae23-62f312e87cc1",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LeftMouse",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "169ba580-f22e-4fc4-b6bb-3dabc52840ad",
                     "path": "<Keyboard>/r",
                     "interactions": "",
@@ -325,17 +296,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "CloseInventory",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4eb032d4-7858-486c-a489-4ff54cfcf5f1",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ReleaseLeftMouse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

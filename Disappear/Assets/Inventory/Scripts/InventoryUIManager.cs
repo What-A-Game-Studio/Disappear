@@ -28,7 +28,7 @@ public class InventoryUIManager : MonoBehaviour
     private Case usableCase;
     private List<int> overlapCasesIndex = new List<int>();
 
-    public InventoryItem DraggingItem { get; set; }
+    public InventoryItem DraggedItem { get; set; }
     public bool IsDragging { get; set; }
 
 
@@ -37,7 +37,6 @@ public class InventoryUIManager : MonoBehaviour
     [SerializeField] private GameObject itemUIPrefab;
 
     private bool previousState;
-
     private GridLayoutGroup grid;
     private int gridWidth;
     private int gridHeight;
@@ -76,17 +75,8 @@ public class InventoryUIManager : MonoBehaviour
 
         gridWidth = grid.constraintCount;
         gridHeight = transform.childCount / gridWidth;
-        
+
         InputManager.Instance.AddCallbackAction(ActionsControls.Rotate, RotateDraggingItem);
-
-    }
-
-    private void RotateDraggingItem(InputAction.CallbackContext context)
-    {
-        if (DraggingItem != null)
-        {
-            DraggingItem.RotateItemPositionOnZAxis();
-        }
     }
 
     private void Update()
@@ -95,8 +85,23 @@ public class InventoryUIManager : MonoBehaviour
         {
             CatchItemOnCase();
         }
+
         previousState = IsDragging;
     }
+
+    /// <summary>
+    /// Event when Input Rotate is pressed
+    /// Rotate the dragged item
+    /// </summary>
+    /// <param name="context"></param>
+    private void RotateDraggingItem(InputAction.CallbackContext context)
+    {
+        if (DraggedItem != null)
+        {
+            DraggedItem.RotateItemPositionOnZAxis();
+        }
+    }
+
 
     /// <summary>
     /// Change color of cases when dragging an item over the inventory
@@ -109,7 +114,7 @@ public class InventoryUIManager : MonoBehaviour
         PointerEventData pointerData = data as PointerEventData;
         int index = pointerData.pointerEnter.transform.GetSiblingIndex();
         CheckSurroundingCasesOnDragOver(index);
-        DraggingItem.OnMouseOverCase();
+        DraggedItem.canDrop = true;
     }
 
 
@@ -144,6 +149,13 @@ public class InventoryUIManager : MonoBehaviour
         return false;
     }
 
+
+    /// <summary>
+    /// Create the sprite of a usable item in the slot specified for it
+    /// If there is already a usable in the slot, it is replaced by the new one
+    /// </summary>
+    /// <param name="itemController"> The data for the item to create</param>
+    /// <param name="previousItem"> the item for the item already in the slot if there is one </param>
     public void StockNewUsable(ItemController itemController, out ItemController previousItem)
     {
         if (usableCase.Occupied)
@@ -236,10 +248,10 @@ public class InventoryUIManager : MonoBehaviour
         int x = baseCaseIndex - (y * gridWidth);
         bool allCaseFree = true;
 
-        int startY = y - Mathf.FloorToInt(DraggingItem.ItemSize.y / 2);
-        int endY = startY + DraggingItem.ItemSize.y;
-        int startX = x - Mathf.FloorToInt(DraggingItem.ItemSize.x / 2);
-        int endX = startX + DraggingItem.ItemSize.x;
+        int startY = y - Mathf.FloorToInt(DraggedItem.ItemSize.y / 2);
+        int endY = startY + DraggedItem.ItemSize.y;
+        int startX = x - Mathf.FloorToInt(DraggedItem.ItemSize.x / 2);
+        int endX = startX + DraggedItem.ItemSize.x;
 
 
         for (int i = startY; i < endY; i++)
@@ -292,18 +304,19 @@ public class InventoryUIManager : MonoBehaviour
         }
 
         overlapCasesIndex.Clear();
-        DraggingItem.OnMouseExitCase();
+        DraggedItem.canDrop = false;
     }
 
     /// <summary>
-    /// 
+    /// Drop the item on the cases if it is available
     /// </summary>
     /// <param name="data"></param>
     public void DropItemOnCase(BaseEventData data)
     {
-        if (DraggingItem != null)
+        if (DraggedItem != null)
         {
             bool allCaseFree = true;
+            Debug.Log("OverlapCasesIndex Size : " + overlapCasesIndex.Count);
             foreach (int c in overlapCasesIndex)
             {
                 if (listCases[c].Occupied || listCases[c].Img.color == Color.red)
@@ -316,26 +329,35 @@ public class InventoryUIManager : MonoBehaviour
 
             if (allCaseFree)
             {
-                CalculateAveragePosition(DraggingItem);
+                CalculateAveragePosition(DraggedItem);
             }
             else
             {
-                DraggingItem.canDrop = false;
+                DraggedItem.canDrop = false;
             }
 
             overlapCasesIndex.Clear();
         }
     }
 
+    /// <summary>
+    /// When an item is picked, free the cases where it was.
+    /// Save the indexes of those cases in case of the dragging fails
+    /// </summary>
     public void CatchItemOnCase()
     {
-        if (DraggingItem.StoredIndex.Count <= 0) return;
-        for (int i = 0; i < DraggingItem.StoredIndex.Count; i++)
+        if (DraggedItem.StoredIndex.Count <= 0) return;
+        for (int i = 0; i < DraggedItem.StoredIndex.Count; i++)
         {
-            listCases[DraggingItem.StoredIndex[i]].Occupied = false;
+            listCases[DraggedItem.StoredIndex[i]].Occupied = false;
         }
     }
 
+    /// <summary>
+    /// Calcuate the average position between all the cases occupied by the item,
+    /// then stock the item at this position
+    /// </summary>
+    /// <param name="item"> The item to stock </param>
     private void CalculateAveragePosition(InventoryItem item)
     {
         List<int> index = new List<int>();
@@ -371,6 +393,14 @@ public class InventoryUIManager : MonoBehaviour
         else
         {
             usableCase.Occupied = false;
+        }
+    }
+
+    public void RestockInCaseOnDragFailed(List<int> indexes)
+    {
+        for (int i = 0; i < indexes.Count; i++)
+        {
+            listCases[indexes[i]].Occupied = true;
         }
     }
 }

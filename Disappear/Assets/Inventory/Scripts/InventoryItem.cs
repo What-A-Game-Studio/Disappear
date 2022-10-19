@@ -30,9 +30,11 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     private Vector2 mousePosition;
     private Vector2 oldPosition;
+    private Quaternion oldRotation;
     private Image img;
 
     private bool isMouseOver = false;
+    private bool hasRotate;
     public bool canDrop { get; set; }
 
     public List<int> StoredIndex { get; private set; }
@@ -51,22 +53,11 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
         originalParent = itemTransform.parent;
         StoredIndex = new List<int>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (InputManager.Instance.LeftMouse)
-        {
-            UpdateMousePosition();
-        }
-
-        if (InputManager.Instance.ReleaseLeftMouse)
-        {
-            img.raycastTarget = true;
-        }
-
         if (!InputManager.Instance.Discard || !isMouseOver) return;
         isMouseOver = false;
         InventoryUIManager.Instance.FreeCases(StoredIndex);
@@ -81,21 +72,26 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        hasRotate = false;
+        Debug.Log("Pointer Down");
         if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
             UpdateMousePosition();
             oldPosition = itemTransform.position;
+            oldRotation = itemTransform.rotation;
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        Debug.Log("Begin Drag");
+
         if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
             img.raycastTarget = false;
             transform.SetParent(InventoryUIManager.Instance.itemDraggedContainer, false);
-            ;
-            InventoryUIManager.Instance.DraggingItem = this;
+
+            InventoryUIManager.Instance.DraggedItem = this;
             InventoryUIManager.Instance.IsDragging = true;
         }
     }
@@ -104,6 +100,7 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
+            UpdateMousePosition();
             itemTransform.position = mousePosition;
         }
     }
@@ -112,14 +109,23 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
     {
         if (ItemController.ItemData.ItemType != ItemType.Usable)
         {
-            InventoryUIManager.Instance.DraggingItem = null;
+            InventoryUIManager.Instance.DraggedItem = null;
             InventoryUIManager.Instance.IsDragging = false;
             transform.SetParent(originalParent, false);
 
             if (!canDrop)
             {
+                InventoryUIManager.Instance.RestockInCaseOnDragFailed(StoredIndex);
+                if (hasRotate)
+                {
+                    itemTransform.rotation = oldRotation;
+                    (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
+                }
+
                 itemTransform.position = oldPosition;
             }
+
+            img.raycastTarget = true;
         }
     }
 
@@ -132,20 +138,16 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
         }
         else
         {
+            if (hasRotate)
+            {
+                itemTransform.rotation = oldRotation;
+                (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
+            }
+
             itemTransform.position = oldPosition;
         }
 
         img.raycastTarget = true;
-    }
-
-    public void OnMouseOverCase()
-    {
-        canDrop = true;
-    }
-
-    public void OnMouseExitCase()
-    {
-        canDrop = false;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -160,11 +162,11 @@ public class InventoryItem : MonoBehaviour, IDragHandler, IBeginDragHandler, IEn
 
     public void RotateItemPositionOnZAxis()
     {
+        hasRotate = !hasRotate;
         if (transform.rotation.z == 0)
             transform.Rotate(0, 0, -90);
         else
             transform.Rotate(0, 0, 90);
-        itemTransform.position = mousePosition;
         (itemSize.x, itemSize.y) = (itemSize.y, itemSize.x);
     }
 }
