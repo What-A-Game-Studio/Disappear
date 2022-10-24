@@ -9,14 +9,15 @@ using WaG.Input_System.Scripts;
 
 [RequireComponent(
     typeof(Rigidbody),
-    typeof(CapsuleCollider)
+    typeof(CapsuleCollider),
+    typeof(StaminaController)
 )]
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController MainPlayer { get; private set; }
-
+    
     private Rigidbody rb;
-
+    private StaminaController stamina;
     private Animator animator;
     private Vector3 currentVelocity;
     private float xRotation;
@@ -38,9 +39,6 @@ public class PlayerController : MonoBehaviour
     [Header("Weight Modifiers")] [SerializeField] private float lightOverweightSpeedModifier;
     [SerializeField] private float largeOverweightSpeedModifier;
   
-    [Header("Stamina")] [SerializeField] private float MaxStamina;
-    private float currentStamina;
-
     private bool rpcCrouch;
     public bool Crouched => Pv.IsMine ? InputManager.Instance.Crouch : rpcCrouch;
 
@@ -85,6 +83,8 @@ public class PlayerController : MonoBehaviour
 
         rb = GetComponent<Rigidbody>();
         Pv = GetComponent<PhotonView>();
+        stamina = GetComponent<StaminaController>();
+
         if (Pv == null)
             throw new Exception("PlayerController required PhotonView !");
 
@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
         // cam.position = cameraRig.position;
         // cam.rotation = cameraRig.rotation;
     }
-
+    
     private void FixedUpdate()
     {
         SampleGround();
@@ -148,8 +148,7 @@ public class PlayerController : MonoBehaviour
         cam.parent = transform;
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
-        currentStamina = MaxStamina;
-
+        
         InputManager.Instance.AddCallbackAction(
             ActionsControls.OpenInventory,
             (context) => HandleInventory()
@@ -192,18 +191,10 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.Move == Vector2.zero)
             targetSpeed = 0f;
 
-        if (InputManager.Instance.Run && currentStamina > 0)
+        if (InputManager.Instance.Run && stamina.CanRun)
         {
-            currentStamina -= Time.fixedDeltaTime;
             targetSpeed += targetSpeed * runSpeedFactor;
         }
-
-        if (!InputManager.Instance.Run)
-        {
-            currentStamina += Time.fixedDeltaTime;
-        }
-
-        currentStamina = Mathf.Clamp(currentStamina, 0, MaxStamina);
         
         if (Crouched)
             targetSpeed += targetSpeed * crouchSpeedFactor;

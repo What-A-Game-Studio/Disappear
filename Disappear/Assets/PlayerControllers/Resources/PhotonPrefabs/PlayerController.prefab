@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1236024974}
   - component: {fileID: 1236024973}
   - component: {fileID: 1236024972}
+  - component: {fileID: 2766373185394460702}
   m_Layer: 8
   m_Name: PlayerController
   m_TagString: Player
@@ -110,7 +111,6 @@ MonoBehaviour:
   crouchSpeedFactor: -0.5
   lightOverweightSpeedModifier: -0.2
   largeOverweightSpeedModifier: -0.5
-  MaxStamina: 10
   jumpFactor: 200
   airResistance: 0.8
   groundCheck:
@@ -173,3 +173,17 @@ MonoBehaviour:
   seeker: {fileID: 11400000, guid: 565072a44b02f6c459a00a2e5d8f2cef, type: 2}
   hider: {fileID: 11400000, guid: 318c9f85cbfc0c049a10a3edb18d05f5, type: 2}
   meshContainer: {fileID: 6389027032552079513}
+--- !u!114 &2766373185394460702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6044308510027733539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7db0440063cca0468b5e73b23797872, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStamina: 10
+  recoveryCooldown: 2
