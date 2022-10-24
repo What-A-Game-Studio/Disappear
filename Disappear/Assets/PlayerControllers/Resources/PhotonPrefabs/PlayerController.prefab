@@ -108,6 +108,9 @@ MonoBehaviour:
   walkSpeed: 2
   runSpeedFactor: 1
   crouchSpeedFactor: -0.5
+  lightOverweightSpeedModifier: -0.2
+  largeOverweightSpeedModifier: -0.5
+  MaxStamina: 10
   jumpFactor: 200
   airResistance: 0.8
   groundCheck:

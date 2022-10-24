@@ -1,7 +1,10 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
+using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine.InputSystem;
+using WaG;
 using WaG.Input_System.Scripts;
 
 [RequireComponent(
@@ -31,6 +34,13 @@ public class PlayerController : MonoBehaviour
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
     [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
+
+    [Header("Weight Modifiers")] [SerializeField] private float lightOverweightSpeedModifier;
+    [SerializeField] private float largeOverweightSpeedModifier;
+  
+    [Header("Stamina")] [SerializeField] private float MaxStamina;
+    private float currentStamina;
+
     private bool rpcCrouch;
     public bool Crouched => Pv.IsMine ? InputManager.Instance.Crouch : rpcCrouch;
 
@@ -57,6 +67,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 rpcVelocity;
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
 
+    public Weight PlayerWeight { private get; set; }
+    private Dictionary<Weight, float> weightModifiers = new Dictionary<Weight, float>();
 
     public bool CanMoveOrRotate { get; set; } = true;
 
@@ -136,7 +148,8 @@ public class PlayerController : MonoBehaviour
         cam.parent = transform;
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
-        
+        currentStamina = MaxStamina;
+
         InputManager.Instance.AddCallbackAction(
             ActionsControls.OpenInventory,
             (context) => HandleInventory()
@@ -147,8 +160,12 @@ public class PlayerController : MonoBehaviour
         );
         InputManager.Instance.AddCallbackAction(
             ActionsControls.Interact,
-            (context) => HandleInteract() );
+            (context) => HandleInteract());
         cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
+
+        weightModifiers.Add(Weight.Normal, 0);
+        weightModifiers.Add(Weight.LigthOverweight, lightOverweightSpeedModifier);
+        weightModifiers.Add(Weight.LargeOverweight, largeOverweightSpeedModifier);
     }
 
     private void HideCursor()
@@ -175,11 +192,24 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.Move == Vector2.zero)
             targetSpeed = 0f;
 
-        if (InputManager.Instance.Run)
+        if (InputManager.Instance.Run && currentStamina > 0)
+        {
+            currentStamina -= Time.deltaTime;
             targetSpeed += targetSpeed * runSpeedFactor;
+        }
+
+        if (!InputManager.Instance.Run)
+        {
+            currentStamina += Time.deltaTime;
+        }
+
+        currentStamina = Mathf.Clamp(currentStamina, 0, MaxStamina);
+        
         if (Crouched)
             targetSpeed += targetSpeed * crouchSpeedFactor;
-
+        
+        targetSpeed += targetSpeed * weightModifiers[PlayerWeight];
+        
         if (grounded)
         {
             currentVelocity.x = Mathf.Lerp(currentVelocity.x,
