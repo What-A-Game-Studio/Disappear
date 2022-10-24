@@ -139,24 +139,13 @@ public class PlayerInventory : MonoBehaviour
     /// </summary>
     private void UpdatePlayerWeight()
     {
-        Debug.Log("Current Weight : " + currentWeight);
         if (currentWeight > maxWeight * 0.75f)
-        {
-            Debug.Log("Large");
             PlayerController.MainPlayer.PlayerWeight = Weight.LargeOverweight;
-        }
-
-        else if (currentWeight > maxWeight * 0.5f)
-        {
-            Debug.Log("Light");
-            PlayerController.MainPlayer.PlayerWeight = Weight.LigthOverweight;
-        }
-
-        else
-        {
-            Debug.Log("Normal");
-            PlayerController.MainPlayer.PlayerWeight = Weight.Normal;
-        }
         
+        else if (currentWeight > maxWeight * 0.5f)
+            PlayerController.MainPlayer.PlayerWeight = Weight.LigthOverweight;
+        
+        else
+            PlayerController.MainPlayer.PlayerWeight = Weight.Normal;
     }
 }

@@ -194,13 +194,13 @@ public class PlayerController : MonoBehaviour
 
         if (InputManager.Instance.Run && currentStamina > 0)
         {
-            currentStamina -= Time.deltaTime;
+            currentStamina -= Time.fixedDeltaTime;
             targetSpeed += targetSpeed * runSpeedFactor;
         }
 
         if (!InputManager.Instance.Run)
         {
-            currentStamina += Time.deltaTime;
+            currentStamina += Time.fixedDeltaTime;
         }
 
         currentStamina = Mathf.Clamp(currentStamina, 0, MaxStamina);
