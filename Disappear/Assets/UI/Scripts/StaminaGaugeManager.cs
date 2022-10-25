@@ -63,7 +63,6 @@ namespace WaG
         /// <returns></returns>
         private IEnumerator FadeOutGauge()
         {
-            Debug.Log("Hello i'm called");
             backgroundStaminaColor = backgroundStaminaGauge.color;
             currentStaminaColor = currentStaminaGauge.color;
             while (backgroundStaminaGauge.color.a > minAlpha && currentStaminaGauge.color.a > minAlpha)

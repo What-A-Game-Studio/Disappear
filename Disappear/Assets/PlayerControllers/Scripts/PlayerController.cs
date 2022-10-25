@@ -15,7 +15,7 @@ using WaG.Input_System.Scripts;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController MainPlayer { get; private set; }
-    
+
     private Rigidbody rb;
     private StaminaController stamina;
     private Animator animator;
@@ -36,9 +36,10 @@ public class PlayerController : MonoBehaviour
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
     [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
 
-    [Header("Weight Modifiers")] [SerializeField] private float lightOverweightSpeedModifier;
+    [Header("Weight Modifiers")] [SerializeField]
+    private float lightOverweightSpeedModifier;
     [SerializeField] private float largeOverweightSpeedModifier;
-  
+
     private bool rpcCrouch;
     public bool Crouched => Pv.IsMine ? InputManager.Instance.Crouch : rpcCrouch;
 
@@ -66,7 +67,6 @@ public class PlayerController : MonoBehaviour
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
 
     public Weight PlayerWeight { private get; set; }
-    private Dictionary<Weight, float> weightModifiers = new Dictionary<Weight, float>();
 
     public bool CanMoveOrRotate { get; set; } = true;
 
@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
         // cam.position = cameraRig.position;
         // cam.rotation = cameraRig.rotation;
     }
-    
+
     private void FixedUpdate()
     {
         SampleGround();
@@ -148,7 +148,7 @@ public class PlayerController : MonoBehaviour
         cam.parent = transform;
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
-        
+
         InputManager.Instance.AddCallbackAction(
             ActionsControls.OpenInventory,
             (context) => HandleInventory()
@@ -161,10 +161,6 @@ public class PlayerController : MonoBehaviour
             ActionsControls.Interact,
             (context) => HandleInteract());
         cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
-
-        weightModifiers.Add(Weight.Normal, 0);
-        weightModifiers.Add(Weight.LigthOverweight, lightOverweightSpeedModifier);
-        weightModifiers.Add(Weight.LargeOverweight, largeOverweightSpeedModifier);
     }
 
     private void HideCursor()
@@ -195,12 +191,23 @@ public class PlayerController : MonoBehaviour
         {
             targetSpeed += targetSpeed * runSpeedFactor;
         }
-        
+
         if (Crouched)
             targetSpeed += targetSpeed * crouchSpeedFactor;
         
-        targetSpeed += targetSpeed * weightModifiers[PlayerWeight];
-        
+        // switch (PlayerWeight)
+        // {
+        //     case Weight.LigthOverweight:
+        //         targetSpeed += targetSpeed * lightOverweightSpeedModifier;
+        //         break;
+        //     case Weight.LargeOverweight:
+        //         targetSpeed += targetSpeed * largeOverweightSpeedModifier;
+        //         break;
+        //     case Weight.Normal:
+        //     default:
+        //         break;
+        // }
+
         if (grounded)
         {
             currentVelocity.x = Mathf.Lerp(currentVelocity.x,
