@@ -2,8 +2,6 @@ using UnityEngine;
 using Photon.Pun;
 using System;
 using WaG;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem;
 using WaG.Input_System.Scripts;
 
 [RequireComponent(
@@ -36,8 +34,6 @@ public class PlayerController : MonoBehaviour
     [Header("Weight Modifiers")] [SerializeField]
     private float lightOverweightSpeedModifier;
     [SerializeField] private float largeOverweightSpeedModifier;
-
-    private bool rpcCrouch;
 
     private bool grounded;
     private bool rpcGrounded;
@@ -200,10 +196,7 @@ public class PlayerController : MonoBehaviour
         {
             targetSpeed += targetSpeed * runSpeedFactor;
         }
-
-        if (Crouched)
-            targetSpeed += targetSpeed * crouchSpeedFactor;
-        
+       
         switch (PlayerWeight)
         {
             case Weight.LigthOverweight:
