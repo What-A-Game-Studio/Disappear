@@ -1,13 +1,13 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem;
+using WaG;
 using WaG.Input_System.Scripts;
 
 [RequireComponent(
     typeof(Rigidbody),
-    typeof(CapsuleCollider)
+    typeof(CapsuleCollider),
+    typeof(StaminaController)
 )]
 public class PlayerController : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     public static PlayerController MainPlayer { get; private set; }
 
     private Rigidbody rb;
-
+    private StaminaController stamina;
     private Animator animator;
     private Vector3 currentVelocity;
     private float teamSpeedModifier = 0;
@@ -29,7 +29,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
+    [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
 
+    [Header("Weight Modifiers")] [SerializeField]
+    private float lightOverweightSpeedModifier;
+    [SerializeField] private float largeOverweightSpeedModifier;
 
     private bool grounded;
     private bool rpcGrounded;
@@ -55,6 +59,8 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 rpcVelocity;
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
+
+    public Weight PlayerWeight { private get; set; }
 
     public bool CanMoveOrRotate { get; set; } = true;
 
@@ -83,6 +89,8 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
         
         Pv = GetComponent<PhotonView>();
+        stamina = GetComponent<StaminaController>();
+
         if (Pv == null)
         {
             Debug.LogError("Need PhotonView", this);
@@ -146,7 +154,7 @@ public class PlayerController : MonoBehaviour
         
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
-        
+
         InputManager.Instance.AddCallbackAction(
             ActionsControls.OpenInventory,
             (context) => HandleInventory()
@@ -184,8 +192,23 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.Move == Vector2.zero)
             targetSpeed = 0f;
 
-        if (InputManager.Instance.Run)
+        if (InputManager.Instance.Run && stamina.CanRun)
+        {
             targetSpeed += targetSpeed * runSpeedFactor;
+        }
+       
+        switch (PlayerWeight)
+        {
+            case Weight.LigthOverweight:
+                targetSpeed += targetSpeed * lightOverweightSpeedModifier;
+                break;
+            case Weight.LargeOverweight:
+                targetSpeed += targetSpeed * largeOverweightSpeedModifier;
+                break;
+            case Weight.Normal:
+            default:
+                break;
+        }
         if (CrouchController.Crouched)
             targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
 

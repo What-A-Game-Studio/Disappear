@@ -40,7 +40,8 @@ public class InventoryUIManager : MonoBehaviour
     private GridLayoutGroup grid;
     private int gridWidth;
     private int gridHeight;
-
+    private int currentIndex;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -99,6 +100,11 @@ public class InventoryUIManager : MonoBehaviour
         if (DraggedItem != null)
         {
             DraggedItem.RotateItemPositionOnZAxis();
+            foreach(int c in overlapCasesIndex)
+                listCases[c].Img.color = Color.white;
+            
+            overlapCasesIndex.Clear();
+            CheckSurroundingCasesOnDragOver(currentIndex);
         }
     }
 
@@ -112,8 +118,8 @@ public class InventoryUIManager : MonoBehaviour
         if (!IsDragging) return;
 
         PointerEventData pointerData = data as PointerEventData;
-        int index = pointerData.pointerEnter.transform.GetSiblingIndex();
-        CheckSurroundingCasesOnDragOver(index);
+        currentIndex = pointerData.pointerEnter.transform.GetSiblingIndex();
+        CheckSurroundingCasesOnDragOver(currentIndex);
         DraggedItem.canDrop = true;
     }
 
@@ -247,6 +253,7 @@ public class InventoryUIManager : MonoBehaviour
         int y = baseCaseIndex / gridWidth;
         int x = baseCaseIndex - (y * gridWidth);
         bool allCaseFree = true;
+    
 
         int startY = y - Mathf.FloorToInt(DraggedItem.ItemSize.y / 2);
         int endY = startY + DraggedItem.ItemSize.y;
@@ -316,7 +323,6 @@ public class InventoryUIManager : MonoBehaviour
         if (DraggedItem != null)
         {
             bool allCaseFree = true;
-            Debug.Log("OverlapCasesIndex Size : " + overlapCasesIndex.Count);
             foreach (int c in overlapCasesIndex)
             {
                 if (listCases[c].Occupied || listCases[c].Img.color == Color.red)

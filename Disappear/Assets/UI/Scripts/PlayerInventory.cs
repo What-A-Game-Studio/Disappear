@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using WaG;
 using WaG.Input_System.Scripts;
 
 public class PlayerInventory : MonoBehaviour
@@ -19,8 +21,12 @@ public class PlayerInventory : MonoBehaviour
     private static readonly int Close = Animator.StringToHash("Close");
     private static readonly int Open = Animator.StringToHash("Open");
 
+    private float currentWeight;
+    private float maxWeight = 50f;
+
     public void Init(GameObject gameUI, GameObject playerGO)
     {
+        currentWeight = 0;
         uiGO = Instantiate(gameUI, transform);
         player = playerGO;
         if (!uiGO.TryGetComponent(out inventoryAnimation))
@@ -39,7 +45,7 @@ public class PlayerInventory : MonoBehaviour
         InputManager.Instance.AddCallbackAction(ActionsControls.CloseInventory, CloseInventory);
         InputManager.Instance.AddCallbackAction(ActionsControls.Use, ActivateCurrentUsable);
     }
-    
+
 
     private void ActivateCurrentUsable(InputAction.CallbackContext context)
     {
@@ -94,11 +100,15 @@ public class PlayerInventory : MonoBehaviour
         {
             if (!inventoryUI.StockNewItem(item)) return false;
             itemsInInventory.Add(item);
+            currentWeight += item.ItemData.Weight;
+            UpdatePlayerWeight();
             return true;
         }
 
         inventoryUI.StockNewUsable(item, out ItemController previousItem);
         itemsInInventory.Add(item);
+        currentWeight += item.ItemData.Weight;
+        UpdatePlayerWeight();
         currentUsableGO = ItemManager.Instance.GetUsable(item);
         currentUsableGO = Instantiate(currentUsableGO, usableAnchor.position, Quaternion.identity, usableAnchor);
         if (!currentUsableGO.TryGetComponent(out currentUsable))
@@ -108,6 +118,7 @@ public class PlayerInventory : MonoBehaviour
 
         if (previousItem != null)
             DropItem(previousItem);
+
         return true;
     }
 
@@ -119,5 +130,22 @@ public class PlayerInventory : MonoBehaviour
     {
         ItemManager.Instance.DropItem(item);
         itemsInInventory.Remove(item);
+        currentWeight -= item.ItemData.Weight;
+        UpdatePlayerWeight();
+    }
+
+    /// <summary>
+    /// Verify player weight when the inventory is updated
+    /// </summary>
+    private void UpdatePlayerWeight()
+    {
+        if (currentWeight > maxWeight * 0.75f)
+            PlayerController.MainPlayer.PlayerWeight = Weight.LargeOverweight;
+        
+        else if (currentWeight > maxWeight * 0.5f)
+            PlayerController.MainPlayer.PlayerWeight = Weight.LigthOverweight;
+        
+        else
+            PlayerController.MainPlayer.PlayerWeight = Weight.Normal;
     }
 }
