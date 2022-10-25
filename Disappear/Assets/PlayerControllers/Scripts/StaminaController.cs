@@ -27,7 +27,9 @@ namespace WaG
 
         private void Update()
         {
-            if (InputManager.Instance.Run)
+            
+            
+            if (InputManager.Instance.Run && InputManager.Instance.Move != Vector2.zero)
             {
                 currentStamina -= Time.deltaTime;
                 if (currentStamina <= 0)
