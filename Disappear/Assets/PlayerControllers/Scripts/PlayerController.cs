@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
+using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 using WaG.Input_System.Scripts;
 
@@ -10,25 +11,21 @@ using WaG.Input_System.Scripts;
 )]
 public class PlayerController : MonoBehaviour
 {
+    private ModelInfos modelInfos;
     public static PlayerController MainPlayer { get; private set; }
 
     private Rigidbody rb;
 
     private Animator animator;
     private Vector3 currentVelocity;
-    private float xRotation;
     private float teamSpeedModifier = 0;
     private PlayerAnimationController pac;
 
     public CrouchController CrouchController { get; private set; }
     public PlayerInventory PlayerInventory { get; private set; }
     public PhotonView Pv { get; private set; }
+    private CameraController cameraController;
 
-    [Header("Camera")] [SerializeField] private Transform cameraRig;
-    [SerializeField] private Transform cam;
-    [SerializeField] private float mouseSensitivity = 22f;
-    [SerializeField] private float upperLimit = -40f;
-    [SerializeField] private float bottomLimit = 70f;
 
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
@@ -38,13 +35,15 @@ public class PlayerController : MonoBehaviour
     private bool rpcGrounded;
     public bool Grounded => Pv.IsMine ? grounded : rpcGrounded;
 
-    [Header("Jump")] [SerializeField] [Range(100, 1000)]
+    [Header("Jump")] 
+    [SerializeField] [Range(100, 1000)]
     private float jumpFactor = 260f;
 
     [SerializeField] private float airResistance = 0.8f;
     [SerializeField] private LayerMask groundCheck;
 
-    [Header("Others")] [SerializeField] private float animBlendSpeed = 8.9f;
+    [Header("Others")] 
+    [SerializeField] private float animBlendSpeed = 8.9f;
     [SerializeField] private float dis2Ground = 0.8f;
 
     [Header("OpenInventory")] [SerializeField]
@@ -56,7 +55,6 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 rpcVelocity;
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
-
 
     public bool CanMoveOrRotate { get; set; } = true;
 
@@ -125,9 +123,6 @@ public class PlayerController : MonoBehaviour
     {
         if (!Pv.IsMine)
             return;
-
-        if (CanMoveOrRotate)
-            CameraMovement();
     }
 
     #endregion Unity Events
@@ -139,14 +134,16 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), Pv, ref cameraRig);
+        modelInfos = tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), Pv);
+        
     }
 
     private void Init()
     {
         MainPlayer = this;
-        cam = Camera.main.transform;
-        cam.parent = transform;
+        cameraController = gameObject.AddComponent<CameraController>();
+        cameraController.CameraRig = modelInfos.CameraRig;
+        
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
         
@@ -161,7 +158,6 @@ public class PlayerController : MonoBehaviour
         InputManager.Instance.AddCallbackAction(
             ActionsControls.Interact,
             (context) => HandleInteract() );
-        cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
     }
 
     private void HideCursor()
@@ -215,26 +211,7 @@ public class PlayerController : MonoBehaviour
                 ForceMode.VelocityChange);
         }
     }
-
-    private void CameraMovement()
-    {
-        if (!cam)
-            return;
-
-        float mouseX = InputManager.Instance.Look.x;
-        float mouseY = InputManager.Instance.Look.y;
-
-
-        cam.position = cameraRig.position;
-        xRotation -= mouseY * mouseSensitivity * Time.smoothDeltaTime;
-        xRotation = Mathf.Clamp(xRotation, upperLimit, bottomLimit);
-        //Up & down vision 
-        cam.localRotation = Quaternion.Euler(xRotation, 0, 0);
-
-
-        rb.MoveRotation(rb.rotation * (Quaternion.Euler(0, mouseX * mouseSensitivity * Time.fixedDeltaTime, 0)));
-    }
-
+    
     private void HandleJump()
     {
         if (!InputManager.Instance.Jump)

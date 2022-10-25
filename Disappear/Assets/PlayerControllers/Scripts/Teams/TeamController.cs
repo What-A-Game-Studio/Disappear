@@ -29,14 +29,14 @@ public class TeamController : MonoBehaviour
         }
     }
 
-    public void SetTeamData(bool isSeeker, PhotonView photonView, ref Transform cameraRig)
+    public ModelInfos SetTeamData(bool isSeeker, PhotonView photonView)
     {
         teamData = isSeeker ? seeker : hider;
         pv = photonView;
 
         SkinnedMeshRenderer[] hiderRenderers;
         DecalProjector hiderShadow;
-        SetModel(out hiderRenderers, out hiderShadow, ref cameraRig);
+        ModelInfos mi = SetModel(out hiderRenderers, out hiderShadow);
         SetPostProcessingVolume();
         SetSpeedModifier();
 
@@ -50,6 +50,8 @@ public class TeamController : MonoBehaviour
         {
             MultiplayerManager.Instance.SetGameTitle("Seeker");
         }
+
+        return mi;
     }
 
 
@@ -64,15 +66,14 @@ public class TeamController : MonoBehaviour
             PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
-    private void SetModel(out SkinnedMeshRenderer[] hiderRenderers,
-        out DecalProjector hiderShadow, ref Transform cameraRig)
+    private ModelInfos SetModel(out SkinnedMeshRenderer[] hiderRenderers,
+        out DecalProjector hiderShadow)
     {
         hiderRenderers = null;
         hiderShadow = null;
 
         // Destroy(meshContainer.GetChild(0).gameObject);
         GameObject go = Instantiate(teamData.Model, meshContainer);
-        cameraRig = go.GetComponent<ModelInfos>().CameraRig;
         SkinnedMeshRenderer[] smr = go.GetComponentsInChildren<SkinnedMeshRenderer>();
 
         for (int i = 0; i < go.transform.childCount; i++)
@@ -100,6 +101,7 @@ public class TeamController : MonoBehaviour
         // go.transform.localPosition = teamData.ModelOffset;
         // FootstepEvent = go.GetComponent<FootstepEvent>();
         // FootstepEvent.Init(meshContainer.GetChild(1));
+        return go.GetComponent<ModelInfos>();
     }
 
     private void SetHider(SkinnedMeshRenderer[] hiderRenderers, DecalProjector hiderShadow)
