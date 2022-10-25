@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     private float xRotation;
     private float teamSpeedModifier = 0;
     private PlayerAnimationController pac;
+
+    public CrouchController CrouchController { get; private set; }
     public PlayerInventory PlayerInventory { get; private set; }
     public PhotonView Pv { get; private set; }
 
@@ -30,9 +32,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
-    [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
-    private bool rpcCrouch;
-    public bool Crouched => Pv.IsMine ? InputManager.Instance.Crouch : rpcCrouch;
+
 
     private bool grounded;
     private bool rpcGrounded;
@@ -71,24 +71,38 @@ public class PlayerController : MonoBehaviour
             Debug.Break();
         }
 
-        rb = GetComponent<Rigidbody>();
+        CrouchController = GetComponent<CrouchController>();
+        if (CrouchController == null)
+        {
+            Debug.LogError("Need crouchController", this);
+            Debug.Break();
+        }
+        if (!TryGetComponent<Rigidbody>(out rb))
+        {
+            Debug.LogError("Need Rigidbody", this);
+            Debug.Break();
+        }
+        rb.freezeRotation = true;
+        
         Pv = GetComponent<PhotonView>();
         if (Pv == null)
-            throw new Exception("PlayerController required PhotonView !");
+        {
+            Debug.LogError("Need PhotonView", this);
+            Debug.Break();
+        }
 
-        rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
 
         InitModel();
         pac = gameObject.AddComponent<PlayerAnimationController>();
         pac.PC = this;
+        
         if (!Pv.IsMine)
             return;
 
         Init();
-        // cam.position = cameraRig.position;
-        // cam.rotation = cameraRig.rotation;
     }
+
+
 
     private void FixedUpdate()
     {
@@ -103,7 +117,6 @@ public class PlayerController : MonoBehaviour
         }
 
         Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, currentVelocity);
-        Pv.RPC(nameof(RPC_Crouch), RpcTarget.All, Crouched);
         Pv.RPC(nameof(RPC_Ground), RpcTarget.All, Grounded);
     }
 
@@ -177,8 +190,8 @@ public class PlayerController : MonoBehaviour
 
         if (InputManager.Instance.Run)
             targetSpeed += targetSpeed * runSpeedFactor;
-        if (Crouched)
-            targetSpeed += targetSpeed * crouchSpeedFactor;
+        if (CrouchController.Crouched)
+            targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
 
         if (grounded)
         {
@@ -261,10 +274,7 @@ public class PlayerController : MonoBehaviour
 
     #region Public
 
-    public void SetCameraRig(Transform cr)
-    {
-        cameraRig = cr;
-    }
+
 
     public void SetTeamSpeedModifier(float teamDataSpeedModifier)
     {
@@ -313,11 +323,7 @@ public class PlayerController : MonoBehaviour
         rpcVelocity = vel;
     }
 
-    [PunRPC]
-    private void RPC_Crouch(bool crouch)
-    {
-        rpcCrouch = crouch;
-    }
+
 
     [PunRPC]
     private void RPC_Ground(bool ground)
