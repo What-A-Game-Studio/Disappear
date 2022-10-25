@@ -12,8 +12,10 @@ namespace WaG
 
         [Header("Stamina Parameters")] [SerializeField]
         private float maxStamina;
-        [SerializeField] private float recoveryCooldown;
 
+        [SerializeField] private float recoveryCooldown;
+        [SerializeField] private float recoveryModifier;
+        [SerializeField] private float consumptionModifier;
         private float currentRecovery;
         private float currentStamina;
         private bool isRecovering;
@@ -27,11 +29,9 @@ namespace WaG
 
         private void Update()
         {
-            
-            
             if (InputManager.Instance.Run && InputManager.Instance.Move != Vector2.zero)
             {
-                currentStamina -= Time.deltaTime;
+                currentStamina -= Time.deltaTime * consumptionModifier;
                 if (currentStamina <= 0)
                     isRecovering = true;
             }
@@ -47,9 +47,7 @@ namespace WaG
                     }
                 }
                 else
-                {
-                    currentStamina += Time.deltaTime;
-                }
+                    currentStamina += Time.deltaTime * recoveryModifier;
             }
 
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);

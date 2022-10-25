@@ -187,3 +187,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStamina: 10
   recoveryCooldown: 2
+  recoveryModifier: 1
+  consumptionModifier: 1
