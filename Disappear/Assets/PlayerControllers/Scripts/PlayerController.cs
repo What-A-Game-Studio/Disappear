@@ -195,18 +195,18 @@ public class PlayerController : MonoBehaviour
         if (Crouched)
             targetSpeed += targetSpeed * crouchSpeedFactor;
         
-        // switch (PlayerWeight)
-        // {
-        //     case Weight.LigthOverweight:
-        //         targetSpeed += targetSpeed * lightOverweightSpeedModifier;
-        //         break;
-        //     case Weight.LargeOverweight:
-        //         targetSpeed += targetSpeed * largeOverweightSpeedModifier;
-        //         break;
-        //     case Weight.Normal:
-        //     default:
-        //         break;
-        // }
+        switch (PlayerWeight)
+        {
+            case Weight.LigthOverweight:
+                targetSpeed += targetSpeed * lightOverweightSpeedModifier;
+                break;
+            case Weight.LargeOverweight:
+                targetSpeed += targetSpeed * largeOverweightSpeedModifier;
+                break;
+            case Weight.Normal:
+            default:
+                break;
+        }
 
         if (grounded)
         {
