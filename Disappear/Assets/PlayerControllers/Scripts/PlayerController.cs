@@ -33,21 +33,20 @@ public class PlayerController : MonoBehaviour
 
     [Header("Weight Modifiers")] [SerializeField]
     private float lightOverweightSpeedModifier;
+
     [SerializeField] private float largeOverweightSpeedModifier;
 
     private bool grounded;
     private bool rpcGrounded;
     public bool Grounded => Pv.IsMine ? grounded : rpcGrounded;
 
-    [Header("Jump")] 
-    [SerializeField] [Range(100, 1000)]
+    [Header("Jump")] [SerializeField] [Range(100, 1000)]
     private float jumpFactor = 260f;
 
     [SerializeField] private float airResistance = 0.8f;
     [SerializeField] private LayerMask groundCheck;
 
-    [Header("Others")] 
-    [SerializeField] private float animBlendSpeed = 8.9f;
+    [Header("Others")] [SerializeField] private float animBlendSpeed = 8.9f;
     [SerializeField] private float dis2Ground = 0.8f;
 
     [Header("OpenInventory")] [SerializeField]
@@ -59,9 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 rpcVelocity;
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
-
     public Weight PlayerWeight { private get; set; }
-
     public bool CanMoveOrRotate { get; set; } = true;
 
     #region Unity Events
@@ -81,13 +78,15 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("Need crouchController", this);
             Debug.Break();
         }
+
         if (!TryGetComponent<Rigidbody>(out rb))
         {
             Debug.LogError("Need Rigidbody", this);
             Debug.Break();
         }
+
         rb.freezeRotation = true;
-        
+
         Pv = GetComponent<PhotonView>();
         stamina = GetComponent<StaminaController>();
 
@@ -101,13 +100,12 @@ public class PlayerController : MonoBehaviour
         InitModel();
         pac = gameObject.AddComponent<PlayerAnimationController>();
         pac.PC = this;
-        
+
         if (!Pv.IsMine)
             return;
 
         Init();
     }
-
 
 
     private void FixedUpdate()
@@ -143,7 +141,6 @@ public class PlayerController : MonoBehaviour
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
         modelInfos = tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), Pv);
-        
     }
 
     private void Init()
@@ -151,7 +148,7 @@ public class PlayerController : MonoBehaviour
         MainPlayer = this;
         cameraController = gameObject.AddComponent<CameraController>();
         cameraController.CameraRig = modelInfos.CameraRig;
-        
+
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
 
@@ -165,7 +162,7 @@ public class PlayerController : MonoBehaviour
         );
         InputManager.Instance.AddCallbackAction(
             ActionsControls.Interact,
-            (context) => HandleInteract() );
+            (context) => HandleInteract());
     }
 
     private void HideCursor()
@@ -190,13 +187,15 @@ public class PlayerController : MonoBehaviour
         float targetSpeed = walkSpeed;
 
         if (InputManager.Instance.Move == Vector2.zero)
+        {
             targetSpeed = 0f;
+        }
 
         if (InputManager.Instance.Run && stamina.CanRun)
         {
             targetSpeed += targetSpeed * runSpeedFactor;
         }
-       
+
         switch (PlayerWeight)
         {
             case Weight.LigthOverweight:
@@ -209,6 +208,7 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+
         if (CrouchController.Crouched)
             targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
 
@@ -220,10 +220,9 @@ public class PlayerController : MonoBehaviour
             currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                 targetSpeed * InputManager.Instance.Move.y,
                 animBlendSpeed * Time.fixedDeltaTime);
-
+            currentVelocity.y = 0;
             float xVelDiff = currentVelocity.x - rb.velocity.x;
             float zVelDiff = currentVelocity.z - rb.velocity.z;
-
             rb.AddForce(transform.TransformVector(new Vector3(xVelDiff, 0, zVelDiff)),
                 ForceMode.VelocityChange);
         }
@@ -234,7 +233,7 @@ public class PlayerController : MonoBehaviour
                 ForceMode.VelocityChange);
         }
     }
-    
+
     private void HandleJump()
     {
         if (!InputManager.Instance.Jump)
@@ -273,8 +272,6 @@ public class PlayerController : MonoBehaviour
     #endregion Private
 
     #region Public
-
-
 
     public void SetTeamSpeedModifier(float teamDataSpeedModifier)
     {
@@ -322,7 +319,6 @@ public class PlayerController : MonoBehaviour
     {
         rpcVelocity = vel;
     }
-
 
 
     [PunRPC]

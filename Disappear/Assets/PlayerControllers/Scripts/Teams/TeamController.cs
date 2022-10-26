@@ -5,10 +5,19 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 public class TeamController : MonoBehaviour
-{
-    [SerializeField] private TeamData seeker;
-    [SerializeField] private TeamData hider;
+{   
     [SerializeField] private Transform meshContainer;
+
+    [Header("Seeker Parameters")]
+    [SerializeField] private TeamData seeker;
+    
+    [Header("Hider Parameters")]
+    [SerializeField] private TeamData hider;
+
+    [SerializeField] private int hiderLife;
+    [SerializeField] private float hiderTransparencySpeed;
+    [SerializeField] private float hiderTransparencyThreshold;
+    
     private PhotonView pv;
     private TeamData teamData;
 
@@ -107,7 +116,7 @@ public class TeamController : MonoBehaviour
     private void SetHider(SkinnedMeshRenderer[] hiderRenderers, DecalProjector hiderShadow)
     {
         HiderController hc = transform.AddComponent<HiderController>();
-        hc.Init(3, 7f, 0.2f);
+        hc.Init(hiderLife, hiderTransparencySpeed, hiderTransparencyThreshold);
         hc.SetMaterials(hiderRenderers, hiderShadow);
     }
 }
