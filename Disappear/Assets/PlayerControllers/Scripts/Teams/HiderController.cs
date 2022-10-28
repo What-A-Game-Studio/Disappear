@@ -6,13 +6,13 @@ using UnityEngine.Rendering.Universal;
 public class HiderController : Interactable
 {
     [SerializeField] private int HiderLife;
+    [SerializeField] private float transparencyThreshold;
 
     public PlayerController pc { get; private set; }
     private List<Material> hiderMaterial = new List<Material>();
     private DecalProjector shadowProjector;
     private float shadowOpacity;
-    private float transparencyThreshold;
-    private float maxVelocity;
+    private float maxRefractionSpeed;
     private float transparencyPercentage;
     private float oldTransparency = 0;
     private static readonly int Opacity = Shader.PropertyToID("_Opacity");
@@ -28,10 +28,10 @@ public class HiderController : Interactable
         pc = GetComponent<PlayerController>();
     }
 
-    public void Init(int maxLife, float maxSpeed, float threshold)
+    public void Init(int maxLife, float hiderMaxRefractionSpeed, float threshold)
     {
         HiderLife = maxLife;
-        maxVelocity = maxSpeed;
+        this.maxRefractionSpeed = hiderMaxRefractionSpeed;
         transparencyThreshold = threshold;
     }
 
@@ -48,15 +48,14 @@ public class HiderController : Interactable
 
     private void Update()
     {
-        transparencyPercentage = Mathf.Floor(10 * pc.PlayerVelocity.magnitude / maxVelocity) / 10.0f;
-        if (Mathf.Abs(transparencyPercentage - oldTransparency) > transparencyThreshold)
-        {
-            float currentTransparency = Mathf.Clamp(1 - transparencyPercentage, 0, 1);
-            foreach (Material mat in hiderMaterial)
-                mat.SetFloat(Opacity, currentTransparency);
-            shadowProjector.fadeFactor = currentTransparency;
-            oldTransparency = transparencyPercentage;
-        }
+        transparencyPercentage = Mathf.Floor(10 * pc.PlayerVelocity.magnitude / maxRefractionSpeed) / 10.0f;
+
+        if (!(Mathf.Abs(transparencyPercentage - oldTransparency) > transparencyThreshold)) return;
+        float currentTransparency = Mathf.Clamp(1 - transparencyPercentage, 0, 1);
+        foreach (Material mat in hiderMaterial)
+            mat.SetFloat(Opacity, currentTransparency);
+        shadowProjector.fadeFactor = currentTransparency;
+        oldTransparency = transparencyPercentage;
     }
 
     protected override void ActionOnInteract(GameObject sender)

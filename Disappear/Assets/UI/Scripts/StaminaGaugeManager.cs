@@ -84,8 +84,6 @@ namespace WaG
         /// <returns></returns>
         private IEnumerator FadeInGauge()
         {
-            Debug.Log("Hello me too");
-
             backgroundStaminaColor = backgroundStaminaGauge.color;
             currentStaminaColor = currentStaminaGauge.color;
             while (backgroundStaminaGauge.color.a < maxAlpha && currentStaminaGauge.color.a < maxAlpha)

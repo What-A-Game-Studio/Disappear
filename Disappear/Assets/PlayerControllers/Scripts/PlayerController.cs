@@ -59,8 +59,8 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
     public float? TemporarySpeedModifier { get; set; } = null;
-    public Weight PlayerWeight { private get; set; }
 
+    public Weight PlayerWeight { private get; set; }
     public bool CanMoveOrRotate { get; set; } = true;
 
     #region Unity Events
@@ -102,6 +102,7 @@ public class PlayerController : MonoBehaviour
         InitModel();
         Pac = gameObject.AddComponent<PlayerAnimationController>();
         Pac.PC = this;
+
 
         if (!Pv.IsMine)
             return;
@@ -189,7 +190,9 @@ public class PlayerController : MonoBehaviour
         targetSpeed = walkSpeed;
 
         if (InputManager.Instance.Move == Vector2.zero)
+        {
             targetSpeed = 0f;
+        }
 
         if (InputManager.Instance.Run && stamina.CanRun)
         {
@@ -225,10 +228,9 @@ public class PlayerController : MonoBehaviour
             currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                 targetSpeed * InputManager.Instance.Move.y,
                 animBlendSpeed * Time.fixedDeltaTime);
-
+            currentVelocity.y = 0;
             float xVelDiff = currentVelocity.x - rb.velocity.x;
             float zVelDiff = currentVelocity.z - rb.velocity.z;
-
             rb.AddForce(transform.TransformVector(new Vector3(xVelDiff, 0, zVelDiff)),
                 ForceMode.VelocityChange);
         }
