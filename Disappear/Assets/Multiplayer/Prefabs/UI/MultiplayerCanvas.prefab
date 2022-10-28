@@ -5003,7 +5003,7 @@ MonoBehaviour:
   playerListItemPrefab: {fileID: 6461544811104178666, guid: d7353617a4d61f54288a2c22279ef09b,
     type: 3}
   StartGameBtn: {fileID: 860092892}
-  rulesBtn: {fileID: 0}
+  dm: {fileID: 9087019541751706595}
 --- !u!1 &1767506390117442172
 GameObject:
   m_ObjectHideFlags: 0
@@ -6464,7 +6464,7 @@ GameObject:
   - component: {fileID: 1808635956671777957}
   - component: {fileID: 9087019541751706595}
   m_Layer: 5
-  m_Name: DebugPanel
+  m_Name: ===DEBUG=== A SUPPR A LA FIN
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -4,21 +4,20 @@ public class DebuggerManager : MonoBehaviour
 {
     public static DebuggerManager Instance { get; set; }
     public bool UnlimitedStamina;
-    
-    private void Awake()
+
+
+    public void Init()
     {
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
-        
-        DontDestroyOnLoad(gameObject);
+
+        UnlimitedStamina = false;
     }
 
     public void SetInfiniteStamina(bool stamina)
     {
         UnlimitedStamina = stamina;
     }
-    
-    
 }
