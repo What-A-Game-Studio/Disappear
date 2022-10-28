@@ -75,14 +75,6 @@ public class PlayerInteraction : MonoBehaviour
             interactableObject = null;
         }
 
-        camRay = new Ray(cam.position, cam.forward);
-        if (isSeeker && InputManager.Instance.Catch && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
-        {
-            if (hit.collider.TryGetComponent(out Interactable interactableHider))
-            {
-                interactableHider.onInteract?.Invoke(player);
-            }
-        }
     }
 
     void OnDrawGizmos()

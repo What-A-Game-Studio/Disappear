@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WaG.Input_System.Scripts;
@@ -18,7 +19,6 @@ public class InputManager : MonoBehaviour
     public bool Run { get; private set; }
     public bool Jump { get; private set; }
     public bool Crouch { get; private set; }
-    public bool Catch { get; private set; }
     public bool Use { get; private set; }
 
     private InputAction moveAction;
@@ -27,7 +27,6 @@ public class InputManager : MonoBehaviour
     private InputAction jumpAction;
     private InputAction couchAction;
     private InputAction openInventoryAction;
-    private InputAction catchAction;
     private InputAction useAction;
 
     #endregion In Game Controls
@@ -36,7 +35,7 @@ public class InputManager : MonoBehaviour
 
     public bool Discard { get; private set; }
     public bool Rotate { get; private set; }
-    
+
     private InputAction discardAction;
     private InputAction rotateAction;
     private InputAction closeInventoryAction;
@@ -60,17 +59,16 @@ public class InputManager : MonoBehaviour
             Debug.LogError("PlayerInput required", this);
             Debug.Break();
         }
-        
+
         playerInput.SwitchCurrentActionMap("Player");
         InGameMap = playerInput.currentActionMap;
-        
+
         moveAction = playerInput.actions[ActionsControls.Move.ToString()];
         lookAction = playerInput.actions[ActionsControls.Look.ToString()];
         runAction = playerInput.actions[ActionsControls.Run.ToString()];
         jumpAction = playerInput.actions[ActionsControls.Jump.ToString()];
         couchAction = playerInput.actions[ActionsControls.Crouch.ToString()];
         openInventoryAction = playerInput.actions[ActionsControls.OpenInventory.ToString()];
-        catchAction = playerInput.actions[ActionsControls.Catch.ToString()];
         useAction = playerInput.actions[ActionsControls.Use.ToString()];
         discardAction = playerInput.actions[ActionsControls.Discard.ToString()];
         rotateAction = playerInput.actions[ActionsControls.Rotate.ToString()];
@@ -82,7 +80,6 @@ public class InputManager : MonoBehaviour
         jumpAction.performed += OnJump;
         couchAction.performed += OnCrouch;
         openInventoryAction.performed += OnOpenInventory;
-        catchAction.performed += OnCatch;
         useAction.performed += OnUse;
         discardAction.performed += OnDiscard;
         rotateAction.performed += OnRotate;
@@ -94,16 +91,14 @@ public class InputManager : MonoBehaviour
         jumpAction.canceled += OnJump;
         couchAction.canceled += OnCrouch;
         openInventoryAction.canceled += OnOpenInventory;
-        catchAction.canceled += OnCatch;
         useAction.canceled += OnUse;
         discardAction.canceled += OnDiscard;
         rotateAction.canceled += OnRotate;
         closeInventoryAction.canceled += OnCloseInventory;
-
     }
 
     #region Private Callback Methods
-    
+
     private void OnEnable()
     {
         InGameMap.Enable();
@@ -143,17 +138,12 @@ public class InputManager : MonoBehaviour
     {
         playerInput.SwitchCurrentActionMap("UI");
     }
-    
+
     private void OnCloseInventory(InputAction.CallbackContext context)
     {
         playerInput.SwitchCurrentActionMap("Player");
     }
-    
-    private void OnCatch(InputAction.CallbackContext context)
-    {
-        Catch = context.ReadValueAsButton();
-    }
-    
+
     private void OnUse(InputAction.CallbackContext context)
     {
         Use = context.ReadValueAsButton();
@@ -163,23 +153,37 @@ public class InputManager : MonoBehaviour
     {
         Discard = context.ReadValueAsButton();
     }
-    
+
     private void OnRotate(InputAction.CallbackContext context)
     {
         Rotate = context.ReadValueAsButton();
     }
-    
+
     #endregion Private Callback Methods
 
     #region Public Methods
-
-    public void AddCallbackAction(ActionsControls actionControl, Action<InputAction.CallbackContext> callback)
+    /// <summary>
+    /// Add event on specific events
+    /// </summary>
+    /// <param name="actionControl">Event to add events</param>
+    /// <param name="performed">
+    /// Event that is triggered when the action has been <see cref="started"/>
+    /// but then canceled before being fully <see cref="performed"/>.
+    /// </param>
+    /// <param name="started"> Event that is triggered when the action has been started.</param>
+    /// <param name="canceled">Event that is triggered when the action has been fully performed.</param>
+    public void AddCallbackAction(ActionsControls actionControl,
+        Action<InputAction.CallbackContext> performed,
+        Action<InputAction.CallbackContext> started = null,
+        Action<InputAction.CallbackContext> canceled = null)
     {
-        playerInput.actions[actionControl.ToString()].performed += callback;
-        // playerInput.actions[actionControl.ToString()].canceled += callback;
+        if(started != null)
+            playerInput.actions[actionControl.ToString()].started += started;
+        if(performed != null)
+            playerInput.actions[actionControl.ToString()].performed += performed;
+        if (canceled != null)
+            playerInput.actions[actionControl.ToString()].canceled += canceled;
     }
-    
 
     #endregion Public Methods
-    
 }

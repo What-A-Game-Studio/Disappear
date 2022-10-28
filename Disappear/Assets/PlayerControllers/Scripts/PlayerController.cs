@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Vector3 currentVelocity;
     private float teamSpeedModifier = 0;
-    private PlayerAnimationController pac;
+    public PlayerAnimationController Pac { get; private set; }
 
     public CrouchController CrouchController { get; private set; }
     public PlayerInventory PlayerInventory { get; private set; }
@@ -29,25 +29,23 @@ public class PlayerController : MonoBehaviour
 
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
-    [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
 
     [Header("Weight Modifiers")] [SerializeField]
     private float lightOverweightSpeedModifier;
+
     [SerializeField] private float largeOverweightSpeedModifier;
 
     private bool grounded;
     private bool rpcGrounded;
     public bool Grounded => Pv.IsMine ? grounded : rpcGrounded;
 
-    [Header("Jump")] 
-    [SerializeField] [Range(100, 1000)]
+    [Header("Jump")] [SerializeField] [Range(100, 1000)]
     private float jumpFactor = 260f;
 
     [SerializeField] private float airResistance = 0.8f;
     [SerializeField] private LayerMask groundCheck;
 
-    [Header("Others")] 
-    [SerializeField] private float animBlendSpeed = 8.9f;
+    [Header("Others")] [SerializeField] private float animBlendSpeed = 8.9f;
     [SerializeField] private float dis2Ground = 0.8f;
 
     [Header("OpenInventory")] [SerializeField]
@@ -58,8 +56,9 @@ public class PlayerController : MonoBehaviour
     public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
 
     private Vector3 rpcVelocity;
-    public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
 
+    public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
+    public float? TemporarySpeedModifier { get; set; } = null;
     public Weight PlayerWeight { private get; set; }
 
     public bool CanMoveOrRotate { get; set; } = true;
@@ -81,16 +80,18 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("Need crouchController", this);
             Debug.Break();
         }
+
         if (!TryGetComponent<Rigidbody>(out rb))
         {
             Debug.LogError("Need Rigidbody", this);
             Debug.Break();
         }
+
         rb.freezeRotation = true;
-        
-        Pv = GetComponent<PhotonView>();
+
         stamina = GetComponent<StaminaController>();
 
+        Pv = GetComponent<PhotonView>();
         if (Pv == null)
         {
             Debug.LogError("Need PhotonView", this);
@@ -99,16 +100,14 @@ public class PlayerController : MonoBehaviour
 
 
         InitModel();
-        pac = gameObject.AddComponent<PlayerAnimationController>();
-        pac.PC = this;
-        
+        Pac = gameObject.AddComponent<PlayerAnimationController>();
+        Pac.PC = this;
+
         if (!Pv.IsMine)
             return;
 
         Init();
     }
-
-
 
     private void FixedUpdate()
     {
@@ -143,7 +142,6 @@ public class PlayerController : MonoBehaviour
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
         modelInfos = tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), Pv);
-        
     }
 
     private void Init()
@@ -151,7 +149,7 @@ public class PlayerController : MonoBehaviour
         MainPlayer = this;
         cameraController = gameObject.AddComponent<CameraController>();
         cameraController.CameraRig = modelInfos.CameraRig;
-        
+
         PlayerInventory = gameObject.AddComponent<PlayerInventory>();
         PlayerInventory.Init(gameUI, gameObject);
 
@@ -165,7 +163,7 @@ public class PlayerController : MonoBehaviour
         );
         InputManager.Instance.AddCallbackAction(
             ActionsControls.Interact,
-            (context) => HandleInteract() );
+            (context) => HandleInteract());
     }
 
     private void HideCursor()
@@ -185,9 +183,10 @@ public class PlayerController : MonoBehaviour
         Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
     }
 
+    private float targetSpeed;
     private void Move()
     {
-        float targetSpeed = walkSpeed;
+        targetSpeed = walkSpeed;
 
         if (InputManager.Instance.Move == Vector2.zero)
             targetSpeed = 0f;
@@ -196,7 +195,12 @@ public class PlayerController : MonoBehaviour
         {
             targetSpeed += targetSpeed * runSpeedFactor;
         }
-       
+
+        if (TemporarySpeedModifier.HasValue)
+        {
+            targetSpeed += targetSpeed * TemporarySpeedModifier.Value;
+        }
+
         switch (PlayerWeight)
         {
             case Weight.LigthOverweight:
@@ -209,6 +213,7 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+
         if (CrouchController.Crouched)
             targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
 
@@ -234,7 +239,7 @@ public class PlayerController : MonoBehaviour
                 ForceMode.VelocityChange);
         }
     }
-    
+
     private void HandleJump()
     {
         if (!InputManager.Instance.Jump)
@@ -255,7 +260,9 @@ public class PlayerController : MonoBehaviour
         animator.ResetTrigger(PlayerAnimationController.JumpHash);
     }
 
-
+    /// <summary>
+    /// Check if player is on ground
+    /// </summary>
     private void SampleGround()
     {
         grounded = Physics.Raycast(
@@ -274,13 +281,19 @@ public class PlayerController : MonoBehaviour
 
     #region Public
 
-
-
+    /// <summary>
+    /// Set Speed by team
+    /// </summary>
+    /// <param name="teamDataSpeedModifier"></param>
     public void SetTeamSpeedModifier(float teamDataSpeedModifier)
     {
         teamSpeedModifier = teamDataSpeedModifier;
     }
 
+    /// <summary>
+    /// If the player controller is mine
+    /// </summary>
+    /// <returns></returns>
     public bool IsMine()
     {
         return Pv.IsMine;
@@ -290,6 +303,8 @@ public class PlayerController : MonoBehaviour
     {
         Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
     }
+
+
 
     #endregion Public
 
@@ -324,7 +339,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
     [PunRPC]
     private void RPC_Ground(bool ground)
     {
@@ -340,7 +354,7 @@ public class PlayerController : MonoBehaviour
     [PunRPC]
     private void RPC_Interact()
     {
-        pac.InteractTrigger();
+        Pac.InteractTrigger();
     }
 
     #endregion RPC

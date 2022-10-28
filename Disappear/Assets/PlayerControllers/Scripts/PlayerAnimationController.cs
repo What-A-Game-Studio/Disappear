@@ -10,6 +10,8 @@ public class PlayerAnimationController : MonoBehaviour
     public static readonly int CrouchHash = Animator.StringToHash("Crouch");
     public static readonly int InventoryHash = Animator.StringToHash("Inventory");
     public static readonly int Interact = Animator.StringToHash("Interact");
+    public static readonly int Attack = Animator.StringToHash("Attack");
+    public static readonly int Attacking = Animator.StringToHash("Attacking");
     private Animator animator;
 
     public PlayerController PC { private get; set; }
@@ -43,5 +45,14 @@ public class PlayerAnimationController : MonoBehaviour
     {
         animator.SetTrigger(PlayerAnimationController.Interact);
     }
+    public void Trigger(int animatorHash)
+    {
+        animator.SetTrigger(animatorHash);
+    }
+    public void ResetTrigger(int animatorHash)
+    {
+        animator.ResetTrigger(animatorHash);
+    }
     
+
 }

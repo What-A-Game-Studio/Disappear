@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1236024972}
   - component: {fileID: 8581994166390946275}
   - component: {fileID: 3450989531408886490}
-  m_Layer: 8
+  m_Layer: 3
   m_Name: PlayerController
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -33,7 +33,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6044308510027733539}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -6.04, y: 0.28, z: 12.155}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -104,7 +104,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 2
   runSpeedFactor: 1
-  crouchSpeedFactor: -0.5
   lightOverweightSpeedModifier: 0
   largeOverweightSpeedModifier: 0
   jumpFactor: 200
