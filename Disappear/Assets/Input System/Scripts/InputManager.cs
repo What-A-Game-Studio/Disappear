@@ -20,6 +20,8 @@ public class InputManager : MonoBehaviour
     public bool Jump { get; private set; }
     public bool Crouch { get; private set; }
     public bool Use { get; private set; }
+    public bool OpenMenu { get; private set; }
+
 
     private InputAction moveAction;
     private InputAction lookAction;
@@ -28,10 +30,11 @@ public class InputManager : MonoBehaviour
     private InputAction couchAction;
     private InputAction openInventoryAction;
     private InputAction useAction;
+    private InputAction openMenuAction;
 
     #endregion In Game Controls
 
-    #region UI Controls
+    #region Inventory Controls
 
     public bool Discard { get; private set; }
     public bool Rotate { get; private set; }
@@ -40,9 +43,16 @@ public class InputManager : MonoBehaviour
     private InputAction rotateAction;
     private InputAction closeInventoryAction;
 
+    #endregion Inventory Controls
+
+    #region UI Controls
+
+    public bool CloseMenu { get; private set; }
+
+    private InputAction closeMenuAction;
+
     #endregion UI Controls
-
-
+    
     private void Awake()
     {
         if (InputManager.Instance != null)
@@ -70,6 +80,9 @@ public class InputManager : MonoBehaviour
         couchAction = playerInput.actions[ActionsControls.Crouch.ToString()];
         openInventoryAction = playerInput.actions[ActionsControls.OpenInventory.ToString()];
         useAction = playerInput.actions[ActionsControls.Use.ToString()];
+        openMenuAction = playerInput.actions[ActionsControls.OpenMenu.ToString()];
+        closeMenuAction = playerInput.actions[ActionsControls.CloseMenu.ToString()];
+
         discardAction = playerInput.actions[ActionsControls.Discard.ToString()];
         rotateAction = playerInput.actions[ActionsControls.Rotate.ToString()];
         closeInventoryAction = playerInput.actions[ActionsControls.CloseInventory.ToString()];
@@ -81,6 +94,8 @@ public class InputManager : MonoBehaviour
         couchAction.performed += OnCrouch;
         openInventoryAction.performed += OnOpenInventory;
         useAction.performed += OnUse;
+        openMenuAction.performed += OnOpenMenu;
+        closeMenuAction.performed += OnCloseMenu;
         discardAction.performed += OnDiscard;
         rotateAction.performed += OnRotate;
         closeInventoryAction.performed += OnCloseInventory;
@@ -92,6 +107,8 @@ public class InputManager : MonoBehaviour
         couchAction.canceled += OnCrouch;
         openInventoryAction.canceled += OnOpenInventory;
         useAction.canceled += OnUse;
+        openMenuAction.canceled += OnOpenMenu;
+        closeMenuAction.canceled += OnCloseMenu;
         discardAction.canceled += OnDiscard;
         rotateAction.canceled += OnRotate;
         closeInventoryAction.canceled += OnCloseInventory;
@@ -106,7 +123,7 @@ public class InputManager : MonoBehaviour
 
     private void OnDisable()
     {
-        InGameMap.Disable();
+        InGameMap?.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -136,7 +153,7 @@ public class InputManager : MonoBehaviour
 
     private void OnOpenInventory(InputAction.CallbackContext context)
     {
-        playerInput.SwitchCurrentActionMap("UI");
+        playerInput.SwitchCurrentActionMap("Inventory");
     }
 
     private void OnCloseInventory(InputAction.CallbackContext context)
@@ -144,6 +161,22 @@ public class InputManager : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Player");
     }
 
+
+    private void OnCatch(InputAction.CallbackContext context)
+    {
+        Catch = context.ReadValueAsButton();
+    }
+
+    private void OnOpenMenu(InputAction.CallbackContext context)
+    {
+        playerInput.SwitchCurrentActionMap("UI");
+    }
+
+    private void OnCloseMenu(InputAction.CallbackContext context)
+    {
+        playerInput.SwitchCurrentActionMap("Player");
+    }
+    
     private void OnUse(InputAction.CallbackContext context)
     {
         Use = context.ReadValueAsButton();

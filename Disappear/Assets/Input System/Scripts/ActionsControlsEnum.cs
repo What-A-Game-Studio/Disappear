@@ -12,9 +12,9 @@ namespace WaG.Input_System.Scripts
         Interact,
         Catch,
         Use,
+        OpenMenu,
+        CloseMenu,
         Discard,
-        LeftMouse,
-        ReleaseLeftMouse,
         Rotate,
     }
 }

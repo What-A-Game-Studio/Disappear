@@ -12,39 +12,36 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
-
     public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
     public static MultiplayerManager Instance { get; set; }
-    [SerializeField] private MenuType defaultMenu = MenuType.Loading;
 
-    [Header("Inputs")]
-    [SerializeField]
-    TMP_InputField roomNameInput;
+    [field: Header("Multiplayer Base Parameters")]
+    [field: SerializeField]
+    public int MaxSeekers { get; private set; }
 
-    [Header("Text")]
-    [SerializeField]
-    TMP_Text titleText;
+    [field: SerializeField] public int MaxHiders { get; private set; }
+    public int CurrentSeekers { get; private set; }
+    public int CurrentHiders { get; private set; }
+    private int maxPlayers;
+    
+    [Space(10)] [SerializeField] private MenuType defaultMenu = MenuType.Loading;
 
-    [SerializeField]
-    TMP_Text errorText;
-    [SerializeField]
-    TMP_Text roomNameText;
+    [Header("Inputs")] [SerializeField] TMP_InputField roomNameInput;
 
-    [Header("Containers / Entities")]
-    [SerializeField]
+    [Header("Text")] [SerializeField] TMP_Text titleText;
+
+    [SerializeField] TMP_Text errorText;
+    [SerializeField] TMP_Text roomNameText;
+
+    [Header("Containers / Entities")] [SerializeField]
     Transform roomListContent;
-    [SerializeField]
-    GameObject roomListItemPrefab;
-    [SerializeField]
-    Transform playerListContent;
-    [SerializeField]
-    GameObject playerListItemPrefab;
 
-    [Header("Button")]
-    [SerializeField]
-    GameObject StartGameBtn;
-    [SerializeField]
-    GameObject rulesBtn;
+    [SerializeField] GameObject roomListItemPrefab;
+    [SerializeField] Transform seekerListContent;
+    [SerializeField] Transform hiderListContent;
+    [SerializeField] GameObject playerListItemPrefab;
+
+    [Header("Button")] [SerializeField] GameObject StartGameBtn;
 
     List<RoomInfo> roomList = new List<RoomInfo>();
 
@@ -59,27 +56,31 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             Destroy(gameObject);
             return;
         }
-        DontDestroyOnLoad(gameObject);
 
+        DontDestroyOnLoad(gameObject);
+        maxPlayers = MaxHiders + MaxSeekers;
     }
+
     void Start()
     {
-        if(defaultMenu != MenuType.None)
+        if (defaultMenu != MenuType.None)
             MenuManager.Instance.OpenMenu(defaultMenu);
-        
+
         PhotonNetwork.ConnectUsingSettings();
     }
-    #region  ======================= Public : Start  =======================
+
+    #region ======================= Public : Start  =======================
 
     public void CreateRoom()
     {
+        CurrentHiders = CurrentSeekers = 0;
         string roomName = "Room#";
         if (!string.IsNullOrEmpty(roomNameInput.text))
             roomName = roomNameInput.text;
         else
             roomName += Random.Range(0, 10000).ToString("0000");
-
-        PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 5, BroadcastPropsChangeToAll = true});
+        PhotonNetwork.CreateRoom(roomName,
+            new RoomOptions { MaxPlayers = (byte)maxPlayers, BroadcastPropsChangeToAll = true });
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
 
@@ -87,10 +88,10 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         LeaveRoom(QuitEnum.Quit);
     }
-    
+
     public void LeaveRoom(QuitEnum reasonToQuit = QuitEnum.Quit)
     {
-        object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit }; 
+        object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
         PhotonNetwork.LeaveRoom();
@@ -99,6 +100,33 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         // MenuManager.Instance.OpenMenu(MenuType.Loading);
         // SceneManager.LoadScene(0);
     }
+
+    public void ChooseHiderTeam()
+    {
+        MenuManager.Instance.OpenMenu(MenuType.Room);
+        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        SetTeam("Hider");
+        //FillPlayerRoomList();
+        StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
+    }
+
+    public void ChooseSeekerTeam()
+    {
+        MenuManager.Instance.OpenMenu(MenuType.Room);
+        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        SetTeam("Seeker");
+        //FillPlayerRoomList();
+
+        StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
+    }
+
+    public void SetTeam(string team)
+    {
+        Hashtable customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
+        customProperties["team"] = team;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+    }
+
 
     public void JoinRoom(RoomInfo info)
     {
@@ -113,6 +141,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             MenuManager.Instance.OpenMenu(MenuType.Error);
         }
     }
+
     public void JoinRoom()
     {
         string roomName = roomNameInput.text;
@@ -137,14 +166,13 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
                 return;
             }
         }
+
         PhotonNetwork.JoinRoom(roomName);
         MenuManager.Instance.OpenMenu(MenuType.Loading);
     }
 
     public void StartGame()
     {
-        RoomManager.Instance.SetSeparationControlsState(rulesBtn.GetComponent<Toggle>().isOn);
-
         PhotonNetwork.LoadLevel(1);
     }
 
@@ -153,35 +181,46 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         titleText.text = name;
     }
 
-    #endregion  ======================= Public : end  =======================
+    #endregion ======================= Public : end  =======================
 
-    #region  ======================= Private : Start  =======================
+    #region ======================= Private : Start  =======================
+
     private GameObject CreatePlayer(Player player)
     {
-        GameObject playerGo = Instantiate(playerListItemPrefab, playerListContent);
-        playerGo.GetComponent<PlayerListItemController>().Init(player, this);
-        return playerGo;
+        if ((string)player.CustomProperties["team"] == "Seeker")
+        {
+            GameObject playerGo = Instantiate(playerListItemPrefab, seekerListContent);
+            CurrentSeekers++;
+            playerGo.GetComponent<PlayerListItemController>().Init(player);
+            return playerGo;
+        }
+        else
+        {
+            GameObject playerGo = Instantiate(playerListItemPrefab, hiderListContent);
+            CurrentHiders++;
+            playerGo.GetComponent<PlayerListItemController>().Init(player);
+            return playerGo;
+        }
     }
 
     private void ClearPlayerRoomList()
     {
-        foreach (Transform child in playerListContent)
+        foreach (Transform child in seekerListContent)
         {
             Destroy(child.gameObject);
         }
     }
+
     private void FillPlayerRoomList()
     {
-
         Player[] players = PhotonNetwork.PlayerList;
-
         for (int i = 0; i < players.Length; i++)
             CreatePlayer(players[i]);
-
     }
-    #endregion  ======================= Private : End  =======================
 
-    #region  ======================= Photon Override : Start  =======================
+    #endregion ======================= Private : End  =======================
+
+    #region ======================= Photon Override : Start  =======================
 
     public override void OnConnectedToMaster()
     {
@@ -198,13 +237,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        MenuManager.Instance.OpenMenu(MenuType.Room);
-        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
-
-        FillPlayerRoomList();
-
-        StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
-       // rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
+        MenuManager.Instance.OpenMenu(MenuType.Role);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -223,7 +256,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        CreatePlayer(newPlayer);
+        //CreatePlayer(newPlayer);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -239,19 +272,24 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             if (roomList[i].RemovedFromList)
                 continue;
             if (roomList[i].MaxPlayers > roomList[i].PlayerCount)
-                Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItemController>().Init(roomList[i]);
+                Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItemController>()
+                    .Init(roomList[i]);
         }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
-        ClearPlayerRoomList();
-        FillPlayerRoomList();
-
-        StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
-        rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
+        // ClearPlayerRoomList();
+        // FillPlayerRoomList();
+        //
+        // StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
+        // rulesBtn.SetActive(PhotonNetwork.IsMasterClient);
     }
-    #endregion  ======================= Photon Override : End  =======================
 
+    public override void OnPlayerPropertiesUpdate(Player target, Hashtable changeProps)
+    {
+        CreatePlayer(target);
+    }
 
+    #endregion ======================= Photon Override : End  =======================
 }
