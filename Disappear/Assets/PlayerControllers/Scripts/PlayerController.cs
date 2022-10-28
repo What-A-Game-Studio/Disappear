@@ -140,7 +140,7 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        modelInfos = tc.SetTeamData(Equals(PhotonNetwork.MasterClient, Pv.Owner), Pv);
+        modelInfos = tc.SetTeamData((string) Pv.Owner.CustomProperties["team"] == "Seeker", Pv);
     }
 
     private void Init()
@@ -191,7 +191,7 @@ public class PlayerController : MonoBehaviour
             targetSpeed = 0f;
         }
 
-        if (InputManager.Instance.Run && stamina.CanRun)
+        if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
         {
             targetSpeed += targetSpeed * runSpeedFactor;
         }

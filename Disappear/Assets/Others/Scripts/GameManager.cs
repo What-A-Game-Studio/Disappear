@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Dynamic;
-using Photon.Pun;
-using Unity.VisualScripting;
+using ExitGames.Client.Photon.StructWrapping;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+using WaG.Input_System.Scripts;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,24 +21,29 @@ public class GameManager : MonoBehaviour
             Destroy(this);
             return;
         }
+        DontDestroyOnLoad(gameObject);
+
+        
+        InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
+        InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
+        
+    }
+
+    public void OpenPauseMenu(InputAction.CallbackContext context)
+    {
+        if (MenuManager.Instance.GetCurrentMenu() == MenuType.Game)
+            MenuManager.Instance.OpenMenu(pauseMenu);
+    }
+
+    public void ClosePauseMenu(InputAction.CallbackContext context)
+    {
+        MenuManager.Instance.CloseMenu(pauseMenu);
+        MenuManager.Instance.OpenMenu(MenuType.Game);
     }
 
     public void Start()
     {
         pauseMenu = MenuManager.Instance.GetMenu(MenuType.Pause);
-    }
-
-    public void Update()
-    {
-        // if (Input.GetKeyDown(KeyCode.Escape)
-        //     && (MenuManager.Instance.GetCurrentMenu() == MenuType.Game
-        //         || MenuManager.Instance.GetCurrentMenu() == MenuType.Pause))
-        // {
-        //     if (pauseMenu.IsOpen)
-        //         MenuManager.Instance.CloseMenu(pauseMenu);
-        //     else
-        //         MenuManager.Instance.OpenMenu(pauseMenu);
-        // }
     }
 
     public void QuitRoom()

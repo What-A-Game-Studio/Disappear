@@ -4,6 +4,7 @@ public enum MenuType
     Title,
     CreateRoom,
     JoinRoom,
+    Role,
     Room,
     FindRoom,
     Error,
