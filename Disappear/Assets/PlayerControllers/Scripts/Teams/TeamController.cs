@@ -1,11 +1,13 @@
 
 using Audio.Scripts.Footsteps;
 using Photon.Pun;
+using SteamAudio;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 public class TeamController : MonoBehaviour
-{   
+{
+    [SerializeField] private bool isSeeker = true;
     [SerializeField] private Transform meshContainer;
 
     [Header("Seeker Parameters")]
@@ -36,9 +38,11 @@ public class TeamController : MonoBehaviour
             Debug.LogError("Hider can not be null", this);
             return;
         }
+
+        teamData = seeker;
     }
 
-    public ModelInfos SetTeamData(bool isSeeker, PhotonView photonView)
+    public ModelInfos SetTeamData(PhotonView photonView)
     {
         teamData = isSeeker ? seeker : hider;
         pv = photonView;
@@ -52,12 +56,6 @@ public class TeamController : MonoBehaviour
         if (!isSeeker)
         {
             SetHider(hiderRenderers, hiderShadow);
-            if (pv.IsMine)
-                MultiplayerManager.Instance.SetGameTitle("Hider");
-        }
-        else if (pv.IsMine)
-        {
-            MultiplayerManager.Instance.SetGameTitle("Seeker");
         }
 
         return mi;
@@ -71,8 +69,8 @@ public class TeamController : MonoBehaviour
 
     private void SetPostProcessingVolume()
     {
-        if (pv.IsMine)
-            PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
+        if (pv.IsMine && PostProcessingController.Instance)
+                PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
     private ModelInfos SetModel(out SkinnedMeshRenderer[] hiderRenderers,
