@@ -11,6 +11,8 @@ using WaG.Input_System.Scripts;
 )]
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private bool mainCharacter;
     private ModelInfos modelInfos;
     public static PlayerController MainPlayer { get; private set; }
 
@@ -104,7 +106,7 @@ public class PlayerController : MonoBehaviour
         Pac.PC = this;
 
 
-        if (!Pv.IsMine)
+        if (!Pv.IsMine || !mainCharacter)
             return;
 
         Init();
@@ -142,7 +144,7 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        modelInfos = tc.SetTeamData((string) Pv.Owner.CustomProperties["team"] == "Seeker", Pv);
+        modelInfos = tc.SetTeamData( Pv);
     }
 
     private void Init()

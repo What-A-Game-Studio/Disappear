@@ -45,7 +45,7 @@ public class AttackController : MonoBehaviour
         InputManager.Instance.AddCallbackAction(
             ActionsControls.Catch,
             started: context => StartAttack(),
-            performed: context => { PlayerController.MainPlayer.TemporarySpeedModifier = chargedAttackSpeedModifier; },
+            performed: context => { pc.TemporarySpeedModifier = chargedAttackSpeedModifier; },
             canceled: context => Attacked());
 
     }
@@ -63,7 +63,7 @@ public class AttackController : MonoBehaviour
     private void Attacked()
     {
         Debug.Log("Catch - canceled");
-        PlayerController.MainPlayer.TemporarySpeedModifier = null;
+        pc.TemporarySpeedModifier = null;
         timeSinceStartedAttack = 0f;
         attackStarted = false;
         pc.Pac.Trigger(PlayerAnimationController.Attacking);

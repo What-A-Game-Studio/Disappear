@@ -161,12 +161,6 @@ public class InputManager : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Player");
     }
 
-
-    private void OnCatch(InputAction.CallbackContext context)
-    {
-        Catch = context.ReadValueAsButton();
-    }
-
     private void OnOpenMenu(InputAction.CallbackContext context)
     {
         playerInput.SwitchCurrentActionMap("UI");

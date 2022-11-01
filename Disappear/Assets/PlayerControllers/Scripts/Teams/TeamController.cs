@@ -43,7 +43,16 @@ public class TeamController : MonoBehaviour
 
     public ModelInfos SetTeamData(PhotonView photonView)
     {
-        teamData = isSeeker ? seeker : hider;
+        if (photonView.Owner != null)
+        {
+            teamData = photonView.Owner.CustomProperties["team"] == "Seeker" ? seeker : hider;
+        }
+        //Si on est en mode solo
+        else
+        {
+            teamData = isSeeker ? seeker : hider;
+        }
+        
         pv = photonView;
 
         SkinnedMeshRenderer[] hiderRenderers;
@@ -53,13 +62,9 @@ public class TeamController : MonoBehaviour
         SetSpeedModifier();
 
         if (!isSeeker)
-        {
             SetHider(hiderRenderers, hiderShadow);
-        }
-
         return mi;
     }
-
 
     private void SetSpeedModifier()
     {
