@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
+[RequireComponent(typeof(PhotonView))]
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
     public static string PhotonPrefabPath { get; private set; } = "PhotonPrefabs";
@@ -37,17 +38,18 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     Transform roomListContent;
 
     [SerializeField] GameObject roomListItemPrefab;
-    [SerializeField] Transform seekerListContent;
-    [SerializeField] Transform hiderListContent;
+    [SerializeField] RectTransform seekerListContent;
+    [SerializeField] RectTransform hiderListContent;
     [SerializeField] GameObject playerListItemPrefab;
 
     [Header("Button")] [SerializeField] GameObject StartGameBtn;
 
-    List<RoomInfo> roomList = new List<RoomInfo>();
-    private List<string> playersDiplayed = new List<string>();
-
     [Header("DEBUGGER A SUPPRIMER A LA FIN")] [SerializeField]
     private DebuggerManager dm;
+
+    List<RoomInfo> roomList = new List<RoomInfo>();
+    private List<string> playersDiplayed = new List<string>();
+    private PhotonView menuPv;
 
     void Awake()
     {
@@ -62,6 +64,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         }
 
         DontDestroyOnLoad(gameObject);
+        menuPv = GetComponent<PhotonView>();
         maxPlayers = MaxHiders + MaxSeekers;
         dm.Init();
     }
@@ -125,6 +128,20 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             FillPlayerRoomList();
 
         StartGameBtn.SetActive(PhotonNetwork.IsMasterClient);
+    }
+
+    public void ChangeTeamToSeeker()
+    {
+        Debug.Log("Change to seek");
+        menuPv.RPC(nameof(RPC_RemoveFromTeam), RpcTarget.All, "Hider", PhotonNetwork.LocalPlayer.NickName);
+        SetTeam("Seeker");
+    }
+
+    public void ChangeTeamToHider()
+    {
+        Debug.Log("Change to hide");
+        menuPv.RPC(nameof(RPC_RemoveFromTeam), RpcTarget.All, "Seeker", PhotonNetwork.LocalPlayer.NickName);
+        SetTeam("Hider");
     }
 
     public void SetTeam(string team)
@@ -209,6 +226,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             CurrentHiders++;
         }
 
+        playerGo.name = player.NickName;
         playersDiplayed.Add(player.NickName);
         playerGo.GetComponent<PlayerListItemController>().Init(player);
     }
@@ -229,6 +247,29 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     }
 
     #endregion ======================= Private : End  =======================
+
+    #region ======================= PunRPC : Start  =======================
+
+    [PunRPC]
+    private void RPC_RemoveFromTeam(string team, string nickname)
+    {
+        Transform container;
+        if (team == "Seeker")
+        {
+            container = seekerListContent;
+        }
+        else
+        {
+            container = hiderListContent;
+        }
+
+        Transform child = container.Find(nickname);
+        if (child == null) return;
+        playersDiplayed.Remove(nickname);
+        Destroy(child.gameObject);
+    }
+
+    #endregion ======================= PunRPC : End  =======================
 
     #region ======================= Photon Override : Start  =======================
 

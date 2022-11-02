@@ -288,6 +288,19 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 506523102, guid: 405d1a409fee9bb4fb66a69986297f0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeTeamToHider
+      objectReference: {fileID: 0}
+    - target: {fileID: 789180386, guid: 405d1a409fee9bb4fb66a69986297f0f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeTeamToSeeker
+      objectReference: {fileID: 0}
+    - target: {fileID: 1413800263086565239, guid: 405d1a409fee9bb4fb66a69986297f0f,
+        type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1767506389235356379, guid: 405d1a409fee9bb4fb66a69986297f0f,
         type: 3}
       propertyPath: m_Name
