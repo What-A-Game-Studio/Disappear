@@ -195,7 +195,7 @@ public class PlayerController : MonoBehaviour
         {
             targetSpeed = 0f;
         }
-
+        
         if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
         {
             targetSpeed += targetSpeed * runSpeedFactor;

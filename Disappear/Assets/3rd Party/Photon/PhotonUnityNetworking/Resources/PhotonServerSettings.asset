@@ -51,6 +51,7 @@ MonoBehaviour:
   - RPC_Interact
   - RPC_InventoryStatus
   - RPC_Ground
+  - RPC_RemoveFromTeam
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
