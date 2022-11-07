@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using ExitGames.Client.Photon;
 using TMPro;
 using UnityEditor;
@@ -249,9 +250,9 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     private void UpdateRoomTeamData(string team, int modifier)
     {
-        int newCount = (int)PhotonNetwork.CurrentRoom.CustomProperties[team];
-        newCount += modifier;
-        PhotonNetwork.CurrentRoom.CustomProperties[team] = newCount;
+        Hashtable customProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+        customProperties[team] = (int)customProperties[team] + modifier;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
     }
 
     #endregion ======================= Private : End  =======================
@@ -273,15 +274,15 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
-        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
+        // hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
+        // seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
     }
 
 
     public override void OnJoinedRoom()
     {
-        // hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CurrentHiders"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MaxHiders"]);
-        // seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CurrentSeekers"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MaxHiders"]);
+        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
+        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
         MenuManager.Instance.OpenMenu(MenuType.Role);
     }
 
@@ -335,10 +336,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         CreatePlayer(target);
     }
-
-    public override void OnRoomPropertiesUpdate(Hashtable changeProps)
-    {
-    }
+    
 
     #endregion ======================= Photon Override : End  =======================
 }
