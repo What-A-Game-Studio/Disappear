@@ -4,21 +4,22 @@ using SteamAudio;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+
 public class TeamController : MonoBehaviour
 {
     [SerializeField] private bool isSeeker = true;
     [SerializeField] private Transform meshContainer;
 
-    [Header("Seeker Parameters")]
-    [SerializeField] private TeamData seeker;
-    
-    [Header("Hider Parameters")]
-    [SerializeField] private TeamData hider;
+    [Header("Seeker Parameters")] [SerializeField]
+    private TeamData seeker;
+
+    [Header("Hider Parameters")] [SerializeField]
+    private TeamData hider;
 
     [SerializeField] private int hiderLife;
     [SerializeField] private float hiderTransparencySpeed;
     [SerializeField] private float hiderTransparencyThreshold;
-    
+
     private PhotonView pv;
     private TeamData teamData;
 
@@ -43,16 +44,9 @@ public class TeamController : MonoBehaviour
 
     public ModelInfos SetTeamData(PhotonView photonView)
     {
-        if (photonView.Owner != null)
-        {
-            teamData = photonView.Owner.CustomProperties["team"] == "Seeker" ? seeker : hider;
-        }
-        //Si on est en mode solo
-        else
-        {
-            teamData = isSeeker ? seeker : hider;
-        }
-        
+        teamData = (string) photonView.Owner.CustomProperties["team"] == "Seeker" ? seeker : hider;
+
+
         pv = photonView;
 
         SkinnedMeshRenderer[] hiderRenderers;
@@ -74,7 +68,7 @@ public class TeamController : MonoBehaviour
     private void SetPostProcessingVolume()
     {
         if (pv.IsMine && PostProcessingController.Instance)
-                PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
+            PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 
     private ModelInfos SetModel(out SkinnedMeshRenderer[] hiderRenderers,

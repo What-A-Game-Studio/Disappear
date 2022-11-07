@@ -11,8 +11,6 @@ using WaG.Input_System.Scripts;
 )]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private bool mainCharacter;
     private ModelInfos modelInfos;
     public static PlayerController MainPlayer { get; private set; }
 
@@ -106,7 +104,7 @@ public class PlayerController : MonoBehaviour
         Pac.PC = this;
 
 
-        if (!Pv.IsMine || !mainCharacter)
+        if (!Pv.IsMine)
             return;
 
         Init();
