@@ -143,6 +143,7 @@ public class PlayerController : MonoBehaviour
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
         modelInfos = tc.SetTeamData( Pv);
+
     }
 
     private void Init()
