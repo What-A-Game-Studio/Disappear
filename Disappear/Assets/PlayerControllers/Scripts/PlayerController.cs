@@ -140,7 +140,7 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        modelInfos = tc.SetTeamData((string) Pv.Owner.CustomProperties["team"] == "Seeker", Pv);
+        modelInfos = tc.SetTeamData((string) Pv.Owner.CustomProperties["team"] == "S", Pv);
     }
 
     private void Init()
