@@ -111,11 +111,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
+        MenuManager.Instance.OpenMenu(MenuType.Loading);
         PhotonNetwork.LeaveRoom();
-        PhotonNetwork.LoadLevel("MultiplayerMenuScene");
-        // PhotonNetwork.LeaveRoom();
-        // MenuManager.Instance.OpenMenu(MenuType.Loading);
-        // SceneManager.LoadScene(0);
     }
 
     public void JoinHiderTeam()
@@ -298,6 +295,12 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        if (SceneManager.GetActiveScene().name != "MultiplayerMenuScene")
+        {
+            PhotonNetwork.LoadLevel("MultiplayerMenuScene");
+            InputManager.Instance.SwitchMap("Menu");
+            GameManager.Instance.SwitchCursorLockMode(CursorLockMode.Confined, true);
+        }
         MenuManager.Instance.OpenMenu(MenuType.Title);
         ClearPlayerRoomList();
     }

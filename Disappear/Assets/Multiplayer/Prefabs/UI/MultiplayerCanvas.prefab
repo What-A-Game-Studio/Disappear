@@ -4234,7 +4234,6 @@ GameObject:
   m_Component:
   - component: {fileID: 155400856478023029}
   - component: {fileID: 155400856478023026}
-  - component: {fileID: 1766525642}
   m_Layer: 5
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -4279,18 +4278,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuName: 9
   IsOpen: 0
---- !u!114 &1766525642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155400856478023028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cd452530e8d3d549a118dc9c3c8fa3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &155400856588562088
 GameObject:
   m_ObjectHideFlags: 0
@@ -4573,7 +4560,6 @@ GameObject:
   m_Component:
   - component: {fileID: 155400856662910896}
   - component: {fileID: 155400856662910897}
-  - component: {fileID: 888166962671149378}
   m_Layer: 5
   m_Name: Victory Screen
   m_TagString: Untagged
@@ -4617,18 +4603,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuName: 8
   IsOpen: 0
---- !u!114 &888166962671149378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 155400856662910899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cd452530e8d3d549a118dc9c3c8fa3c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1247816962709631518
 GameObject:
   m_ObjectHideFlags: 0

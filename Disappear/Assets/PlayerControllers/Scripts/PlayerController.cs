@@ -65,6 +65,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        InputManager.Instance.SwitchMap("Player");
         HideCursor();
         if (!TryGetComponent<Animator>(out animator))
         {
