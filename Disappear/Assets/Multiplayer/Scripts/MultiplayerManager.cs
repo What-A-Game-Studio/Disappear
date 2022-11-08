@@ -239,7 +239,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         {
             Destroy(child.gameObject);
         }
-        
+
         foreach (Transform child in hiderListContent)
         {
             Destroy(child.gameObject);
@@ -276,7 +276,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         //En attendant la saisie du joueur
         PhotonNetwork.NickName = "Player#" + Random.Range(0, 10000).ToString("0000");
     }
-    
+
     public override void OnJoinedRoom()
     {
         hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["H"],
@@ -302,6 +302,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             InputManager.Instance.SwitchMap("Menu");
             GameManager.Instance.SwitchCursorLockMode(CursorLockMode.None, true);
         }
+
         MenuManager.Instance.OpenMenu(MenuType.Title);
         ClearPlayerRoomList();
     }
@@ -359,6 +360,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
                 return;
             }
         }
+
         CreatePlayer(target);
     }
 

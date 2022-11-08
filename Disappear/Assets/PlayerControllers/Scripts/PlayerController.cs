@@ -213,6 +213,8 @@ public class PlayerController : MonoBehaviour
         if (CrouchController.Crouched)
             targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
 
+        
+        targetSpeed *= DebuggerManager.Instance.debugSpeed;
         if (grounded)
         {
             currentVelocity.x = Mathf.Lerp(currentVelocity.x,
