@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        SwitchCursorLockMode(CursorLockMode.Confined, true);
+        SwitchCursorLockMode(CursorLockMode.None, true);
         InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
         InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
         
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     public void OpenPauseMenu(InputAction.CallbackContext context)
     {
             MenuManager.Instance.OpenMenu(pauseMenu);
-            SwitchCursorLockMode(CursorLockMode.Confined, true);
+            SwitchCursorLockMode(CursorLockMode.None, true);
     }
 
     public void ClosePauseMenu(InputAction.CallbackContext context)

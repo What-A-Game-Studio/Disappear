@@ -7,6 +7,7 @@ using ExitGames.Client.Photon;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WaG;
@@ -88,8 +89,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         else
             roomName += Random.Range(0, 10000).ToString("0000");
 
-        customProperties.Add("CH", 0);
-        customProperties.Add("CS", 0);
+        customProperties.Add("H", 0);
+        customProperties.Add("S", 0);
         customProperties.Add("MH", MaxHiders);
         customProperties.Add("MS", MaxSeekers);
 
@@ -108,6 +109,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void LeaveRoom(QuitEnum reasonToQuit = QuitEnum.Quit)
     {
+        UpdateRoomTeamData((string)PhotonNetwork.LocalPlayer.CustomProperties["team"], -1);
         object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
@@ -138,11 +140,13 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void SwitchTeamFromHiderToSeeker()
     {
+        UpdateRoomTeamData("H", -1);
         SetTeam("S");
     }
 
     public void SwitchTeamFromSeekerToHider()
     {
+        UpdateRoomTeamData("S", -1);
         SetTeam("H");
     }
 
@@ -151,6 +155,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         Hashtable customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
         customProperties["team"] = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+        UpdateRoomTeamData(team, 1);
     }
 
 
@@ -217,12 +222,10 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         if ((string)player.CustomProperties["team"] == "S")
         {
             playerGo = Instantiate(playerListItemPrefab, seekerListContent);
-            UpdateRoomTeamData("CS", 1);
         }
         else
         {
             playerGo = Instantiate(playerListItemPrefab, hiderListContent);
-            UpdateRoomTeamData("CH", 1);
         }
 
         playerGo.name = player.NickName;
@@ -233,6 +236,11 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     private void ClearPlayerRoomList()
     {
         foreach (Transform child in seekerListContent)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        foreach (Transform child in hiderListContent)
         {
             Destroy(child.gameObject);
         }
@@ -268,19 +276,12 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         //En attendant la saisie du joueur
         PhotonNetwork.NickName = "Player#" + Random.Range(0, 10000).ToString("0000");
     }
-
-    public override void OnCreatedRoom()
-    {
-        // hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
-        // seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
-    }
-
-
+    
     public override void OnJoinedRoom()
     {
-        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"],
+        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["H"],
             (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
-        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"],
+        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["S"],
             (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
         MenuManager.Instance.OpenMenu(MenuType.Role);
     }
@@ -299,7 +300,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.LoadLevel("MultiplayerMenuScene");
             InputManager.Instance.SwitchMap("Menu");
-            GameManager.Instance.SwitchCursorLockMode(CursorLockMode.Confined, true);
+            GameManager.Instance.SwitchCursorLockMode(CursorLockMode.None, true);
         }
         MenuManager.Instance.OpenMenu(MenuType.Title);
         ClearPlayerRoomList();
