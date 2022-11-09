@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1236024972}
   - component: {fileID: 8581994166390946275}
   - component: {fileID: 3450989531408886490}
+  - component: {fileID: 6320307325807197030}
   m_Layer: 3
   m_Name: PlayerController
   m_TagString: Player
@@ -102,7 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7c423ab8d29a054390c30a31a2244e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCharacter: 0
   walkSpeed: 2
   runSpeedFactor: 1
   lightOverweightSpeedModifier: 0
@@ -206,3 +206,20 @@ MonoBehaviour:
   recoveryCooldown: 2
   recoveryModifier: 1
   consumptionModifier: 1
+--- !u!114 &6320307325807197030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6044308510027733539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a8c592b8e8d75f4f9e20610d794dc08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHeathStatus: {fileID: 11400000, guid: 6a6082ecf9822614f883b57a5e89c419, type: 2}
+  heathStatus:
+  - {fileID: 11400000, guid: 7f9102ce2602e1344a3e0c998fa9b340, type: 2}
+  - {fileID: 11400000, guid: 6a6082ecf9822614f883b57a5e89c419, type: 2}
+  - {fileID: 11400000, guid: c1f6e8dfe3f431a4fbc587f49ff296d7, type: 2}

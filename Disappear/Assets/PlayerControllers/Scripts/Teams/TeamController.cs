@@ -44,8 +44,7 @@ public class TeamController : MonoBehaviour
 
     public ModelInfos SetTeamData(PhotonView photonView)
     {
-        teamData = (string) photonView.Owner.CustomProperties["team"] == "Seeker" ? seeker : hider;
-
+        teamData = (string) photonView.Owner.CustomProperties["team"] == "S" ? seeker : hider;
 
         pv = photonView;
 

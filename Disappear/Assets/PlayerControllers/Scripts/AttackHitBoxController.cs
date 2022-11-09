@@ -3,42 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Realtime;
 using UnityEngine;
+using WAG.Health;
 
-    public class AttackHitBoxController : MonoBehaviour
+public class AttackHitBoxController : MonoBehaviour
+{
+    [SerializeField] private HealthStatusController damageableObjectInRange;
+
+    private HealthStatusController DamageableObjectInRange => damageableObjectInRange;
+    private void OnTriggerStay(Collider other)
     {
-        [SerializeField] private LayerMask layerToDetect;
-        public GameObject PlayerInRange { get; private set; }
-        
-        private void OnTriggerEnter(Collider other)
+        if (other.gameObject.TryGetComponent<HealthStatusController>(out HealthStatusController tmp))
         {
-            if (IsLayerToDetect(other))
+            Ray r = new Ray(transform.position, (tmp.transform.position - transform.position).normalized);
+            if (Physics.Raycast(r, out RaycastHit hitInfo))
             {
-                Ray r = new Ray(transform.position, (other.transform.position - transform.position).normalized);
-                if (Physics.Raycast(r, out RaycastHit hitInfo))
+                if (tmp.gameObject.GetInstanceID() == hitInfo.collider.gameObject.GetInstanceID())
                 {
-                    if (hitInfo.transform.gameObject.GetInstanceID() == other.gameObject.GetInstanceID())
+                    if (!damageableObjectInRange || tmp.gameObject.GetInstanceID() != damageableObjectInRange.gameObject.GetInstanceID())
                     {
-                        Debug.Log(other.gameObject.name);
-                        PlayerInRange = other.gameObject;
+                        damageableObjectInRange = tmp;  
+                        Debug.Log(damageableObjectInRange.gameObject.name);
                     }
                 }
             }
         }
-        private void OnTriggerExit(Collider other)
-        
-        {
-            if (IsLayerToDetect(other))
-            {
-                if (PlayerInRange && PlayerInRange.GetInstanceID() == other.gameObject.GetInstanceID())
-                {
-                    PlayerInRange = null;
-                }
-            }
-        }
-        
-        private bool IsLayerToDetect(Collider other)
-        {
-            return (layerToDetect.value & (1 << other.gameObject.layer)) > 0;
-        }
-
     }
+
+    private void OnDisable()
+    {
+        damageableObjectInRange = null;
+    }
+}
