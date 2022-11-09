@@ -1,13 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
-using SteamAudio;
 using UnityEngine;
-using WaG.Input_System.Scripts;
 
 public class AttackController : MonoBehaviour
 {
+    [SerializeField] private AttackHitBoxController loadedAttack;
+    [SerializeField] private AttackHitBoxController normalAttack;
+    [Header("Values")]
     [SerializeField] private float attackMissCooldown = 2f;
     [SerializeField] private float attackMissSpeedModifier = -0.8f;
     [SerializeField] private float attackHitCooldown = 2.6f;
@@ -21,6 +19,7 @@ public class AttackController : MonoBehaviour
     private PhotonView pv;
 
     private PlayerController pc;
+
     //camRay = new Ray(cam.position, cam.forward);
     // if (isSeeker && InputManager.Instance.Catch && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
     // {
@@ -36,48 +35,19 @@ public class AttackController : MonoBehaviour
         {
             Debug.LogError("Need PhotonView", this);
             Debug.Break();
-        }        
+        }
+
         if (!transform.parent.parent.TryGetComponent<PlayerController>(out pc))
         {
             Debug.LogError("Need PlayerController", this);
             Debug.Break();
         }
-        InputManager.Instance.AddCallbackAction(
-            ActionsControls.Catch,
-            started: context => StartAttack(),
-            performed: context => { pc.TemporarySpeedModifier = chargedAttackSpeedModifier; },
-            canceled: context => Attacked());
 
-    }
-    
-    private void StartAttack()
-    {
-        
-        pc.Pac.ResetTrigger(PlayerAnimationController.Attacking);
-        Debug.Log("Catch - started");
-        attackStarted = true;
-        pc.Pac.Trigger(PlayerAnimationController.Attack);
-        
+        // InputManager.Instance.AddCallbackAction(
+        //     ActionsControls.Catch,
+        //     started: context => StartAttack(),
+        //     performed: context => { pc.TemporarySpeedModifier = chargedAttackSpeedModifier; },
+        //     canceled: context => Attacked());
     }
 
-    private void Attacked()
-    {
-        Debug.Log("Catch - canceled");
-        pc.TemporarySpeedModifier = null;
-        timeSinceStartedAttack = 0f;
-        attackStarted = false;
-        pc.Pac.Trigger(PlayerAnimationController.Attacking);
-    }
-    
-    private void Update()
-    {
-        if (attackStarted)
-        {
-            timeSinceStartedAttack += Time.deltaTime;
-            if (timeSinceStartedAttack > chargeTime)
-            {
-                Attacked();
-            }
-        }
-    }
 }

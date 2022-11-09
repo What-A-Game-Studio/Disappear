@@ -2,7 +2,8 @@ using ExitGames.Client.Photon.StructWrapping;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
+
 
 public class GameManager : MonoBehaviour
 {

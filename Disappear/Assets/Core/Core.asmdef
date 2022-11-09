@@ -1,8 +1,7 @@
 {
-    "name": "Health",
-    "rootNamespace": "WAG.Health",
+    "name": "Core",
+    "rootNamespace": "WAG.Core",
     "references": [
-        "GUID:fe16aff440d71e944bada5b811aa591b",
         "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],

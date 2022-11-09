@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using WaG;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
 
 public class PlayerInventory : MonoBehaviour
 {

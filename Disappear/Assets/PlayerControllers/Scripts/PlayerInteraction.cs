@@ -1,12 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.Serialization;
-using WaG.Input_System.Scripts;
-using Matrix4x4 = UnityEngine.Matrix4x4;
-using Vector3 = UnityEngine.Vector3;
+using WAG.Core.Controls;
 
 public class PlayerInteraction : MonoBehaviour
 {

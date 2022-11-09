@@ -1,8 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
-using System;
 using WaG;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
 
 [RequireComponent(
     typeof(Rigidbody),

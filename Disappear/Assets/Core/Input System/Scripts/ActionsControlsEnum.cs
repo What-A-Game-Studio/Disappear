@@ -1,4 +1,4 @@
-namespace WaG.Input_System.Scripts
+namespace WAG.Core.Controls
 {
     public enum ActionsControls
     {

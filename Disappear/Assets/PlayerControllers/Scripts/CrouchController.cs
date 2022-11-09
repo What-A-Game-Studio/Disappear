@@ -1,6 +1,6 @@
 using Photon.Pun;
 using UnityEngine;
-
+using WAG.Core.Controls;
 public class CrouchController : MonoBehaviour
 {
     [SerializeField] private float crouchSpeedFactor = -0.5f;
