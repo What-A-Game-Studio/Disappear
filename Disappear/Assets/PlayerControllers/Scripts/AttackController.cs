@@ -1,12 +1,13 @@
+using System;
 using Photon.Pun;
 using UnityEngine;
+using WAG.Core.Controls;
 
 public class AttackController : MonoBehaviour
 {
     [SerializeField] private AttackHitBoxController loadedAttack;
     [SerializeField] private AttackHitBoxController normalAttack;
-    [Header("Values")]
-    [SerializeField] private float attackMissCooldown = 2f;
+    [Header("Values")] [SerializeField] private float attackMissCooldown = 2f;
     [SerializeField] private float attackMissSpeedModifier = -0.8f;
     [SerializeField] private float attackHitCooldown = 2.6f;
     [SerializeField] private float attackHitSpeedModifier = -0.9f;
@@ -19,15 +20,7 @@ public class AttackController : MonoBehaviour
     private PhotonView pv;
 
     private PlayerController pc;
-
-    //camRay = new Ray(cam.position, cam.forward);
-    // if (isSeeker && InputManager.Instance.Catch && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
-    // {
-    //     if (hit.collider.TryGetComponent(out Interactable interactableHider))
-    //     {
-    //         interactableHider.onInteract?.Invoke(player);
-    //     }
-    // }
+    
     private void Awake()
     {
         ///TODO: Pas hyper clean je pense
@@ -43,11 +36,26 @@ public class AttackController : MonoBehaviour
             Debug.Break();
         }
 
-        // InputManager.Instance.AddCallbackAction(
-        //     ActionsControls.Catch,
-        //     started: context => StartAttack(),
-        //     performed: context => { pc.TemporarySpeedModifier = chargedAttackSpeedModifier; },
-        //     canceled: context => Attacked());
+        InputManager.Instance.AddCallbackAction(
+            ActionsControls.Catch,
+            started: context => { },
+            performed: context => registerAttack(),
+            canceled: context => { });
     }
 
+
+    private void registerAttack()
+    {
+        if (loadedAttack.DamageableObjectInRange == null)
+            return;
+
+        Vector3 attackOrigin = loadedAttack.transform.position;
+        Ray r = new Ray(attackOrigin, loadedAttack.DamageableObjectInRange.transform.position - attackOrigin);
+        if (Physics.Raycast(r, out RaycastHit hitInfo) &&
+            loadedAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
+            hitInfo.collider.gameObject.GetInstanceID())
+        {
+            loadedAttack.DamageableObjectInRange.TakeDamage();
+        }
+    }
 }
