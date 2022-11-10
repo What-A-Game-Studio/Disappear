@@ -97,6 +97,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CreateRoom(roomName,
             new RoomOptions
             {
+                IsOpen = true,
+                IsVisible = true,
                 MaxPlayers = (byte)maxPlayers, CustomRoomProperties = customProperties, BroadcastPropsChangeToAll = true
             });
         MenuManager.Instance.OpenMenu(MenuType.Loading);
@@ -254,9 +256,16 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     private void UpdateRoomTeamData(string team, int modifier)
     {
-        Hashtable customProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+        Room cr = PhotonNetwork.CurrentRoom;
+        Hashtable customProperties = cr.CustomProperties;
         customProperties[team] = (int)customProperties[team] + modifier;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        if ((int)cr.PlayerCount <= 0 || cr.PlayerCount >= cr.MaxPlayers)
+        {
+            cr.IsOpen = false;
+            cr.IsVisible = false;
+        }
+
+        cr.SetCustomProperties(customProperties);
     }
 
     #endregion ======================= Private : End  =======================
@@ -315,13 +324,15 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         foreach (RoomInfo ri in roomList)
         {
+            Debug.Log("Update Room List with : " + ri.Name);
+
             Transform roomChild = roomListContent.Find(ri.Name);
-            if (ri.PlayerCount <= 0 || ri.PlayerCount >= ri.MaxPlayers)
+            if (!ri.IsVisible || !ri.IsOpen || ri.RemovedFromList)
             {
                 if (roomChild)
                     Destroy(roomChild.gameObject);
             }
-            else if(roomChild == null)
+            else if (roomChild == null)
             {
                 Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItemController>()
                     .Init(ri);
