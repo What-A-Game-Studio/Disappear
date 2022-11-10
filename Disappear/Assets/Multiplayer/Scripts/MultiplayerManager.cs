@@ -158,7 +158,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         UpdateRoomTeamData(team, 1);
     }
 
-
     public void JoinRoom(RoomInfo info)
     {
         if (info.MaxPlayers > info.PlayerCount)
@@ -314,19 +313,19 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        this.roomList = roomList;
-        foreach (Transform child in roomListContent)
+        foreach (RoomInfo ri in roomList)
         {
-            Destroy(child.gameObject);
-        }
-
-        for (int i = 0; i < roomList.Count; i++)
-        {
-            if (roomList[i].RemovedFromList)
-                continue;
-            if (roomList[i].MaxPlayers > roomList[i].PlayerCount)
+            Transform roomChild = roomListContent.Find(ri.Name);
+            if (ri.PlayerCount <= 0 || ri.PlayerCount >= ri.MaxPlayers)
+            {
+                if (roomChild)
+                    Destroy(roomChild.gameObject);
+            }
+            else if(roomChild == null)
+            {
                 Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItemController>()
-                    .Init(roomList[i]);
+                    .Init(ri);
+            }
         }
     }
 

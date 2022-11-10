@@ -18,7 +18,7 @@ public class RoomListItemController : MonoBehaviour
     public void Init(RoomInfo roomInfo)
     {
         this.roomInfo = roomInfo;
-        roomNameTxt.text = roomInfo.Name;
+        name = roomNameTxt.text = roomInfo.Name;
         nbPlayerTxt.text = roomInfo.PlayerCount + "/" + roomInfo.MaxPlayers;
 
     }
