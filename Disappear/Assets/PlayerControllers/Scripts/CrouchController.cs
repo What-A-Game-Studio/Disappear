@@ -4,7 +4,7 @@ using WAG.Core.Controls;
 public class CrouchController : MonoBehaviour
 {
     [SerializeField] private float crouchSpeedFactor = -0.5f;
-    public float CrouchSpeedFactor => crouchSpeedFactor;
+    public float CrouchSpeedFactor => Crouched ? crouchSpeedFactor : 0;
 
     [SerializeField] private float capsuleColliderStandRadius = .28f;
     [SerializeField] private float capsuleColliderStandHeight = 1.78f;

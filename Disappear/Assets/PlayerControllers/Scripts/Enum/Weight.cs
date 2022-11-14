@@ -7,7 +7,7 @@ namespace WaG
     public enum Weight
     {
         Normal,
-        LigthOverweight,
+        LightOverweight,
         LargeOverweight
     }
 }

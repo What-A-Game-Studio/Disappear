@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")] [SerializeField] [Range(100, 1000)]
     private float jumpFactor = 260f;
+    
 
     [SerializeField] private float airResistance = 0.8f;
     [SerializeField] private LayerMask groundCheck;
@@ -61,6 +62,10 @@ public class PlayerController : MonoBehaviour
 
     public Weight PlayerWeight { private get; set; }
     public bool CanMoveOrRotate { get; set; } = true;
+    
+    private PlayerHealthController healthController;
+    public PlayerHealthController HealthController => healthController;
+
 
     #region Unity Events
 
@@ -83,6 +88,12 @@ public class PlayerController : MonoBehaviour
         if (!TryGetComponent<Rigidbody>(out rb))
         {
             Debug.LogError("Need Rigidbody", this);
+            Debug.Break();
+        }
+
+        if (!TryGetComponent<PlayerHealthController>(out healthController))
+        {
+            Debug.LogError("Need playerHealthController", this);
             Debug.Break();
         }
 
@@ -141,8 +152,7 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        modelInfos = tc.SetTeamData( Pv);
-
+        modelInfos = tc.SetTeamData(Pv);
     }
 
     private void Init()
@@ -185,28 +195,26 @@ public class PlayerController : MonoBehaviour
     }
 
     private float targetSpeed;
+
     private void Move()
     {
         targetSpeed = walkSpeed;
 
         if (InputManager.Instance.Move == Vector2.zero)
-        {
             targetSpeed = 0f;
-        }
-        
+
+
         if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
-        {
             targetSpeed += targetSpeed * runSpeedFactor;
-        }
+
 
         if (TemporarySpeedModifier.HasValue)
-        {
             targetSpeed += targetSpeed * TemporarySpeedModifier.Value;
-        }
 
+        ///TODO : Move this in dedicate componant 
         switch (PlayerWeight)
         {
-            case Weight.LigthOverweight:
+            case Weight.LightOverweight:
                 targetSpeed += targetSpeed * lightOverweightSpeedModifier;
                 break;
             case Weight.LargeOverweight:
@@ -217,17 +225,20 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        if (CrouchController.Crouched)
-            targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
-
         if (grounded)
         {
+            targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
+
+            targetSpeed += targetSpeed * HealthController.HealthSpeedModifier;
+
             currentVelocity.x = Mathf.Lerp(currentVelocity.x,
                 targetSpeed * InputManager.Instance.Move.x,
                 animBlendSpeed * Time.fixedDeltaTime);
+
             currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                 targetSpeed * InputManager.Instance.Move.y,
                 animBlendSpeed * Time.fixedDeltaTime);
+
             currentVelocity.y = 0;
             float xVelDiff = currentVelocity.x - rb.velocity.x;
             float zVelDiff = currentVelocity.z - rb.velocity.z;
@@ -305,8 +316,6 @@ public class PlayerController : MonoBehaviour
     {
         Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
     }
-
-
 
     #endregion Public
 

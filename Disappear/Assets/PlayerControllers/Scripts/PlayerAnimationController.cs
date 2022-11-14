@@ -1,6 +1,8 @@
 using UnityEngine;
+using WAG.Health;
+
 public class PlayerAnimationController : MonoBehaviour
-{        
+{
     public static readonly int XVelHash = Animator.StringToHash("xVelocity");
     public static readonly int ZVelHash = Animator.StringToHash("zVelocity");
     public static readonly int YVelHash = Animator.StringToHash("yVelocity");
@@ -10,11 +12,12 @@ public class PlayerAnimationController : MonoBehaviour
     public static readonly int CrouchHash = Animator.StringToHash("Crouch");
     public static readonly int InventoryHash = Animator.StringToHash("Inventory");
     public static readonly int Interact = Animator.StringToHash("Interact");
-    public static readonly int Attack = Animator.StringToHash("Attack");
+    public static readonly int Wounded = Animator.StringToHash("Wounded");
     public static readonly int Attacking = Animator.StringToHash("Attacking");
     private Animator animator;
 
     public PlayerController PC { private get; set; }
+
     // Start is called before the first frame update
     private void Awake()
     {
@@ -24,6 +27,7 @@ public class PlayerAnimationController : MonoBehaviour
             Debug.Break();
         }
     }
+
     private void Start()
     {
         animator.Rebind();
@@ -39,20 +43,23 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetBool(PlayerAnimationController.InventoryHash, PC.InventoryStatus);
         animator.SetBool(PlayerAnimationController.FallingHash, !PC.Grounded);
         animator.SetBool(PlayerAnimationController.GroundedHash, PC.Grounded);
+        animator.SetBool(PlayerAnimationController.Wounded,
+            PC.HealthController.CurrentHeathStatus != HeathStatus.Healthy);
+        Debug.Log(PC.HealthController.CurrentHeathStatus);
     }
 
     public void InteractTrigger()
     {
         animator.SetTrigger(PlayerAnimationController.Interact);
     }
+
     public void Trigger(int animatorHash)
     {
         animator.SetTrigger(animatorHash);
     }
+
     public void ResetTrigger(int animatorHash)
     {
         animator.ResetTrigger(animatorHash);
     }
-    
-
 }

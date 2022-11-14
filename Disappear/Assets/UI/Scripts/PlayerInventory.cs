@@ -142,7 +142,7 @@ public class PlayerInventory : MonoBehaviour
             PlayerController.MainPlayer.PlayerWeight = Weight.LargeOverweight;
         
         else if (currentWeight > maxWeight * 0.5f)
-            PlayerController.MainPlayer.PlayerWeight = Weight.LigthOverweight;
+            PlayerController.MainPlayer.PlayerWeight = Weight.LightOverweight;
         
         else
             PlayerController.MainPlayer.PlayerWeight = Weight.Normal;

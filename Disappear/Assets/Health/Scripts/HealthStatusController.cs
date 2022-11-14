@@ -11,6 +11,8 @@ namespace WAG.Health
 
         [SerializeField] private HeathStatus startHeathStatus = HeathStatus.Healthy;
 
+        [SerializeField] private bool recalculateHealth;
+        
         private HeathStatus currentHeathStatus;
         public HeathStatus CurrentHeathStatus => currentHeathStatus;
 
@@ -27,8 +29,18 @@ namespace WAG.Health
             OnHealthChanged -= HealthChangeAction;
         }
 
+        private void Update()
+        {
+            if (recalculateHealth)
+            {
+                OnHealthChanged?.Invoke(startHeathStatus);
+                recalculateHealth = false;
+            }
+        }
+
         private void HealthChangeAction(HeathStatus status)
         {
+            currentHeathStatus = status;
             switch (status)
             {
                 case HeathStatus.Healthy:
