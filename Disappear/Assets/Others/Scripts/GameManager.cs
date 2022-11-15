@@ -1,5 +1,3 @@
-using ExitGames.Client.Photon.StructWrapping;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WAG.Core.Controls;
@@ -25,8 +23,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         SwitchCursorLockMode(CursorLockMode.None, true);
-        InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
-        InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
+        WAG.Core.Controls.InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
+        WAG.Core.Controls.InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
         
     }
 

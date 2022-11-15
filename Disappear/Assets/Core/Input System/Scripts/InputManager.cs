@@ -69,7 +69,7 @@ namespace WAG.Core.Controls
                 Debug.Break();
             }
 
-            playerInput.SwitchCurrentActionMap("Player");
+            playerInput.SwitchCurrentActionMap("Menu");
             InGameMap = playerInput.currentActionMap;
 
             moveAction = playerInput.actions[ActionsControls.Move.ToString()];
@@ -81,36 +81,35 @@ namespace WAG.Core.Controls
             useAction = playerInput.actions[ActionsControls.Use.ToString()];
             openMenuAction = playerInput.actions[ActionsControls.OpenMenu.ToString()];
             closeMenuAction = playerInput.actions[ActionsControls.CloseMenu.ToString()];
-
             discardAction = playerInput.actions[ActionsControls.Discard.ToString()];
             rotateAction = playerInput.actions[ActionsControls.Rotate.ToString()];
             closeInventoryAction = playerInput.actions[ActionsControls.CloseInventory.ToString()];
 
-            moveAction.performed += OnMove;
-            lookAction.performed += OnLook;
-            runAction.performed += OnRun;
-            jumpAction.performed += OnJump;
-            couchAction.performed += OnCrouch;
-            openInventoryAction.performed += OnOpenInventory;
-            useAction.performed += OnUse;
-            openMenuAction.performed += OnOpenMenu;
-            closeMenuAction.performed += OnCloseMenu;
-            discardAction.performed += OnDiscard;
-            rotateAction.performed += OnRotate;
-            closeInventoryAction.performed += OnCloseInventory;
+        moveAction.performed += OnMove;
+        lookAction.performed += OnLook;
+        runAction.performed += OnRun;
+        jumpAction.performed += OnJump;
+        couchAction.performed += OnCrouch;
+        openInventoryAction.performed += OnOpenInventory;
+        useAction.performed += OnUse;
+        openMenuAction.performed += OnOpenMenu;
+        closeMenuAction.performed += OnCloseMenu;
+        discardAction.performed += OnDiscard;
+        rotateAction.performed += OnRotate;
+        closeInventoryAction.performed += OnCloseInventory;
 
-            moveAction.canceled += OnMove;
-            lookAction.canceled += OnLook;
-            runAction.canceled += OnRun;
-            jumpAction.canceled += OnJump;
-            couchAction.canceled += OnCrouch;
-            openInventoryAction.canceled += OnOpenInventory;
-            useAction.canceled += OnUse;
-            openMenuAction.canceled += OnOpenMenu;
-            closeMenuAction.canceled += OnCloseMenu;
-            discardAction.canceled += OnDiscard;
-            rotateAction.canceled += OnRotate;
-            closeInventoryAction.canceled += OnCloseInventory;
+        moveAction.canceled += OnMove;
+        lookAction.canceled += OnLook;
+        runAction.canceled += OnRun;
+        jumpAction.canceled += OnJump;
+        couchAction.canceled += OnCrouch;
+        openInventoryAction.canceled += OnOpenInventory;
+        useAction.canceled += OnUse;
+        openMenuAction.canceled += OnOpenMenu;
+        closeMenuAction.canceled += OnCloseMenu;
+        discardAction.canceled += OnDiscard;
+        rotateAction.canceled += OnRotate;
+        closeInventoryAction.canceled += OnCloseInventory;
         }
 
         #region Private Callback Methods
@@ -162,7 +161,7 @@ namespace WAG.Core.Controls
 
         private void OnOpenMenu(InputAction.CallbackContext context)
         {
-            playerInput.SwitchCurrentActionMap("UI");
+            playerInput.SwitchCurrentActionMap("Pause");
         }
 
         private void OnCloseMenu(InputAction.CallbackContext context)
@@ -211,7 +210,14 @@ namespace WAG.Core.Controls
             if (canceled != null)
                 playerInput.actions[actionControl.ToString()].canceled += canceled;
         }
-
+        
+        public void SwitchMap(string map)
+        {
+            if (playerInput.actions.FindActionMap(map) != null)
+            {
+                playerInput.SwitchCurrentActionMap(map);
+            }
+        }
         #endregion Public Methods
     }
 }
