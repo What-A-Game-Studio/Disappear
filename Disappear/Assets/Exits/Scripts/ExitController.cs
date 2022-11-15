@@ -1,7 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using WAG.Core;
+using WAG.Core.GM;
 
 [RequireComponent(typeof(Collider))]
 public abstract class ExitController : MonoBehaviour
@@ -16,7 +15,7 @@ public abstract class ExitController : MonoBehaviour
 
     protected void ExitHider(HiderController hc)
     {
-        if (hc.IsMine())
-            GameManager.Instance.HiderQuit(QuitEnum.Escape);
+        // if (hc.IsMine())
+        //     GameManager.Instance.HiderQuit(QuitEnum.Escape);
     }
 }

@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using WAG.Core;
+using WAG.Core.GM;
 
 public class HiderController : Interactable
 {
@@ -75,7 +77,7 @@ public class HiderController : Interactable
             }
             else
             {
-                GameManager.Instance.HiderQuit(QuitEnum.Dead);
+                MultiplayerManager.Instance.LeaveRoom(QuitEnum.Dead);
             }
         }
     }

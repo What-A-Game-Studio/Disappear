@@ -11,7 +11,10 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WaG;
+using WAG.Core;
 using WAG.Core.Controls;
+using WAG.Core.GM;
+using WAG.Core.Menus;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks

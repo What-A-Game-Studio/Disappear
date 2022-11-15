@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using TMPro;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using WAG.Core;
 
 public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCallback
 {
