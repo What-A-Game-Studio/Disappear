@@ -1,8 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
-using System;
 using WaG;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
 
 [RequireComponent(
     typeof(Rigidbody),
@@ -19,7 +18,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Vector3 currentVelocity;
     private float teamSpeedModifier = 0;
-    private PlayerAnimationController pac;
+    public PlayerAnimationController Pac { get; private set; }
 
     public CrouchController CrouchController { get; private set; }
     public PlayerInventory PlayerInventory { get; private set; }
@@ -29,7 +28,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
     [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
-    [Header("Crouch")] [SerializeField] private float crouchSpeedFactor = -0.5f;
 
     [Header("Weight Modifiers")] [SerializeField]
     private float lightOverweightSpeedModifier;
@@ -42,6 +40,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")] [SerializeField] [Range(100, 1000)]
     private float jumpFactor = 260f;
+    
 
     [SerializeField] private float airResistance = 0.8f;
     [SerializeField] private LayerMask groundCheck;
@@ -57,9 +56,16 @@ public class PlayerController : MonoBehaviour
     public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
 
     private Vector3 rpcVelocity;
+
     public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
+    public float? TemporarySpeedModifier { get; set; } = null;
+
     public Weight PlayerWeight { private get; set; }
     public bool CanMoveOrRotate { get; set; } = true;
+    
+    private PlayerHealthController healthController;
+    public PlayerHealthController HealthController => healthController;
+
 
     #region Unity Events
 
@@ -86,11 +92,17 @@ public class PlayerController : MonoBehaviour
             Debug.Break();
         }
 
+        if (!TryGetComponent<PlayerHealthController>(out healthController))
+        {
+            Debug.LogError("Need playerHealthController", this);
+            Debug.Break();
+        }
+
         rb.freezeRotation = true;
 
-        Pv = GetComponent<PhotonView>();
         stamina = GetComponent<StaminaController>();
 
+        Pv = GetComponent<PhotonView>();
         if (Pv == null)
         {
             Debug.LogError("Need PhotonView", this);
@@ -99,15 +111,15 @@ public class PlayerController : MonoBehaviour
 
 
         InitModel();
-        pac = gameObject.AddComponent<PlayerAnimationController>();
-        pac.PC = this;
+        Pac = gameObject.AddComponent<PlayerAnimationController>();
+        Pac.PC = this;
+
 
         if (!Pv.IsMine)
             return;
 
         Init();
     }
-
 
     private void FixedUpdate()
     {
@@ -141,7 +153,7 @@ public class PlayerController : MonoBehaviour
         // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
         name = PhotonNetwork.LocalPlayer.NickName;
         TeamController tc = GetComponent<TeamController>();
-        modelInfos = tc.SetTeamData((string) Pv.Owner.CustomProperties["team"] == "S", Pv);
+        modelInfos = tc.SetTeamData(Pv);
     }
 
     private void Init()
@@ -183,23 +195,27 @@ public class PlayerController : MonoBehaviour
         Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
     }
 
+    private float targetSpeed;
+
     private void Move()
     {
-        float targetSpeed = walkSpeed;
+        targetSpeed = walkSpeed;
 
         if (InputManager.Instance.Move == Vector2.zero)
-        {
             targetSpeed = 0f;
-        }
-        
-        if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
-        {
-            targetSpeed += targetSpeed * runSpeedFactor;
-        }
 
+
+        if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
+            targetSpeed += targetSpeed * runSpeedFactor;
+
+
+        if (TemporarySpeedModifier.HasValue)
+            targetSpeed += targetSpeed * TemporarySpeedModifier.Value;
+
+        ///TODO : Move this in dedicate componant 
         switch (PlayerWeight)
         {
-            case Weight.LigthOverweight:
+            case Weight.LightOverweight:
                 targetSpeed += targetSpeed * lightOverweightSpeedModifier;
                 break;
             case Weight.LargeOverweight:
@@ -210,19 +226,22 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        if (CrouchController.Crouched)
-            targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
-
-        
         targetSpeed *= DebuggerManager.Instance.debugSpeed;
+
         if (grounded)
         {
+            targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
+
+            targetSpeed += targetSpeed * HealthController.HealthSpeedModifier;
+
             currentVelocity.x = Mathf.Lerp(currentVelocity.x,
                 targetSpeed * InputManager.Instance.Move.x,
                 animBlendSpeed * Time.fixedDeltaTime);
+
             currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                 targetSpeed * InputManager.Instance.Move.y,
                 animBlendSpeed * Time.fixedDeltaTime);
+
             currentVelocity.y = 0;
             float xVelDiff = currentVelocity.x - rb.velocity.x;
             float zVelDiff = currentVelocity.z - rb.velocity.z;
@@ -257,7 +276,9 @@ public class PlayerController : MonoBehaviour
         animator.ResetTrigger(PlayerAnimationController.JumpHash);
     }
 
-
+    /// <summary>
+    /// Check if player is on ground
+    /// </summary>
     private void SampleGround()
     {
         grounded = Physics.Raycast(
@@ -276,11 +297,19 @@ public class PlayerController : MonoBehaviour
 
     #region Public
 
+    /// <summary>
+    /// Set Speed by team
+    /// </summary>
+    /// <param name="teamDataSpeedModifier"></param>
     public void SetTeamSpeedModifier(float teamDataSpeedModifier)
     {
         teamSpeedModifier = teamDataSpeedModifier;
     }
 
+    /// <summary>
+    /// If the player controller is mine
+    /// </summary>
+    /// <returns></returns>
     public bool IsMine()
     {
         return Pv.IsMine;
@@ -339,7 +368,7 @@ public class PlayerController : MonoBehaviour
     [PunRPC]
     private void RPC_Interact()
     {
-        pac.InteractTrigger();
+        Pac.InteractTrigger();
     }
 
     #endregion RPC

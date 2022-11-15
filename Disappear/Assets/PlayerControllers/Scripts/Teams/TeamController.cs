@@ -1,22 +1,25 @@
 using Audio.Scripts.Footsteps;
 using Photon.Pun;
+using SteamAudio;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+
 public class TeamController : MonoBehaviour
-{   
+{
+    [SerializeField] private bool isSeeker = true;
     [SerializeField] private Transform meshContainer;
 
-    [Header("Seeker Parameters")]
-    [SerializeField] private TeamData seeker;
-    
-    [Header("Hider Parameters")]
-    [SerializeField] private TeamData hider;
+    [Header("Seeker Parameters")] [SerializeField]
+    private TeamData seeker;
+
+    [Header("Hider Parameters")] [SerializeField]
+    private TeamData hider;
 
     [SerializeField] private int hiderLife;
     [SerializeField] private float hiderTransparencySpeed;
     [SerializeField] private float hiderTransparencyThreshold;
-    
+
     private PhotonView pv;
     private TeamData teamData;
 
@@ -35,11 +38,14 @@ public class TeamController : MonoBehaviour
             Debug.LogError("Hider can not be null", this);
             return;
         }
+
+        teamData = seeker;
     }
 
-    public ModelInfos SetTeamData(bool isSeeker, PhotonView photonView)
+    public ModelInfos SetTeamData(PhotonView photonView)
     {
-        teamData = isSeeker ? seeker : hider;
+        teamData = (string) photonView.Owner.CustomProperties["team"] == "S" ? seeker : hider;
+
         pv = photonView;
 
         SkinnedMeshRenderer[] hiderRenderers;
@@ -49,19 +55,9 @@ public class TeamController : MonoBehaviour
         SetSpeedModifier();
 
         if (!isSeeker)
-        {
             SetHider(hiderRenderers, hiderShadow);
-            if (pv.IsMine)
-                MultiplayerManager.Instance.SetGameTitle("Hider");
-        }
-        else if (pv.IsMine)
-        {
-            MultiplayerManager.Instance.SetGameTitle("Seeker");
-        }
-
         return mi;
     }
-
 
     private void SetSpeedModifier()
     {
@@ -70,7 +66,7 @@ public class TeamController : MonoBehaviour
 
     private void SetPostProcessingVolume()
     {
-        if (pv.IsMine)
+        if (pv.IsMine && PostProcessingController.Instance)
             PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
     }
 

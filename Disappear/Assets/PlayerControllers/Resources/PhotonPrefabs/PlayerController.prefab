@@ -12,13 +12,14 @@ GameObject:
   - component: {fileID: 1029722226550594275}
   - component: {fileID: 1029722226550594273}
   - component: {fileID: 1029722226550594274}
-  - component: {fileID: 1029722226550594287}
   - component: {fileID: 1236024974}
   - component: {fileID: 1236024973}
+  - component: {fileID: 1029722226550594287}
   - component: {fileID: 1236024972}
   - component: {fileID: 8581994166390946275}
   - component: {fileID: 3450989531408886490}
-  m_Layer: 8
+  - component: {fileID: 7774758773170448034}
+  m_Layer: 3
   m_Name: PlayerController
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -33,7 +34,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6044308510027733539}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -6.04, y: 0.28, z: 12.155}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -90,31 +91,6 @@ CapsuleCollider:
   m_Height: 1.78
   m_Direction: 1
   m_Center: {x: 0, y: 0.89, z: 0}
---- !u!114 &1029722226550594287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6044308510027733539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7c423ab8d29a054390c30a31a2244e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  walkSpeed: 2
-  runSpeedFactor: 1
-  crouchSpeedFactor: -0.5
-  lightOverweightSpeedModifier: 0
-  largeOverweightSpeedModifier: 0
-  jumpFactor: 200
-  airResistance: 0.8
-  groundCheck:
-    serializedVersion: 2
-    m_Bits: 2147483647
-  animBlendSpeed: 8.9
-  dis2Ground: 0.8
-  gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
 --- !u!114 &1236024974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,6 +130,30 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &1029722226550594287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6044308510027733539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7c423ab8d29a054390c30a31a2244e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 2
+  runSpeedFactor: 1
+  lightOverweightSpeedModifier: 0
+  largeOverweightSpeedModifier: 0
+  jumpFactor: 200
+  airResistance: 0.8
+  groundCheck:
+    serializedVersion: 2
+    m_Bits: 2147483647
+  animBlendSpeed: 8.9
+  dis2Ground: 0.8
+  gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
 --- !u!114 &1236024972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8db1284903754ba478cbf86af09665f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSeeker: 1
   meshContainer: {fileID: 6389027032552079513}
   seeker: {fileID: 11400000, guid: 565072a44b02f6c459a00a2e5d8f2cef, type: 2}
   hider: {fileID: 11400000, guid: 318c9f85cbfc0c049a10a3edb18d05f5, type: 2}
@@ -205,3 +206,20 @@ MonoBehaviour:
   recoveryCooldown: 2
   recoveryModifier: 1
   consumptionModifier: 1
+--- !u!114 &7774758773170448034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6044308510027733539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a342c238961672f4fbd8806af158de27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHeathStatus: 3
+  recalculateHealth: 0
+  healthySpeedModifier: 0
+  woundedSpeedModifier: -0.2
+  dyingSpeedModifier: -0.8

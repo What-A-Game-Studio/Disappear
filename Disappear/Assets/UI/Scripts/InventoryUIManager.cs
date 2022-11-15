@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
 
 public class Case
 {

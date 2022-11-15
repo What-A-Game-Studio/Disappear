@@ -1,12 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using UnityEngine.Serialization;
-using WaG.Input_System.Scripts;
-using Matrix4x4 = UnityEngine.Matrix4x4;
-using Vector3 = UnityEngine.Vector3;
+using WAG.Core.Controls;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -75,14 +68,6 @@ public class PlayerInteraction : MonoBehaviour
             interactableObject = null;
         }
 
-        camRay = new Ray(cam.position, cam.forward);
-        if (isSeeker && InputManager.Instance.Catch && Physics.Raycast(camRay, out hit, catchMaxDistance, catchLayer))
-        {
-            if (hit.collider.TryGetComponent(out Interactable interactableHider))
-            {
-                interactableHider.onInteract?.Invoke(player);
-            }
-        }
     }
 
     void OnDrawGizmos()

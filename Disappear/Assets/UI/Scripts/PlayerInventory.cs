@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using WaG;
-using WaG.Input_System.Scripts;
+using WAG.Core.Controls;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -143,7 +142,7 @@ public class PlayerInventory : MonoBehaviour
             PlayerController.MainPlayer.PlayerWeight = Weight.LargeOverweight;
         
         else if (currentWeight > maxWeight * 0.5f)
-            PlayerController.MainPlayer.PlayerWeight = Weight.LigthOverweight;
+            PlayerController.MainPlayer.PlayerWeight = Weight.LightOverweight;
         
         else
             PlayerController.MainPlayer.PlayerWeight = Weight.Normal;

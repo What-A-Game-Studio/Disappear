@@ -1,0 +1,17 @@
+{
+    "name": "Health",
+    "rootNamespace": "WAG.Health",
+    "references": [
+        "GUID:fe16aff440d71e944bada5b811aa591b",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
