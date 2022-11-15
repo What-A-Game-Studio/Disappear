@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using WaG;
 using WAG.Core.Controls;
+using WAG.Interactions;
 
 public class PlayerInventory : MonoBehaviour
 {

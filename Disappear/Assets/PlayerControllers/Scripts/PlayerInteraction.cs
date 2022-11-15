@@ -1,5 +1,6 @@
 using UnityEngine;
 using WAG.Core.Controls;
+using WAG.Interactions;
 
 public class PlayerInteraction : MonoBehaviour
 {

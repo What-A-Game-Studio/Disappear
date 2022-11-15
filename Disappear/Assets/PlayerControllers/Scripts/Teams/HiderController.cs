@@ -3,7 +3,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using WAG.Core;
-using WAG.Core.GM;
+using WAG.Interactions;
 
 public class HiderController : Interactable
 {
