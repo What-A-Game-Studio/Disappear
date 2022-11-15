@@ -1,20 +1,15 @@
 using Photon.Pun;
-using Photon.Realtime;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using ExitGames.Client.Photon;
+using Photon.Realtime;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using WaG;
 using WAG.Core;
 using WAG.Core.Controls;
 using WAG.Core.GM;
 using WAG.Core.Menus;
+using WAG.Debug;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks

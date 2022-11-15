@@ -3,6 +3,7 @@ using Photon.Pun;
 using WaG;
 using WAG.Core.Controls;
 using WAG.Core.Menus;
+using WAG.Debug;
 
 [RequireComponent(
     typeof(Rigidbody),

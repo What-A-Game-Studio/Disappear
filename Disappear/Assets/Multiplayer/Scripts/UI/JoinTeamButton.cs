@@ -4,8 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WaG
-{
+
     public class JoinTeamButton : MonoBehaviour
     {
         private TMP_Text textTeam;
@@ -44,4 +43,3 @@ namespace WaG
             colors.normalColor = buttonColor;
         }
     }
-}
