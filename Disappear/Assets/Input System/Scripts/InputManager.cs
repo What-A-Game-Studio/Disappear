@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using WaG.Input_System.Scripts;
@@ -53,7 +54,7 @@ public class InputManager : MonoBehaviour
     private InputAction closeMenuAction;
 
     #endregion UI Controls
-    
+
     private void Awake()
     {
         if (InputManager.Instance != null)
@@ -71,7 +72,7 @@ public class InputManager : MonoBehaviour
             Debug.Break();
         }
 
-        playerInput.SwitchCurrentActionMap("Player");
+        playerInput.SwitchCurrentActionMap("Menu");
         InGameMap = playerInput.currentActionMap;
 
         moveAction = playerInput.actions[ActionsControls.Move.ToString()];
@@ -172,14 +173,14 @@ public class InputManager : MonoBehaviour
 
     private void OnOpenMenu(InputAction.CallbackContext context)
     {
-        playerInput.SwitchCurrentActionMap("UI");
+        playerInput.SwitchCurrentActionMap("Pause");
     }
 
     private void OnCloseMenu(InputAction.CallbackContext context)
     {
         playerInput.SwitchCurrentActionMap("Player");
     }
-    
+
     private void OnUse(InputAction.CallbackContext context)
     {
         Use = context.ReadValueAsButton();
@@ -203,6 +204,14 @@ public class InputManager : MonoBehaviour
     {
         playerInput.actions[actionControl.ToString()].performed += callback;
         // playerInput.actions[actionControl.ToString()].canceled += callback;
+    }
+
+    public void SwitchMap(string map)
+    {
+        if (playerInput.actions.FindActionMap(map) != null)
+        {
+            playerInput.SwitchCurrentActionMap(map);
+        }
     }
 
     #endregion Public Methods

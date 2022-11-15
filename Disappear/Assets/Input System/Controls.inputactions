@@ -2,6 +2,12 @@
     "name": "Controls",
     "maps": [
         {
+            "name": "Menu",
+            "id": "350d0a3c-df6e-4c28-a423-9381cd8f4c3f",
+            "actions": [],
+            "bindings": []
+        },
+        {
             "name": "Player",
             "id": "d15654da-5665-4c18-a5c9-870b60e0cb9e",
             "actions": [
@@ -322,7 +328,7 @@
             ]
         },
         {
-            "name": "UI",
+            "name": "Pause",
             "id": "53f87ee6-52d7-4ad4-ad2f-bbd67eaee288",
             "actions": [
                 {

@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
 
-        
+        SwitchCursorLockMode(CursorLockMode.None, true);
         InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
         InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
         
@@ -31,13 +31,14 @@ public class GameManager : MonoBehaviour
 
     public void OpenPauseMenu(InputAction.CallbackContext context)
     {
-        if (MenuManager.Instance.GetCurrentMenu() == MenuType.Game)
             MenuManager.Instance.OpenMenu(pauseMenu);
+            SwitchCursorLockMode(CursorLockMode.None, true);
     }
 
     public void ClosePauseMenu(InputAction.CallbackContext context)
     {
         MenuManager.Instance.CloseMenu(pauseMenu);
+        SwitchCursorLockMode(CursorLockMode.Locked, false);
         MenuManager.Instance.OpenMenu(MenuType.Game);
     }
 
@@ -68,5 +69,17 @@ public class GameManager : MonoBehaviour
     public void HiderQuit(QuitEnum reasonToQuit)
     {
         MultiplayerManager.Instance.LeaveRoom(reasonToQuit);
+    }
+
+    public void SwitchCursorLockMode(CursorLockMode lockMode, bool visible)
+    
+    {
+        Cursor.lockState = lockMode;
+        Cursor.visible = visible;
+        if (PlayerController.MainPlayer)
+        {
+            PlayerController.MainPlayer.CanMoveOrRotate = !visible;
+
+        }
     }
 }
