@@ -22,6 +22,10 @@ public class PlayerListItemController : MonoBehaviourPunCallbacks
     {
         this.playerInfo = pi;
         playerNameTxt.text = pi.NickName;
+        if (pi.NickName == PhotonNetwork.LocalPlayer.NickName)
+        {
+            playerNameTxt.color = Color.yellow;
+        }
         playerHostImage.gameObject.SetActive(pi.IsMasterClient);
     }
 

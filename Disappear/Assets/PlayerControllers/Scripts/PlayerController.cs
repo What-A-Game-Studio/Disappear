@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        InputManager.Instance.SwitchMap("Player");
         HideCursor();
         if (!TryGetComponent<Animator>(out animator))
         {
@@ -224,6 +225,8 @@ public class PlayerController : MonoBehaviour
             default:
                 break;
         }
+
+        targetSpeed *= DebuggerManager.Instance.debugSpeed;
 
         if (grounded)
         {

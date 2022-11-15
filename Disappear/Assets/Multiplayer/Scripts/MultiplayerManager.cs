@@ -7,6 +7,7 @@ using ExitGames.Client.Photon;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WaG;
@@ -88,14 +89,16 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         else
             roomName += Random.Range(0, 10000).ToString("0000");
 
-        customProperties.Add("CH", 0);
-        customProperties.Add("CS", 0);
+        customProperties.Add("H", 0);
+        customProperties.Add("S", 0);
         customProperties.Add("MH", MaxHiders);
         customProperties.Add("MS", MaxSeekers);
 
         PhotonNetwork.CreateRoom(roomName,
             new RoomOptions
             {
+                IsOpen = true,
+                IsVisible = true,
                 MaxPlayers = (byte)maxPlayers, CustomRoomProperties = customProperties, BroadcastPropsChangeToAll = true
             });
         MenuManager.Instance.OpenMenu(MenuType.Loading);
@@ -108,14 +111,12 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void LeaveRoom(QuitEnum reasonToQuit = QuitEnum.Quit)
     {
+        UpdateRoomTeamData((string)PhotonNetwork.LocalPlayer.CustomProperties["team"], -1);
         object[] content = new object[] { PhotonNetwork.NickName, reasonToQuit };
         RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
         PhotonNetwork.RaiseEvent(1, content, raiseEventOptions, SendOptions.SendReliable);
+        MenuManager.Instance.OpenMenu(MenuType.Loading);
         PhotonNetwork.LeaveRoom();
-        PhotonNetwork.LoadLevel("MultiplayerMenuScene");
-        // PhotonNetwork.LeaveRoom();
-        // MenuManager.Instance.OpenMenu(MenuType.Loading);
-        // SceneManager.LoadScene(0);
     }
 
     public void JoinHiderTeam()
@@ -141,11 +142,13 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void SwitchTeamFromHiderToSeeker()
     {
+        UpdateRoomTeamData("H", -1);
         SetTeam("S");
     }
 
     public void SwitchTeamFromSeekerToHider()
     {
+        UpdateRoomTeamData("S", -1);
         SetTeam("H");
     }
 
@@ -154,8 +157,8 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         Hashtable customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
         customProperties["team"] = team;
         PhotonNetwork.LocalPlayer.SetCustomProperties(customProperties);
+        UpdateRoomTeamData(team, 1);
     }
-
 
     public void JoinRoom(RoomInfo info)
     {
@@ -220,12 +223,10 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         if ((string)player.CustomProperties["team"] == "S")
         {
             playerGo = Instantiate(playerListItemPrefab, seekerListContent);
-            UpdateRoomTeamData("CS", 1);
         }
         else
         {
             playerGo = Instantiate(playerListItemPrefab, hiderListContent);
-            UpdateRoomTeamData("CH", 1);
         }
 
         playerGo.name = player.NickName;
@@ -236,6 +237,11 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     private void ClearPlayerRoomList()
     {
         foreach (Transform child in seekerListContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (Transform child in hiderListContent)
         {
             Destroy(child.gameObject);
         }
@@ -250,9 +256,16 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     private void UpdateRoomTeamData(string team, int modifier)
     {
-        Hashtable customProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+        Room cr = PhotonNetwork.CurrentRoom;
+        Hashtable customProperties = cr.CustomProperties;
         customProperties[team] = (int)customProperties[team] + modifier;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        if ((int)cr.PlayerCount <= 0 || cr.PlayerCount >= cr.MaxPlayers)
+        {
+            cr.IsOpen = false;
+            cr.IsVisible = false;
+        }
+
+        cr.SetCustomProperties(customProperties);
     }
 
     #endregion ======================= Private : End  =======================
@@ -272,18 +285,11 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         PhotonNetwork.NickName = "Player#" + Random.Range(0, 10000).ToString("0000");
     }
 
-    public override void OnCreatedRoom()
-    {
-        // hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
-        // seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"], (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
-    }
-
-
     public override void OnJoinedRoom()
     {
-        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CH"],
+        hiderJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["H"],
             (int)PhotonNetwork.CurrentRoom.CustomProperties["MH"]);
-        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["CS"],
+        seekerJoinButton.Init((int)PhotonNetwork.CurrentRoom.CustomProperties["S"],
             (int)PhotonNetwork.CurrentRoom.CustomProperties["MS"]);
         MenuManager.Instance.OpenMenu(MenuType.Role);
     }
@@ -298,6 +304,13 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        if (SceneManager.GetActiveScene().name != "MultiplayerMenuScene")
+        {
+            PhotonNetwork.LoadLevel("MultiplayerMenuScene");
+            InputManager.Instance.SwitchMap("Menu");
+            GameManager.Instance.SwitchCursorLockMode(CursorLockMode.None, true);
+        }
+
         MenuManager.Instance.OpenMenu(MenuType.Title);
         ClearPlayerRoomList();
     }
@@ -309,19 +322,21 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        this.roomList = roomList;
-        foreach (Transform child in roomListContent)
+        foreach (RoomInfo ri in roomList)
         {
-            Destroy(child.gameObject);
-        }
+            Debug.Log("Update Room List with : " + ri.Name);
 
-        for (int i = 0; i < roomList.Count; i++)
-        {
-            if (roomList[i].RemovedFromList)
-                continue;
-            if (roomList[i].MaxPlayers > roomList[i].PlayerCount)
+            Transform roomChild = roomListContent.Find(ri.Name);
+            if (!ri.IsVisible || !ri.IsOpen || ri.RemovedFromList)
+            {
+                if (roomChild)
+                    Destroy(roomChild.gameObject);
+            }
+            else if (roomChild == null)
+            {
                 Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItemController>()
-                    .Init(roomList[i]);
+                    .Init(ri);
+            }
         }
     }
 
@@ -355,6 +370,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
                 return;
             }
         }
+
         CreatePlayer(target);
     }
 

@@ -51,7 +51,7 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
     }
 
     #region ======================= Public : Start  =======================
-    
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -98,7 +98,8 @@ public class RoomManager : MonoBehaviourPunCallbacks, IPunObservable, IOnEventCa
                         break;
                 }
 
-                NotificationManager.Instance.DisplayNotification(leavingPlayer + " " + quitReason);
+                if (NotificationManager.Instance)
+                    NotificationManager.Instance.DisplayNotification(leavingPlayer + " " + quitReason);
             }
         }
     }
