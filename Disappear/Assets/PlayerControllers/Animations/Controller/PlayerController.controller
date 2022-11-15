@@ -2282,7 +2282,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: 0e4957b1365cf71488bebe3805d11eee,
       type: 3}
     m_Threshold: 0.125
-    m_Position: {x: 0, y: 2}
+    m_Position: {x: 0, y: 1.333333}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2291,7 +2291,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: bf306fadb81f707448f2434bd733f994,
       type: 3}
     m_Threshold: 0.25
-    m_Position: {x: 2, y: 0}
+    m_Position: {x: 1.333333, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2300,7 +2300,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: 60f8a5e17222d1c47b413e557af6eda0,
       type: 3}
     m_Threshold: 0.375
-    m_Position: {x: -2, y: 0}
+    m_Position: {x: -1.333333, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2309,7 +2309,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: 9d7af652a0229d848aebd60e223803e2,
       type: 3}
     m_Threshold: 0.5
-    m_Position: {x: 0, y: -2}
+    m_Position: {x: 0, y: -1.333333}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2318,7 +2318,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: ae0d6294c4e465f4f97286d04ba889f9,
       type: 3}
     m_Threshold: 0.625
-    m_Position: {x: 0, y: 4}
+    m_Position: {x: 0, y: 2.666667}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2336,7 +2336,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: 842e9f9ece288f0418692a7a2fdc9719,
       type: 3}
     m_Threshold: 0.875
-    m_Position: {x: -4, y: 0}
+    m_Position: {x: -2.666667, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend
@@ -2345,7 +2345,7 @@ BlendTree:
     m_Motion: {fileID: -203655887218126122, guid: d6e82c04d91b25b4483d99366537a3bc,
       type: 3}
     m_Threshold: 1
-    m_Position: {x: 0, y: -4}
+    m_Position: {x: 0, y: -2.666667}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: Blend

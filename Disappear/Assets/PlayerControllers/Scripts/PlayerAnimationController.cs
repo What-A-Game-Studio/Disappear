@@ -45,7 +45,6 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetBool(PlayerAnimationController.GroundedHash, PC.Grounded);
         animator.SetBool(PlayerAnimationController.Wounded,
             PC.HealthController.CurrentHeathStatus != HeathStatus.Healthy);
-        Debug.Log(PC.HealthController.CurrentHeathStatus);
     }
 
     public void InteractTrigger()

@@ -219,5 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startHeathStatus: 3
+  recalculateHealth: 0
+  healthySpeedModifier: 0
   woundedSpeedModifier: -0.2
   dyingSpeedModifier: -0.8
