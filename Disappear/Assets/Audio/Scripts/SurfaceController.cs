@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Audio.Scripts
+namespace WAG.Audio
 {
     public class SurfaceController : MonoBehaviour
     {

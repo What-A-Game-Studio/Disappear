@@ -1,9 +1,8 @@
-using Audio.Scripts.Footsteps;
 using Photon.Pun;
-using SteamAudio;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using WAG.Audio.Footsteps;
 
 public class TeamController : MonoBehaviour
 {
