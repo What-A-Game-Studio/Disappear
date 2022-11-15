@@ -1,7 +1,6 @@
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 [CustomEditor(typeof(RendomiserTransform))]
 public class RendomiserTransform: EditorWindow
@@ -37,9 +36,9 @@ public class RendomiserTransform: EditorWindow
     private Vector3 GetRdmRotation(Vector3 currentRot)
     {
         return new Vector3(
-            rotationX ? Random.Range(0f, 360f) : currentRot.x,
-            rotationY ? Random.Range(0f, 360f) : currentRot.y,
-            rotationZ ? Random.Range(0f, 360f) : currentRot.y);
+            rotationX ? UnityEngine.Random.Range(0f, 360f) : currentRot.x,
+            rotationY ? UnityEngine.Random.Range(0f, 360f) : currentRot.y,
+            rotationZ ? UnityEngine.Random.Range(0f, 360f) : currentRot.y);
     }
         
 }
