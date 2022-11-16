@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
-using Audio.Scripts.Footsteps;
 using UnityEngine;
 
-namespace Audio.Scripts
+namespace WAG.Audio
 {
     public class AudioManager : MonoBehaviour
     {

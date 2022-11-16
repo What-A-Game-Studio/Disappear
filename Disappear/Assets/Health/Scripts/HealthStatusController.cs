@@ -6,7 +6,6 @@ namespace WAG.Health
     public abstract class HealthStatusController : MonoBehaviour
     {
         public delegate void ChangeHealth(HeathStatus status);
-
         public event ChangeHealth OnHealthChanged;
 
         [SerializeField] private HeathStatus startHeathStatus = HeathStatus.Healthy;

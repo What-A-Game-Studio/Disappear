@@ -1,6 +1,6 @@
 {
-    "name": "WaG.Audio",
-    "rootNamespace": "",
+    "name": "WAG.Audio",
+    "rootNamespace": "WAG.Audio",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

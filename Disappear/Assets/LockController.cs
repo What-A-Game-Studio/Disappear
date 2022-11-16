@@ -1,5 +1,7 @@
 
 using UnityEngine;
+using WAG.Player;
+
 public class LockController : MonoBehaviour
 {
  

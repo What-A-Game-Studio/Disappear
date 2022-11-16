@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WaG
+namespace WAG.Multiplayer
 {
+
     public class JoinTeamButton : MonoBehaviour
     {
         private TMP_Text textTeam;
@@ -13,8 +12,8 @@ namespace WaG
         private Button teamButton;
         private ColorBlock colors;
         private Color baseColor;
-        
-        
+
+
         public void Init(int current, int max)
         {
             textTeam = GetComponentInChildren<TextMeshProUGUI>();

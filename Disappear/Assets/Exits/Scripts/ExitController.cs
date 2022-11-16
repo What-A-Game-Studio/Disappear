@@ -1,22 +1,25 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using WAG.Core;
+using WAG.Core.GM;
+using WAG.Player.Teams;
 
-[RequireComponent(typeof(Collider))]
-public abstract class ExitController : MonoBehaviour
+namespace WAG.Exits
 {
-    protected virtual void OnTriggerEnter(Collider other)
+    [RequireComponent(typeof(Collider))]
+    public abstract class ExitController : MonoBehaviour
     {
-        if (other.gameObject.TryGetComponent(out HiderController hc))
+        protected virtual void OnTriggerEnter(Collider other)
         {
-            ExitHider(hc);
+            if (other.gameObject.TryGetComponent(out HiderController hc))
+            {
+                ExitHider(hc);
+            }
         }
-    }
 
-    protected void ExitHider(HiderController hc)
-    {
-        if (hc.IsMine())
-            GameManager.Instance.HiderQuit(QuitEnum.Escape);
+        protected void ExitHider(HiderController hc)
+        {
+            // if (hc.IsMine())
+            //     GameManager.Instance.HiderQuit(QuitEnum.Escape);
+        }
     }
 }

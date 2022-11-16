@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Audio.Footstep.Scriptable_Object;
 using UnityEngine;
 
-namespace Audio.Scripts
+namespace WAG.Audio
 {
     [CreateAssetMenu(fileName = "SurfaceData", menuName = "SO/Surface")]
     public class SurfaceTypeSO : ScriptableObject

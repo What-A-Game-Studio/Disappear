@@ -1,26 +1,29 @@
 using UnityEngine;
+using WAG.Player.Teams;
 
-
-public class ExitStayController : ExitController
+namespace WAG.Exits
 {
-    [SerializeField] private ExitStayUIController LoadingUi;
-    [SerializeField] private float timeToExit;
-    protected override void OnTriggerEnter(Collider other)
+    public class ExitStayController : ExitController
     {
-        if (other.gameObject.TryGetComponent(out HiderController hc))
-        {
-            if(hc.IsMine())
-                LoadingUi.StartTimer(timeToExit, () => ExitHider(hc));
-        }
-    
-    }
+        [SerializeField] private ExitStayUIController LoadingUi;
+        [SerializeField] private float timeToExit;
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.TryGetComponent(out HiderController hc))
+        protected override void OnTriggerEnter(Collider other)
         {
-            if(hc.IsMine())
-                LoadingUi.CancelTimer();
+            if (other.gameObject.TryGetComponent(out HiderController hc))
+            {
+                if (hc.IsMine())
+                    LoadingUi.StartTimer(timeToExit, () => ExitHider(hc));
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject.TryGetComponent(out HiderController hc))
+            {
+                if (hc.IsMine())
+                    LoadingUi.CancelTimer();
+            }
         }
     }
 }

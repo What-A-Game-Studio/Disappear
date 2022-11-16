@@ -1,76 +1,77 @@
-using System;
 using Photon.Realtime;
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class PlayerListItemController : MonoBehaviourPunCallbacks
+namespace WAG.Multiplayer
 {
-    [SerializeField] TMP_Text playerNameTxt;
-
-    [SerializeField] TMP_Text PlayerPingTxt;
-
-    [SerializeField] Image playerHostImage;
-
-    public Player playerInfo { get; private set; }
-
-    public void Init(Player pi)
+    public class PlayerListItemController : MonoBehaviourPunCallbacks
     {
-        this.playerInfo = pi;
-        playerNameTxt.text = pi.NickName;
-        if (pi.NickName == PhotonNetwork.LocalPlayer.NickName)
+        [SerializeField] TMP_Text playerNameTxt;
+
+        [SerializeField] TMP_Text PlayerPingTxt;
+
+        [SerializeField] Image playerHostImage;
+
+        public Player playerInfo { get; private set; }
+
+        public void Init(Player pi)
         {
-            playerNameTxt.color = Color.yellow;
-        }
-        playerHostImage.gameObject.SetActive(pi.IsMasterClient);
-    }
+            this.playerInfo = pi;
+            playerNameTxt.text = pi.NickName;
+            if (pi.NickName == PhotonNetwork.LocalPlayer.NickName)
+            {
+                playerNameTxt.color = Color.yellow;
+            }
 
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        if (Equals(playerInfo, otherPlayer))
+            playerHostImage.gameObject.SetActive(pi.IsMasterClient);
+        }
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            if (Equals(playerInfo, otherPlayer))
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        public override void OnLeftRoom()
         {
             Destroy(gameObject);
         }
-    }
 
-    public override void OnLeftRoom()
-    {
-        Destroy(gameObject);
-    }
+        public void SetTeam(string team)
+        {
+            Hashtable customProperties = playerInfo.CustomProperties;
+            customProperties["team"] = team;
+            playerInfo.SetCustomProperties(customProperties);
+        }
 
-    public void SetTeam(string team)
-    {
-        Hashtable customProperties = playerInfo.CustomProperties;
-        customProperties["team"] = team;
-        playerInfo.SetCustomProperties(customProperties);
-    }
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        {
+            if (targetPlayer.NickName != playerInfo.NickName)
+                return;
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-    {
-        if (targetPlayer.NickName != playerInfo.NickName)
-            return;
+            // if ((bool)changedProps["team"])
+            // {
+            //     playerTeamBtn.sprite = seekerSprite;
+            // }
+            // else
+            // {
+            //     playerTeamBtn.sprite = hiderSprite;
+            // }
+        }
 
-        // if ((bool)changedProps["team"])
-        // {
-        //     playerTeamBtn.sprite = seekerSprite;
-        // }
-        // else
-        // {
-        //     playerTeamBtn.sprite = hiderSprite;
-        // }
-    }
+        public void SetTeamToHider()
+        {
+            SetTeam("Hider");
+        }
 
-    public void SetTeamToHider()
-    {
-        SetTeam("Hider");
-    }
-
-    public void SetTeamToSeeker()
-    {
-        SetTeam("Hider");
+        public void SetTeamToSeeker()
+        {
+            SetTeam("Hider");
+        }
     }
 }

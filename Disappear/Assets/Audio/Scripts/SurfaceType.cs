@@ -1,4 +1,4 @@
-namespace Audio.Scripts
+namespace WAG.Audio
 {
     public enum SurfaceType
     {

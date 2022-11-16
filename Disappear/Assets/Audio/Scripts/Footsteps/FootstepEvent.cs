@@ -1,7 +1,6 @@
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-namespace Audio.Scripts.Footsteps
+namespace WAG.Audio.Footsteps
 {
     public class FootstepEvent : MonoBehaviour
     {
