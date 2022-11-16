@@ -1,0 +1,27 @@
+{
+    "name": "WAG.Player",
+    "rootNamespace": "WAG.Player",
+    "references": [
+        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
+        "GUID:831409e8f9d13b5479a3baef9822ad34",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:df380645f10b7bc4b97d4f5eb6303d95",
+        "GUID:f4a8973e1692c3849900caa2c774a016",
+        "GUID:fe16aff440d71e944bada5b811aa591b",
+        "GUID:bb32fab89fddbf04a96d6d7ff1053820",
+        "GUID:87b2a3a23ae10a8458e2b9136cbcbac8",
+        "GUID:f7bc848dc15e0694792c8481b88438ec",
+        "GUID:ac885473fbab94e4ca1ef888b2193ba4",
+        "GUID:4585dbe4832b83946bbb2754addb0e62"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

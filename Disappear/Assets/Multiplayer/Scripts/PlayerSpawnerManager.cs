@@ -1,42 +1,43 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class PlayerSpawnerManager : MonoBehaviour
+namespace WAG.Multiplayer
 {
-    public static PlayerSpawnerManager Instance { get; protected set; }
-
-    private List<Vector3> playerSpawnPositionList = new List<Vector3>();
-
-
-    private void Awake()
+    public class PlayerSpawnerManager : MonoBehaviour
     {
-        if(Instance == null)
-            Instance = this;
-        else
+        public static PlayerSpawnerManager Instance { get; protected set; }
+
+        private List<Vector3> playerSpawnPositionList = new List<Vector3>();
+
+
+        private void Awake()
         {
-            Destroy(gameObject);
-            return;
+            if (Instance == null)
+                Instance = this;
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            if (transform.childCount == 0)
+            {
+                Debug.LogError("PlayerSpawnerManager need some spawners", this);
+                return;
+            }
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                playerSpawnPositionList.Add(transform.GetChild(i).position);
+            }
         }
 
-        if (transform.childCount == 0)
+        public Vector3 ChooseRandomSpawnPosition()
         {
-            Debug.LogError("PlayerSpawnerManager need some spawners", this);
-            return;
+            int rand = Random.Range(0, playerSpawnPositionList.Count);
+            Vector3 newPos = playerSpawnPositionList[rand];
+            return newPos;
         }
-        
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            playerSpawnPositionList.Add(transform.GetChild(i).position);
-        }
-    }
-
-    public Vector3 ChooseRandomSpawnPosition()
-    {
-        int rand = Random.Range(0, playerSpawnPositionList.Count);
-        Vector3 newPos = playerSpawnPositionList[rand];
-        return newPos;
     }
 }
