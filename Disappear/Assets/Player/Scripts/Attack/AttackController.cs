@@ -47,16 +47,16 @@ namespace WAG.Player.Attacks
 
         private void registerAttack()
         {
-            if (loadedAttack.DamageableObjectInRange == null)
+            if (normalAttack.DamageableObjectInRange == null)
                 return;
 
-            Vector3 attackOrigin = loadedAttack.transform.position;
-            Ray r = new Ray(attackOrigin, loadedAttack.DamageableObjectInRange.transform.position - attackOrigin);
+            Vector3 attackOrigin = normalAttack.transform.position;
+            Ray r = new Ray(attackOrigin, normalAttack.DamageableObjectInRange.transform.position - attackOrigin);
             if (Physics.Raycast(r, out RaycastHit hitInfo) &&
-                loadedAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
+                normalAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
                 hitInfo.collider.gameObject.GetInstanceID())
             {
-                loadedAttack.DamageableObjectInRange.TakeDamage();
+                normalAttack.DamageableObjectInRange.TakeDamage();
             }
         }
     }

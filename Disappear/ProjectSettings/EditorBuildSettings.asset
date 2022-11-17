@@ -14,9 +14,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Multiplayer/Scenes/MultiplayerGameScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/PostGame/PostGameScene.unity
-    guid: 968298b3fd7f86d41bc80dc9f6bf0e8c
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7261e7b95a3a63b4e8677ca3cf1d02c3,
       type: 2}

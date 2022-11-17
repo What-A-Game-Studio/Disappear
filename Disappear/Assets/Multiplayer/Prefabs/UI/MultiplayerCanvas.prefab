@@ -123,12 +123,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2065269781}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: WAG.Core.Menus.MenuManager, WAG.Core
         m_MethodName: OpenMenu
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 4057579508725493407}
-          m_ObjectArgumentAssemblyTypeName: MenuController, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: WAG.Core.Menus.MenuController, WAG.Core
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2104,12 +2104,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2065269781}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: WAG.Core.Menus.MenuManager, WAG.Core
         m_MethodName: OpenMenu
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 2586597613124966521}
-          m_ObjectArgumentAssemblyTypeName: MenuController, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: WAG.Core.Menus.MenuController, WAG.Core
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
