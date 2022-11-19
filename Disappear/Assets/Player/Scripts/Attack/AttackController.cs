@@ -25,23 +25,23 @@ namespace WAG.Player.Attacks
         private void Awake()
         {
             ///TODO: Pas hyper clean je pense
-            if (!transform.parent.parent.TryGetComponent<PhotonView>(out pv))
-            {
-                Debug.LogError("Need PhotonView", this);
-                Debug.Break();
-            }
+            // if (!transform.parent.parent.TryGetComponent<PhotonView>(out pv))
+            // {
+            //     Debug.LogError("Need PhotonView", this);
+            //     Debug.Break();
+            // }
 
-            if (!transform.parent.parent.TryGetComponent<PlayerController>(out pc))
-            {
-                Debug.LogError("Need PlayerController", this);
-                Debug.Break();
-            }
+            // if (!transform.parent.parent.TryGetComponent<PlayerController>(out pc))
+            // {
+            //     Debug.LogError("Need PlayerController", this);
+            //     Debug.Break();
+            // }
 
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.Catch,
-                started: context => { },
-                performed: context => registerAttack(),
-                canceled: context => { });
+                started: context => { /*Debug.Log("started: " + context);*/ },
+                performed: context => { Debug.Log("Performed: " + context); },
+                canceled: context => {/* Debug.Log("canceled: "+context);*/ });
         }
 
 

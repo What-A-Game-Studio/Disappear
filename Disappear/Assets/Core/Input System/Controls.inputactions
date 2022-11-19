@@ -228,7 +228,7 @@
                     "name": "",
                     "id": "1e8cf369-5e3a-4694-8c25-b2397438245a",
                     "path": "<Mouse>/press",
-                    "interactions": "",
+                    "interactions": "Press,Hold",
                     "processors": "",
                     "groups": "",
                     "action": "Catch",
