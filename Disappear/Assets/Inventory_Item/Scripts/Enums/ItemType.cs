@@ -1,4 +1,4 @@
-namespace WAG.Inventory.Items
+namespace WAG.Inventory_Items
 {
         public enum ItemType
         {

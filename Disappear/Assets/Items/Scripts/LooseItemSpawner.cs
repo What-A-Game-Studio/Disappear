@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public class LooseItemSpawner : ItemSpawner
     {

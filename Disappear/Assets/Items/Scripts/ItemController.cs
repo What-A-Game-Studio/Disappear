@@ -1,12 +1,11 @@
-using System;
 using System.Collections;
 using UnityEngine;
-using WAG.Inventory;
+using WAG.Inventory_Items;
 using Random = UnityEngine.Random;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
-    public class ItemController : MonoBehaviour
+    public class ItemController : MonoBehaviour, IItemController
     {
         [SerializeField] private float forceAtSpawn = 1.2f;
         private Rigidbody rb;
@@ -17,7 +16,7 @@ namespace WAG.Inventory.Items
         [SerializeField] private float currentAngularVelocityMagnitude;
         public ItemDataSO ItemData { get; set; }
 
-        public InventoryController ContainIn { get; set; }
+        // public InventoryController ContainIn { get; set; }
 
         private void Awake()
         {
@@ -63,14 +62,13 @@ namespace WAG.Inventory.Items
         public void Activate(Vector3 spawnPos, Vector3 forwardOrientation)
         {
             transform.position = spawnPos + forwardOrientation;
-            rb.AddForce(forwardOrientation * forceAtSpawn);
+            rb.AddForce(forwardOrientation * forceAtSpawn*2);
             gameObject.SetActive(true);
         }
 
-        public void Drop()
+        public void Drop(Vector3 position, Vector3 forward)
         {
-            ContainIn.DropItem(this);
-            ContainIn = null;
+            ItemManager.Instance.DropItem(this, position, forward);
         }
     }
 }

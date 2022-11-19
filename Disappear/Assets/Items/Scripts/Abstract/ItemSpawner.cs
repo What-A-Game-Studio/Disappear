@@ -1,6 +1,7 @@
 using UnityEngine;
+using WAG.Inventory_Items;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public abstract class ItemSpawner : MonoBehaviour
     {

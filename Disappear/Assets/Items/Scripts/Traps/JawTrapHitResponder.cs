@@ -5,7 +5,7 @@ using UnityEngine;
 using WAG.HitHurtBoxes;
 using WAG.HitHurtBoxes.Class;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public class JawTrapHitResponder : CompHitResponder
     {

@@ -1,6 +1,7 @@
 using UnityEngine;
+using WAG.Inventory_Items;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     [CreateAssetMenu(fileName = "New Rarity Tiers", menuName = "SO/Rarity Tier")]
     public class RarityTierSO : ScriptableObject

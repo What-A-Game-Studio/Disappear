@@ -1,11 +1,12 @@
 using UnityEngine;
 using WAG.Interactions;
+using WAG.Inventory_Items;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public class PickableItem : Interactable
     {
-        private InventoryController inventory;
+        private IInventoryController inventory;
         public ItemController ItemController { get; set; }
 
 

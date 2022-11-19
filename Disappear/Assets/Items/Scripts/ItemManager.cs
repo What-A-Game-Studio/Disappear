@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using Photon.Pun;
+using WAG.Inventory_Items;
 using Random = UnityEngine.Random;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     /// <summary>
     /// ItemManager 
@@ -19,7 +19,7 @@ namespace WAG.Inventory.Items
 
         [SerializeField] private RarityTierSO[] RarityTiers;
         [SerializeField] private ItemDataSO[] itemsData;
-        [SerializeField] private GameObject[] usablesPrefabs;
+        [SerializeField] private GameObject[] usablePrefabs;
 
         private ItemSpawner[] spawners;
 
@@ -170,8 +170,9 @@ namespace WAG.Inventory.Items
         /// drop item from inventory
         /// </summary>
         /// <param name="item">Item to drop</param>
-        /// <param name="inventoryTransform"></param>
-        public void DropItem(ItemController item, Transform inventoryTransform)
+        /// <param name="position">Position to drop</param>
+        /// <param name="forward">direction to drop</param>
+        public void DropItem(ItemController item, Vector3 position, Vector3 forward)
         {
             int? indexInChildren = FindIndexOfItem(item);
 
@@ -180,8 +181,8 @@ namespace WAG.Inventory.Items
             pv.RPC(nameof(RPC_DropItem),
                 RpcTarget.All,
                 indexInChildren.Value,
-                inventoryTransform.position,
-                inventoryTransform.forward);
+                position,
+                forward);
         }
 
         /// <summary>
@@ -204,10 +205,9 @@ namespace WAG.Inventory.Items
         /// </summary>
         /// <param name="item">The item to find</param>
         /// <returns>The usable item if it exists, null otherwise</returns>
-        [CanBeNull]
         public GameObject GetUsable(ItemController item)
         {
-            foreach (GameObject go in usablesPrefabs)
+            foreach (GameObject go in usablePrefabs)
             {
                 string itemName = item.ItemData.ShortName.Split("_")[0];
                 if (go.name.Contains(itemName))
@@ -239,7 +239,7 @@ namespace WAG.Inventory.Items
                 return;
 
             Transform child = transform.GetChild(indexInChildren);
-            child.GetComponent<ItemController>()?.Activate(spawnPos, forwardOrientation);
+            child.GetComponent<ItemController>()?.Activate(spawnPos+Vector3.up, forwardOrientation);
         }
 
         [PunRPC] // Remote Procedure Calls

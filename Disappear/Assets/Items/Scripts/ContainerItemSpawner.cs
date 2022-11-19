@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public class ContainerItemSpawner : ItemSpawner
     {

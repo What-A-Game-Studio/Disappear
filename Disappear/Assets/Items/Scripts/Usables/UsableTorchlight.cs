@@ -1,7 +1,7 @@
 using UnityEngine;
 using WAG.Interactions;
 
-namespace WAG.Inventory.Items
+namespace WAG.Items
 {
     public class UsableTorchlight : Interactable
     {

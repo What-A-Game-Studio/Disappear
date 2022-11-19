@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WAG.Inventory.Items
+namespace WAG.Inventory_Items
 {
     [CreateAssetMenu(fileName = "New Item", menuName = "SO/Item")]
     public class ItemDataSO : ScriptableObject

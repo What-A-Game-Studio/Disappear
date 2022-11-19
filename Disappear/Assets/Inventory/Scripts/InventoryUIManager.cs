@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WAG.Core.Controls;
-using WAG.Inventory.Items;
+using WAG.Inventory_Items;
 
 namespace WAG.Inventory
 {
@@ -23,6 +23,8 @@ namespace WAG.Inventory
 
         [SerializeField] private RectTransform itemContainer;
         [field: SerializeField] public Transform itemDraggedContainer { get; private set; }
+        public Transform WhereToDropItem { get; set; }
+
         [SerializeField] private GameObject itemUIPrefab;
 
         private bool previousState;
@@ -118,7 +120,7 @@ namespace WAG.Inventory
         /// </summary>
         /// <param name="itemController">Informations of picked item</param>
         /// <returns>true if there is enough space for item, false otherwise</returns>
-        public bool StockNewItem(ItemController itemController)
+        public bool StockNewItem(IItemController itemController)
         {
             for (int i = 0; i < listCases.Count; i++)
             {
@@ -151,7 +153,7 @@ namespace WAG.Inventory
         /// </summary>
         /// <param name="itemController"> The data for the item to create</param>
         /// <param name="previousItem"> the item for the item already in the slot if there is one </param>
-        public void StockNewUsable(ItemController itemController, out ItemController previousItem)
+        public void StockNewUsable(IItemController itemController, out IItemController previousItem)
         {
             if (usableCase.Occupied)
             {
@@ -174,7 +176,7 @@ namespace WAG.Inventory
         /// </summary>
         /// <param name="itemController">Information of picked item</param>
         /// <returns> The InventoryItem component of the created object</returns>
-        public InventoryItem GenerateUIItem(ItemController itemController)
+        public InventoryItem GenerateUIItem(IItemController itemController)
         {
             GameObject itemUI = Instantiate(itemUIPrefab, itemContainer);
             itemUI.GetComponent<Image>().sprite = itemController.ItemData.Image;

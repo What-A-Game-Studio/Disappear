@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using WAG.Core.Controls;
-using WAG.Inventory.Items;
+using WAG.Inventory_Items;
 
 namespace WAG.Inventory
 {
@@ -19,7 +19,7 @@ namespace WAG.Inventory
             set => itemSize = value;
         }
 
-        public ItemController ItemController { get; set; }
+        public IItemController ItemController { get; set; }
 
         private RectTransform itemTransform;
 
@@ -63,7 +63,8 @@ namespace WAG.Inventory
             if (!InputManager.Instance.Discard || !isMouseOver) return;
             isMouseOver = false;
             InventoryUIManager.Instance.FreeCases(StoredIndex);
-            ItemController.Drop();
+            ItemController.Drop(InventoryUIManager.Instance.WhereToDropItem.position,
+                InventoryUIManager.Instance.WhereToDropItem.forward);
             Destroy(gameObject);
         }
 

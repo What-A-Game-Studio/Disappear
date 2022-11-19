@@ -1,0 +1,14 @@
+{
+    "name": "WAG.Inventory_Items",
+    "rootNamespace": "WAG.Inventory_Items",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
