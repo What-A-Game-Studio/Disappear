@@ -234,11 +234,11 @@ namespace WAG.Core.Controls
             if (canceled != null)
                 playerInput.actions[actionControl.ToString()].canceled -= canceled;
         }
-        public void SwitchMap(string map)
+        public void SwitchMap(ControlMap map)
         {
-            if (playerInput.actions.FindActionMap(map) != null)
+            if (playerInput.actions.FindActionMap(map.ToString()) != null)
             {
-                playerInput.SwitchCurrentActionMap(map);
+                playerInput.SwitchCurrentActionMap(map.ToString());
             }
         }
 

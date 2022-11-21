@@ -82,7 +82,7 @@ namespace WAG.Player
 
         void Awake()
         {
-            InputManager.Instance.SwitchMap("Player");
+            InputManager.Instance.SwitchMap(ControlMap.Player);
             HideCursor();
             if (!TryGetComponent<Animator>(out animator))
             {
