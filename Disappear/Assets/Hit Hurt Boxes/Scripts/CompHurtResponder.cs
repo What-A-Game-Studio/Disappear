@@ -7,9 +7,9 @@ namespace WAG.HitHurtBoxes
 {
     public class CompHurtResponder : MonoBehaviour, IHurtResponder
     {
-        private List<IHurtBox> hurtBoxes = new List<IHurtBox>();
+        protected List<IHurtBox> hurtBoxes = new List<IHurtBox>();
 
-        private void Start()
+        protected virtual void Start()
         {
             //Get all Hurt boxes & set HurtResponder to this
             hurtBoxes = new List<IHurtBox>(GetComponentsInChildren<IHurtBox>());
@@ -17,12 +17,12 @@ namespace WAG.HitHurtBoxes
                 hurtBoxes[i].HurtResponder = this;
         }
 
-        public bool CheckHit(HitData data)
+        public virtual bool CheckHit(HitData data)
         {
             return true;
         }
 
-        public void Response(HitData data)
+        public virtual void Response(HitData data)
         {
             Debug.Log(data.ColliderName + " take " + data.Damage + " damage(s)", this);
         }

@@ -6,7 +6,7 @@ namespace WAG.HitHurtBoxes
 {
     public class CompHurtBox : MonoBehaviour, IHurtBox
     {
-        [SerializeField] private bool active;
+        [SerializeField] protected bool active;
         [SerializeField] private Transform owner;
 
         public bool Active => active;
@@ -15,7 +15,7 @@ namespace WAG.HitHurtBoxes
 
         public IHurtResponder HurtResponder { get; set; }
 
-        public bool CheckHit(HitData data)
+        public virtual bool CheckHit(HitData data)
         {
             if (HurtResponder == null)
             {

@@ -118,9 +118,7 @@ namespace WAG.Inventory
             // item.ContainIn = this;
             currentWeight += item.ItemData.Weight;
             UpdatePlayerWeight();
-            ///TODO: Pourquoi il faut aller récupérer le prefabs dans le input manager ?
-            // currentUsableGO = ItemManager.Instance.GetUsable(item);
-            currentUsableGO = Instantiate(currentUsableGO, usableAnchor.position, Quaternion.identity, usableAnchor);
+            currentUsableGO = Instantiate(item.ItemData.Model, usableAnchor.position, Quaternion.identity, usableAnchor);
             if (!currentUsableGO.TryGetComponent(out currentUsable))
             {
                 Debug.LogError("Can't find Usable component");
@@ -138,7 +136,6 @@ namespace WAG.Inventory
         /// <param name="item">The item to drop</param>
         public void DropItem(IItemController item)
         {
-            Debug.Log("InventoryController.DropItem", this);
             item.Drop(transform.position, transform.forward);
             // ItemManager.Instance.DropItem(item, transform);
             itemsInInventory.Remove(item);

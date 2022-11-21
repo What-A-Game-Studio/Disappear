@@ -212,7 +212,28 @@ namespace WAG.Core.Controls
             if (canceled != null)
                 playerInput.actions[actionControl.ToString()].canceled += canceled;
         }
-
+        /// <summary>
+        /// remove event on specific events
+        /// </summary>
+        /// <param name="actionControl">Event to add events</param>
+        /// <param name="performed">
+        /// Event that is triggered when the action has been <see cref="started"/>
+        /// but then canceled before being fully <see cref="performed"/>.
+        /// </param>
+        /// <param name="started"> Event that is triggered when the action has been started.</param>
+        /// <param name="canceled">Event that is triggered when the action has been fully performed.</param>
+        public void RemoveCallbackAction(ActionsControls actionControl,
+            Action<InputAction.CallbackContext> performed,
+            Action<InputAction.CallbackContext> started = null,
+            Action<InputAction.CallbackContext> canceled = null)
+        {
+            if (started != null)
+                playerInput.actions[actionControl.ToString()].started -= started;
+            if (performed != null)
+                playerInput.actions[actionControl.ToString()].performed -= performed;
+            if (canceled != null)
+                playerInput.actions[actionControl.ToString()].canceled -= canceled;
+        }
         public void SwitchMap(string map)
         {
             if (playerInput.actions.FindActionMap(map) != null)

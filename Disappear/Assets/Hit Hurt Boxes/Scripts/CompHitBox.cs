@@ -8,7 +8,8 @@ namespace WAG.HitHurtBoxes
     {
         [SerializeField] private BoxCollider collider;
         [SerializeField] private LayerMask layer;
-        [SerializeField] private float thickness = 0.025f;
+        public bool MultipleHit { get; set; } = true;
+        private const float Thickness = 0.025f;
 
         public IHitResponder HitResponder { get; set; }
 
@@ -21,11 +22,11 @@ namespace WAG.HitHurtBoxes
                 collider.size.z * transform.lossyScale.z
             );
 
-            float distance = scaledSize.y - thickness;
+            float distance = scaledSize.y - Thickness;
             Vector3 direction = transform.up;
             Vector3 center = transform.TransformPoint(collider.center);
             Vector3 start = center - direction * (distance / 2);
-            Vector3 halfExtents = new Vector3(scaledSize.x, thickness, scaledSize.z) / 2;
+            Vector3 halfExtents = new Vector3(scaledSize.x, Thickness, scaledSize.z) / 2;
 
             Quaternion orientation = transform.rotation;
 
@@ -61,6 +62,9 @@ namespace WAG.HitHurtBoxes
                             hitData.HitDetector.HitResponder?.Response(hitData);
                             hitData.HurtBox.HurtResponder?.Response(hitData);
                             isValid = true;
+
+                            if (!MultipleHit)
+                                return true;
                         }
                     }
                 }

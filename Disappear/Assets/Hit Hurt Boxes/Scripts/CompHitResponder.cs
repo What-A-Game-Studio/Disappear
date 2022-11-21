@@ -8,11 +8,13 @@ namespace WAG.HitHurtBoxes
     {
         [SerializeField] protected int damage = 1;
         [SerializeField] protected CompHitBox hitBox;
+        [SerializeField] protected bool multipleHit = true;
         public int Damage => damage;
 
         protected virtual void Awake()
         {
             hitBox.HitResponder = this;
+            hitBox.MultipleHit = multipleHit;
         }
 
         // protected virtual void Update()

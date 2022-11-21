@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
-  m_Name: Torchlight_Data
+  m_Name: Jawtrap_Data
   m_EditorClassIdentifier: 
-  <ShortName>k__BackingField: Torchlight
-  <FullName>k__BackingField: Torchlight
-  <Description>k__BackingField: Torchlight providing light
+  <ShortName>k__BackingField: Jaw trap
+  <FullName>k__BackingField: Jaw trap
+  <Description>k__BackingField: 
   <Weight>k__BackingField: 1
   <Size>k__BackingField: {x: 1, y: 1}
   <ItemType>k__BackingField: 3
-  <TierEnum>k__BackingField: 2
-  <Model>k__BackingField: {fileID: 919132149155446097, guid: 713d4e350fca0aa43a1a634da67736ca,
+  <TierEnum>k__BackingField: 0
+  <Model>k__BackingField: {fileID: 1563831381925397527, guid: 008e7d88db2f0a44bab79eb8f7894a41,
     type: 3}
-  <Image>k__BackingField: {fileID: 21300000, guid: a1e95ee2a35f1e545ba45ac43e7bf2b8,
+  <Image>k__BackingField: {fileID: 21300000, guid: 7764d51018f9d314a807c8ef88c95422,
     type: 3}

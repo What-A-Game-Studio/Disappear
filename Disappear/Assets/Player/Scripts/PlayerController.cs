@@ -29,7 +29,6 @@ namespace WAG.Player
         private Vector3 currentVelocity;
         private float teamSpeedModifier = 0;
         public PlayerAnimationController Pac { get; private set; }
-
         public CrouchController CrouchController { get; private set; }
         public InventoryController InventoryController { get; private set; }
         public PhotonView Pv { get; private set; }
@@ -38,6 +37,10 @@ namespace WAG.Player
 
         [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
         [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
+
+        public bool CanRotate { get; set; } = true;
+        public bool CanMove { get; set; } = true;
+        
 
         [Header("Weight Modifiers")] [SerializeField]
         private float lightOverweightSpeedModifier;
@@ -59,7 +62,7 @@ namespace WAG.Player
         [SerializeField] private float dis2Ground = 0.8f;
 
         [Header("OpenInventory")] [SerializeField]
-        private GameObject gameUI;
+        private GameObject inventoryUI;
 
         private bool inventoryStatus;
         private bool rpcInventoryStatus;
@@ -71,8 +74,6 @@ namespace WAG.Player
         public float? TemporarySpeedModifier { get; set; } = null;
 
         public Weight PlayerWeight { private get; set; }
-        public bool CanMoveOrRotate { get; set; } = true;
-
         private PlayerHealthController healthController;
         public PlayerHealthController HealthController => healthController;
 
@@ -118,12 +119,10 @@ namespace WAG.Player
                 Debug.LogError("Need PhotonView", this);
                 Debug.Break();
             }
-
-
+            
             InitModel();
             Pac = gameObject.AddComponent<PlayerAnimationController>();
             Pac.PC = this;
-
 
             if (!Pv.IsMine)
                 return;
@@ -137,21 +136,18 @@ namespace WAG.Player
             if (!Pv.IsMine)
                 return;
 
-            if (CanMoveOrRotate)
+            if (CanMove)
             {
                 Move();
                 HandleJump();
             }
+            else
+            {
+                currentVelocity = Vector3.zero;
+            }
 
             Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, currentVelocity);
             Pv.RPC(nameof(RPC_Ground), RpcTarget.All, Grounded);
-        }
-
-        //After FixedUpdate
-        private void LateUpdate()
-        {
-            if (!Pv.IsMine)
-                return;
         }
 
         #endregion Unity Events
@@ -173,7 +169,7 @@ namespace WAG.Player
             cameraController.CameraRig = modelInfos.CameraRig;
 
             InventoryController = gameObject.AddComponent<InventoryController>();
-            InventoryController.Init(gameUI, gameObject, modelInfos.ObjectHolder);
+            InventoryController.Init(inventoryUI, gameObject, modelInfos.ObjectHolder);
             InventoryController.OnChangeWeight += currentWeight =>
             {
                 if (currentWeight > maxWeight * 0.75f)
@@ -222,7 +218,6 @@ namespace WAG.Player
 
             if (InputManager.Instance.Move == Vector2.zero)
                 targetSpeed = 0f;
-
 
             if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
                 targetSpeed += targetSpeed * runSpeedFactor;
@@ -274,6 +269,7 @@ namespace WAG.Player
                     ForceMode.VelocityChange);
             }
         }
+
 
         private void HandleJump()
         {

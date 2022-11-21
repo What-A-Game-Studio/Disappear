@@ -153,7 +153,8 @@ MonoBehaviour:
     m_Bits: 2147483647
   animBlendSpeed: 8.9
   dis2Ground: 0.8
-  gameUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33, type: 3}
+  inventoryUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33,
+    type: 3}
 --- !u!114 &1236024972
 MonoBehaviour:
   m_ObjectHideFlags: 0
