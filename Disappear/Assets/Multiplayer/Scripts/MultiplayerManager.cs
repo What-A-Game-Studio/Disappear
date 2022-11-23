@@ -309,7 +309,7 @@ namespace WAG.Multiplayer
             if (SceneManager.GetActiveScene().name != "MultiplayerMenuScene")
             {
                 PhotonNetwork.LoadLevel("MultiplayerMenuScene");
-                InputManager.Instance.SwitchMap("Menu");
+                InputManager.Instance.SwitchMap(ControlMap.Menu);
                 GameManager.Instance.SwitchCursorLockMode(CursorLockMode.None, true);
             }
 

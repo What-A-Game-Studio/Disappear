@@ -1,0 +1,74 @@
+using System.Collections;
+using UnityEngine;
+using WAG.Inventory_Items;
+using Random = UnityEngine.Random;
+
+namespace WAG.Items
+{
+    public class ItemController : MonoBehaviour, IItemController
+    {
+        [SerializeField] private float forceAtSpawn = 1.2f;
+        private Rigidbody rb;
+
+        [SerializeField] private float timeToCheckIfItemStill = 1f;
+
+        // [SerializeField] private float minimalAngularVelocityMagnitude = 1f;
+        [SerializeField] private float currentAngularVelocityMagnitude;
+        public ItemDataSO ItemData { get; set; }
+
+        // public InventoryController ContainIn { get; set; }
+
+        private void Awake()
+        {
+            tag = "Interactable";
+        }
+
+        private void Start()
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            gameObject.AddComponent<BoxCollider>();
+            PickableItem pui = gameObject.AddComponent<PickableItem>();
+            pui.ItemController = this;
+            rb.AddTorque(GetRdmVector(-1, 1) * forceAtSpawn, ForceMode.Impulse);
+            // transform.Rotate(GetRdmVector(0,360f));
+        }
+
+        private void FixedUpdate()
+        {
+            currentAngularVelocityMagnitude = rb.angularVelocity.magnitude;
+        }
+
+        IEnumerator CheckItemStill()
+        {
+            yield return new WaitForSeconds(timeToCheckIfItemStill);
+            //if(rb.angularVelocity.magnitude)
+        }
+
+        private Vector3 GetRdmVector(float min, float max)
+        {
+            return new Vector3(Random.Range(min, max),
+                Random.Range(min, max),
+                Random.Range(min, max));
+        }
+
+        /// <summary>
+        /// Reactivate item at main camera position
+        ///  at forward direction
+        /// </summary>
+        /// <param name="spawnPos"></param>
+        /// <param name="forwardOrientation"></param>
+        public void Activate(Vector3 spawnPos, Vector3 forwardOrientation)
+        {
+            transform.position = spawnPos + forwardOrientation;
+            rb.AddForce(forwardOrientation * forceAtSpawn*2);
+            gameObject.SetActive(true);
+        }
+
+        public void Drop(Vector3 position, Vector3 forward)
+        {
+            ItemManager.Instance.DropItem(this, position, forward);
+        }
+    }
+}

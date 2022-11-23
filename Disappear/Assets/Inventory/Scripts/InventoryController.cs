@@ -3,18 +3,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using WAG.Core;
 using WAG.Core.Controls;
+using WAG.Inventory_Items;
 using WAG.Interactions;
-using WAG.Inventory.Items;
 
 namespace WAG.Inventory
 {
-    public class InventoryController : MonoBehaviour
+    public class InventoryController : MonoBehaviour, IInventoryController
     {
         
         public delegate void ChangeWeight(float currentWeight);
         public event ChangeWeight OnChangeWeight;
         
-        private List<ItemController> itemsInInventory = new List<ItemController>();
+        private List<IItemController> itemsInInventory = new List<IItemController>();
         private Transform usableAnchor;
         private GameObject currentUsableGO;
         private Interactable currentUsable;
@@ -35,14 +35,14 @@ namespace WAG.Inventory
             playerGo = playerGameObject;
             currentWeight = 0;
             uiGO = Instantiate(gameUI, transform);
-            if (!uiGO.TryGetComponent(out inventoryAnimation))
+            if (!uiGO.TryGetComponent<Animator>(out inventoryAnimation))
                 Debug.LogError("Could not find Animator Component on GameUI GameObject");
 
             if (!uiGO.transform.Find("InventoryScreen").Find("BackgroundInventory").Find("Inventory")
-                    .TryGetComponent(out inventoryUI))
+                    .TryGetComponent<InventoryUIManager>(out inventoryUI))
                 Debug.LogError("Could not find InventoryUIManager Component on GameUI Children");
 
-
+            inventoryUI.WhereToDropItem = transform;
             usableAnchor = objectHolder;
 
             InputManager.Instance.AddCallbackAction(ActionsControls.OpenInventory, OpenInventory);
@@ -99,7 +99,7 @@ namespace WAG.Inventory
         /// <param name="item">The item to add</param>
         /// <returns>true if there is there is enough room in the inventory for the item,
         /// false otherwise</returns>
-        public bool AddItemToInventory(ItemController item)
+        public bool AddItemToInventory(IItemController item)
         {
             if (item.ItemData.ItemType != ItemType.Usable)
             {
@@ -107,19 +107,18 @@ namespace WAG.Inventory
                     return false;
                 
                 itemsInInventory.Add(item);
-                item.ContainIn = this;
+                // item.ContainIn = this;
                 currentWeight += item.ItemData.Weight;
                 UpdatePlayerWeight();
                 return true;
             }
 
-            inventoryUI.StockNewUsable(item, out ItemController previousItem);
+            inventoryUI.StockNewUsable(item, out IItemController previousItem);
             itemsInInventory.Add(item);
-            item.ContainIn = this;
+            // item.ContainIn = this;
             currentWeight += item.ItemData.Weight;
             UpdatePlayerWeight();
-            currentUsableGO = ItemManager.Instance.GetUsable(item);
-            currentUsableGO = Instantiate(currentUsableGO, usableAnchor.position, Quaternion.identity, usableAnchor);
+            currentUsableGO = Instantiate(item.ItemData.Model, usableAnchor.position, Quaternion.identity, usableAnchor);
             if (!currentUsableGO.TryGetComponent(out currentUsable))
             {
                 Debug.LogError("Can't find Usable component");
@@ -135,9 +134,10 @@ namespace WAG.Inventory
         /// Delete an item from the inventory and respawn its game object in the world
         /// </summary>
         /// <param name="item">The item to drop</param>
-        public void DropItem(ItemController item)
+        public void DropItem(IItemController item)
         {
-            ItemManager.Instance.DropItem(item, transform);
+            item.Drop(transform.position, transform.forward);
+            // ItemManager.Instance.DropItem(item, transform);
             itemsInInventory.Remove(item);
             currentWeight -= item.ItemData.Weight;
             UpdatePlayerWeight();
