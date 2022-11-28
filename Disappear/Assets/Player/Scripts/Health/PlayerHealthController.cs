@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 using WAG.Health;
 
@@ -11,6 +12,21 @@ namespace WAG.Player.Health
 
         public float HealthSpeedModifier { get; private set; } = 0;
 
+        protected override void Awake()
+        {
+            base.Awake();
+            pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int)startHeathStatus);
+            OnHealthChanged += status =>  pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int)status);
+        }
+        [PunRPC]
+        private void RPC_SyncHealth(int status)
+        {
+            SetHealth(status);
+            if (!pv.IsMine)
+                return;
+            Invoke();
+            
+        }
 
         protected override void OnHealthy()
         {

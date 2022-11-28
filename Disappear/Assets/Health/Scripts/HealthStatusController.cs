@@ -1,4 +1,5 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 
 namespace WAG.Health
@@ -8,19 +9,26 @@ namespace WAG.Health
         public delegate void ChangeHealth(HeathStatus status);
         public event ChangeHealth OnHealthChanged;
 
-        [SerializeField] private HeathStatus startHeathStatus = HeathStatus.Healthy;
+        [SerializeField] protected HeathStatus startHeathStatus = HeathStatus.Healthy;
 
         [SerializeField] private bool recalculateHealth;
         
         private HeathStatus currentHeathStatus;
         public HeathStatus CurrentHeathStatus => currentHeathStatus;
 
+        protected PhotonView pv;
         protected virtual void Awake()
         {
+            if (!TryGetComponent<PhotonView>(out pv))
+            {
+                Debug.LogError("HealthStatusController need status", this);
+                Debug.Break();
+            }
+         
             currentHeathStatus = startHeathStatus;
-
+            
             OnHealthChanged += HealthChangeAction;
-            OnHealthChanged?.Invoke(currentHeathStatus);
+            Invoke();
         }
 
         protected virtual void OnDestroy()
@@ -32,10 +40,16 @@ namespace WAG.Health
         {
             if (recalculateHealth)
             {
-                OnHealthChanged?.Invoke(startHeathStatus);
+                Invoke();
                 recalculateHealth = false;
             }
         }
+
+        protected void Invoke()
+        {
+            OnHealthChanged?.Invoke(currentHeathStatus);
+        }
+        
 
         private void HealthChangeAction(HeathStatus status)
         {
@@ -98,7 +112,8 @@ namespace WAG.Health
                 return;
 
             currentHeathStatus = newStatus;
-            OnHealthChanged?.Invoke(currentHeathStatus);
+            
+            Invoke();
         }
 
         /// <summary>

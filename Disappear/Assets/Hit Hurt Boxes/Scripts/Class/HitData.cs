@@ -28,7 +28,7 @@ namespace WAG.HitHurtBoxes.Class
                     if (HitDetector.HitResponder == null || HitDetector.HitResponder.CheckHit(this))
                         return true;
 
-            return true;
+            return false;
         }
     }
 }

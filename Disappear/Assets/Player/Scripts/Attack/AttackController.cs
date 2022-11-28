@@ -1,13 +1,14 @@
 using Photon.Pun;
 using UnityEngine;
 using WAG.Core.Controls;
+using WAG.HitHurtBoxes;
+using WAG.HitHurtBoxes.Class;
+using WAG.Player.Health;
 
 namespace WAG.Player.Attacks
 {
-    public class AttackController : MonoBehaviour
+    public class AttackController : CompHitResponder
     {
-        [SerializeField] private AttackHitBoxController loadedAttack;
-        [SerializeField] private AttackHitBoxController normalAttack;
         [Header("Values")] [SerializeField] private float attackMissCooldown = 2f;
         [SerializeField] private float attackMissSpeedModifier = -0.8f;
         [SerializeField] private float attackHitCooldown = 2.6f;
@@ -22,31 +23,44 @@ namespace WAG.Player.Attacks
 
         private PlayerController pc;
 
-        private void Awake()
+        protected override void Awake()
         {
-
-
+            base.Awake();
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.Catch,
-                started: context => { /*Debug.Log("started: " + context);*/ },
-                performed: context => { Debug.Log("Performed: " + context); },
-                canceled: context => {/* Debug.Log("canceled: "+context);*/ });
+                started: context =>
+                {
+                    /*Debug.Log("started: " + context);*/
+                },
+                performed: context =>
+                {
+                    if (hitBox.CheckHit(out HitData data))
+                    {
+                        if (data.HurtBox.Owner.parent.TryGetComponent<PlayerHealthController>(out PlayerHealthController phc))
+                        {
+                            phc.TakeDamage();
+                        }
+                    }
+                },
+                canceled: context =>
+                {
+                    /* Debug.Log("canceled: "+context);*/
+                });
         }
 
-
-        private void registerAttack()
-        {
-            if (normalAttack.DamageableObjectInRange == null)
-                return;
-
-            Vector3 attackOrigin = normalAttack.transform.position;
-            Ray r = new Ray(attackOrigin, normalAttack.DamageableObjectInRange.transform.position - attackOrigin);
-            if (Physics.Raycast(r, out RaycastHit hitInfo) &&
-                normalAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
-                hitInfo.collider.gameObject.GetInstanceID())
-            {
-                normalAttack.DamageableObjectInRange.TakeDamage();
-            }
-        }
+        // private void registerAttack()
+        // {
+        //     if (normalAttack.DamageableObjectInRange == null)
+        //         return;
+        //
+        //     Vector3 attackOrigin = normalAttack.transform.position;
+        //     Ray r = new Ray(attackOrigin, normalAttack.DamageableObjectInRange.transform.position - attackOrigin);
+        //     if (Physics.Raycast(r, out RaycastHit hitInfo) &&
+        //         normalAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
+        //         hitInfo.collider.gameObject.GetInstanceID())
+        //     {
+        //         normalAttack.DamageableObjectInRange.TakeDamage();
+        //     }
+        // }
     }
 }

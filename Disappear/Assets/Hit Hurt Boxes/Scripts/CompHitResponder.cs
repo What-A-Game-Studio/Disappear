@@ -9,6 +9,8 @@ namespace WAG.HitHurtBoxes
         [SerializeField] protected int damage = 1;
         [SerializeField] protected CompHitBox hitBox;
         [SerializeField] protected bool multipleHit = true;
+        [field:SerializeField]
+        public Transform Owner { get; protected set; }
         public int Damage => damage;
 
         protected virtual void Awake()
@@ -22,7 +24,8 @@ namespace WAG.HitHurtBoxes
         //     if (canAttack && hitBox.CheckHit())
         //         canAttack = false;
         // }
-        
+
+
         public virtual bool CheckHit(HitData data)
         {
             return true;

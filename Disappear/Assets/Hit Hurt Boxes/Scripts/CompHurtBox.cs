@@ -21,7 +21,6 @@ namespace WAG.HitHurtBoxes
             {
                 Debug.Log("No Responder", this);
             }
-
             return true;
         }
     }

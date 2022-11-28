@@ -14,7 +14,7 @@ namespace WAG.HitHurtBoxes
         public IHitResponder HitResponder { get; set; }
 
 
-        public bool CheckHit()
+        public bool CheckHit(out HitData data)
         {
             Vector3 scaledSize = new Vector3(
                 collider.size.x * transform.lossyScale.x,
@@ -30,10 +30,10 @@ namespace WAG.HitHurtBoxes
 
             Quaternion orientation = transform.rotation;
 
-            HitData hitData = null;
             IHurtBox hurtBox = null;
             RaycastHit[] hits = Physics.BoxCastAll(start, halfExtents, direction, orientation, layer);
             bool isValid = false;
+            data = null;
             foreach (RaycastHit hit in hits)
             {
                 //Search on collider because transform can try to get component in parent of this collider
@@ -41,7 +41,7 @@ namespace WAG.HitHurtBoxes
                 {
                     if (hurtBox.Active)
                     {
-                        hitData = new HitData
+                        data = new HitData
                         {
                             //Damage deal
                             Damage = HitResponder?.Damage ?? 0,
@@ -56,11 +56,12 @@ namespace WAG.HitHurtBoxes
                             ColliderName = hit.collider.transform.name
                         };
 
-                        if (hitData.Validate())
+                        //Can't hit him self 
+                        if (hurtBox.Owner.GetInstanceID() != HitResponder.Owner.GetInstanceID() && data.Validate())
                         {
                             //Call Response of they aren't null
-                            hitData.HitDetector.HitResponder?.Response(hitData);
-                            hitData.HurtBox.HurtResponder?.Response(hitData);
+                            data.HitDetector.HitResponder?.Response(data);
+                            data.HurtBox.HurtResponder?.Response(data);
                             isValid = true;
 
                             if (!MultipleHit)

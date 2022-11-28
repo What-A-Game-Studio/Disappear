@@ -2,6 +2,8 @@
     "name": "WAG.Health",
     "rootNamespace": "WAG.Health",
     "references": [
+        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
+        "GUID:831409e8f9d13b5479a3baef9822ad34",
         "GUID:fe16aff440d71e944bada5b811aa591b",
         "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
