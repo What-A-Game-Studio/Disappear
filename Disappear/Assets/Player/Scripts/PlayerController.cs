@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 using WAG.Core.Controls;
@@ -9,6 +10,7 @@ using WAG.Player.Health;
 using WAG.Player.Models;
 using WAG.Player.Movements;
 using WAG.Player.Teams;
+using System;
 
 namespace WAG.Player
 {
@@ -40,7 +42,7 @@ namespace WAG.Player
 
         public bool CanRotate { get; set; } = true;
         public bool CanMove { get; set; } = true;
-        
+
 
         [Header("Weight Modifiers")] [SerializeField]
         private float lightOverweightSpeedModifier;
@@ -71,7 +73,7 @@ namespace WAG.Player
         private Vector3 rpcVelocity;
 
         public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
-        public float? TemporarySpeedModifier { get; set; } = null;
+        private float? temporarySpeedModifier = null;
 
         public Weight PlayerWeight { private get; set; }
         private PlayerHealthController healthController;
@@ -119,7 +121,7 @@ namespace WAG.Player
                 Debug.LogError("Need PhotonView", this);
                 Debug.Break();
             }
-            
+
             InitModel();
             Pac = gameObject.AddComponent<PlayerAnimationController>();
             Pac.PC = this;
@@ -223,8 +225,8 @@ namespace WAG.Player
                 targetSpeed += targetSpeed * runSpeedFactor;
 
 
-            if (TemporarySpeedModifier.HasValue)
-                targetSpeed += targetSpeed * TemporarySpeedModifier.Value;
+            if (temporarySpeedModifier.HasValue)
+                targetSpeed += targetSpeed * temporarySpeedModifier.Value;
 
             ///TODO : Move this in dedicate componant 
             switch (PlayerWeight)
@@ -311,6 +313,40 @@ namespace WAG.Player
         #endregion Private
 
         #region Public
+
+        /// <summary>
+        /// Set a temporary speed for seconds 
+        /// </summary>
+        /// <param name="speedModifier">Speed modifier value</param>
+        /// <param name="duration">Time in seconds</param>
+        /// <param name="delay">Delay speed modifier in seconds</param>
+        public void SetTemporarySpeedForSeconds(float speedModifier, float duration, float? delay = null,
+            Action callBack = null)
+        {
+            StartCoroutine(SetTemporarySpeed(speedModifier, duration, delay, callBack));
+        }
+
+        private IEnumerator SetTemporarySpeed(float speedModifier, float duration, float? delay = null,
+            Action callBack = null)
+        {
+            //Apply delay
+            if (delay.HasValue)
+                yield return new WaitForSeconds(delay.Value);
+
+            //Apply speed
+            if (temporarySpeedModifier.HasValue)
+                temporarySpeedModifier += speedModifier;
+            else
+                temporarySpeedModifier = speedModifier;
+
+            //Reset value
+            yield return new WaitForSeconds(duration);
+            temporarySpeedModifier -= speedModifier;
+            if (temporarySpeedModifier <= 0)
+                temporarySpeedModifier = null;
+            
+            callBack?.Invoke();
+        }
 
         /// <summary>
         /// Set Speed by team

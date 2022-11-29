@@ -16,9 +16,7 @@ namespace WAG.Player.Attacks
         [SerializeField] private float chargeTime = 0.3f;
         [SerializeField] private float chargedAttackSpeedModifier = 0.5f;
 
-        private float timeSinceStartedAttack = 0f;
-        private bool attackStarted;
-
+        private bool canAttack = true;
         private PhotonView pv;
 
         private PlayerController pc;
@@ -26,6 +24,12 @@ namespace WAG.Player.Attacks
         protected override void Awake()
         {
             base.Awake();
+            if (!transform.parent.TryGetComponent<PlayerController>(out pc))
+            {
+                Debug.LogError("AttackHitResponder need to be chiled to PlayerController", this);
+                Debug.Break();
+            }
+
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.Catch,
                 started: context =>
@@ -34,14 +38,37 @@ namespace WAG.Player.Attacks
                 },
                 performed: context =>
                 {
+                    if (!canAttack)
+                        return;
+                    canAttack = false;
                     if (hitBox.CheckHit(out HitData data))
                     {
+                        Debug.Log("CheckHit = true");
                         if (data.HurtBox.Owner.parent.TryGetComponent<PlayerHealthController>(
                                 out PlayerHealthController phc))
                         {
+                            Debug.Log("PlayerHealthController = true");
                             phc.TakeDamage();
+                            pc.SetTemporarySpeedForSeconds(
+                                speedModifier: attackHitSpeedModifier,
+                                duration: attackHitCooldown,
+                                callBack: () =>
+                                {
+                                    Debug.Log("attack hit callback = true");
+                                    canAttack = true;
+                                });
+                            return;
                         }
                     }
+
+                    pc.SetTemporarySpeedForSeconds(
+                        speedModifier: attackMissSpeedModifier,
+                        duration: attackMissCooldown,
+                        callBack: () =>
+                        {
+                            Debug.Log("attack miss callback = true");
+                            canAttack = true;
+                        });
                 },
                 canceled: context =>
                 {
