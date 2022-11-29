@@ -15,17 +15,17 @@ namespace WAG.Player.Health
         protected override void Awake()
         {
             base.Awake();
-            pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int)startHeathStatus);
-            OnHealthChanged += status =>  pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int)status);
+            pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int) startHeathStatus);
+            OnHealthChanged += status => pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int) status);
         }
+
         [PunRPC]
         private void RPC_SyncHealth(int status)
         {
-            SetHealth(status);
+            SetHealth(status, false);
             if (!pv.IsMine)
                 return;
             Invoke();
-            
         }
 
         protected override void OnHealthy()
