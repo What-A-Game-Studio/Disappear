@@ -7,7 +7,7 @@ using WAG.Player.Health;
 
 namespace WAG.Player.Attacks
 {
-    public class AttackController : CompHitResponder
+    public class AttackHitResponder : CompHitResponder
     {
         [Header("Values")] [SerializeField] private float attackMissCooldown = 2f;
         [SerializeField] private float attackMissSpeedModifier = -0.8f;
@@ -36,7 +36,8 @@ namespace WAG.Player.Attacks
                 {
                     if (hitBox.CheckHit(out HitData data))
                     {
-                        if (data.HurtBox.Owner.parent.TryGetComponent<PlayerHealthController>(out PlayerHealthController phc))
+                        if (data.HurtBox.Owner.parent.TryGetComponent<PlayerHealthController>(
+                                out PlayerHealthController phc))
                         {
                             phc.TakeDamage();
                         }
@@ -47,20 +48,5 @@ namespace WAG.Player.Attacks
                     /* Debug.Log("canceled: "+context);*/
                 });
         }
-
-        // private void registerAttack()
-        // {
-        //     if (normalAttack.DamageableObjectInRange == null)
-        //         return;
-        //
-        //     Vector3 attackOrigin = normalAttack.transform.position;
-        //     Ray r = new Ray(attackOrigin, normalAttack.DamageableObjectInRange.transform.position - attackOrigin);
-        //     if (Physics.Raycast(r, out RaycastHit hitInfo) &&
-        //         normalAttack.DamageableObjectInRange.gameObject.GetInstanceID() ==
-        //         hitInfo.collider.gameObject.GetInstanceID())
-        //     {
-        //         normalAttack.DamageableObjectInRange.TakeDamage();
-        //     }
-        // }
     }
 }

@@ -9,6 +9,7 @@ namespace WAG.HitHurtBoxes
     {
         [field:SerializeField]
         public Transform Owner { get; protected set; }
+        
         protected List<IHurtBox> hurtBoxes = new List<IHurtBox>();
 
         protected virtual void Start()

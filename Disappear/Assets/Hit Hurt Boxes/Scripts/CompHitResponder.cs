@@ -9,8 +9,7 @@ namespace WAG.HitHurtBoxes
         [SerializeField] protected int damage = 1;
         [SerializeField] protected CompHitBox hitBox;
         [SerializeField] protected bool multipleHit = true;
-        [field:SerializeField]
-        public Transform Owner { get; protected set; }
+        [field: SerializeField] public Transform Owner { get; protected set; }
         public int Damage => damage;
 
         protected virtual void Awake()
@@ -25,14 +24,30 @@ namespace WAG.HitHurtBoxes
         //         canAttack = false;
         // }
 
-
+        /// <summary>
+        /// Conditions : 
+        /// Make sure nothing stand between Hit & Hurt
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public virtual bool CheckHit(HitData data)
         {
-            return true;
+            Transform target = data.HurtBox.HurtResponder.Owner;
+            Vector3 attackOrigin = transform.position;
+            Ray r = new Ray(attackOrigin, target.position - attackOrigin);
+             bool isSomethingBetween = (Physics.Raycast(r, out RaycastHit hitInfo) &&
+                    target.gameObject.GetInstanceID() ==
+                    hitInfo.collider.gameObject.GetInstanceID());
+             
+             return !isSomethingBetween;
         }
 
         public virtual void Response(HitData data)
         {
         }
+
+
+        
+
     }
 }
