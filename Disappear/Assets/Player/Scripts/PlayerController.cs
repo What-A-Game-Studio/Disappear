@@ -1,23 +1,29 @@
-using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 using WAG.Core.Controls;
 using WAG.Core.Menus;
-using WAG.Debugger;
 using WAG.Inventory;
 using WAG.Player.Enums;
 using WAG.Player.Health;
 using WAG.Player.Models;
 using WAG.Player.Movements;
 using WAG.Player.Teams;
-using System;
 
 namespace WAG.Player
 {
     [RequireComponent(
+        typeof(Animator),
         typeof(Rigidbody),
-        typeof(CapsuleCollider),
-        typeof(StaminaController)
+        typeof(CapsuleCollider)
+    )]
+    [RequireComponent(
+        typeof(TeamController),
+        typeof(CrouchController),
+        typeof(PlayerHealthController)
+    )]
+    [RequireComponent(
+        typeof(PlayerSpeedController),
+        typeof(PlayerAnimationController)
     )]
     public class PlayerController : MonoBehaviour
     {
@@ -26,28 +32,9 @@ namespace WAG.Player
         public static PlayerController MainPlayer { get; private set; }
 
         private Rigidbody rb;
-        private StaminaController stamina;
-        private Animator animator;
         private Vector3 currentVelocity;
-        private float teamSpeedModifier = 0;
-        public PlayerAnimationController Pac { get; private set; }
-        public CrouchController CrouchController { get; private set; }
-        public InventoryController InventoryController { get; private set; }
-        public PhotonView Pv { get; private set; }
-        private CameraController cameraController;
-
-
-        [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
-        [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
-
         public bool CanRotate { get; set; } = true;
         public bool CanMove { get; set; } = true;
-
-
-        [Header("Weight Modifiers")] [SerializeField]
-        private float lightOverweightSpeedModifier;
-
-        [SerializeField] private float largeOverweightSpeedModifier;
 
         private bool grounded;
         private bool rpcGrounded;
@@ -73,29 +60,26 @@ namespace WAG.Player
         private Vector3 rpcVelocity;
 
         public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
-        private float? temporarySpeedModifier = null;
-
-        public Weight PlayerWeight { private get; set; }
-        private PlayerHealthController healthController;
-        public PlayerHealthController HealthController => healthController;
 
 
-        #region Unity Events
+        #region Needed Components
 
-        void Awake()
+        private Animator animator;
+
+        public PlayerHealthController HealthController => speedController.HealthController;
+        private PlayerAnimationController pac;
+        public InventoryController InventoryController { get; private set; }
+        public PhotonView Pv { get; private set; }
+        private CameraController cameraController;
+
+        private PlayerSpeedController speedController;
+        public PlayerSpeedController SpeedController => speedController;
+
+        private void GetNeededComponents()
         {
-            InputManager.Instance.SwitchMap(ControlMap.Player);
-            HideCursor();
             if (!TryGetComponent<Animator>(out animator))
             {
                 Debug.LogError("Need animator", this);
-                Debug.Break();
-            }
-
-            CrouchController = GetComponent<CrouchController>();
-            if (CrouchController == null)
-            {
-                Debug.LogError("Need crouchController", this);
                 Debug.Break();
             }
 
@@ -105,15 +89,7 @@ namespace WAG.Player
                 Debug.Break();
             }
 
-            if (!TryGetComponent<PlayerHealthController>(out healthController))
-            {
-                Debug.LogError("Need playerHealthController", this);
-                Debug.Break();
-            }
-
             rb.freezeRotation = true;
-
-            stamina = GetComponent<StaminaController>();
 
             Pv = GetComponent<PhotonView>();
             if (Pv == null)
@@ -122,9 +98,34 @@ namespace WAG.Player
                 Debug.Break();
             }
 
+            if (!TryGetComponent<PlayerSpeedController>(out speedController))
+            {
+                Debug.LogError("Need PlayerSpeedController", this);
+                Debug.Break();
+            }
+
+            if (!TryGetComponent<PlayerAnimationController>(out pac))
+            {
+                Debug.LogError("Need PlayerAnimationController", this);
+                Debug.Break();
+            }
+            else
+                pac.PC = this;
+        }
+
+        private StaminaController stamina;
+
+        #endregion Needed Components
+
+        #region Unity Events
+
+        void Awake()
+        {
+            InputManager.Instance.SwitchMap(ControlMap.Player);
+            HideCursor();
+            GetNeededComponents();
             InitModel();
-            Pac = gameObject.AddComponent<PlayerAnimationController>();
-            Pac.PC = this;
+
 
             if (!Pv.IsMine)
                 return;
@@ -175,12 +176,12 @@ namespace WAG.Player
             InventoryController.OnChangeWeight += currentWeight =>
             {
                 if (currentWeight > maxWeight * 0.75f)
-                    PlayerWeight = Weight.LargeOverweight;
+                    speedController.PlayerWeight = Weight.LargeOverweight;
 
                 else if (currentWeight > maxWeight * 0.5f)
-                    PlayerWeight = Weight.LightOverweight;
+                    speedController.PlayerWeight = Weight.LightOverweight;
                 else
-                    PlayerWeight = Weight.Normal;
+                    speedController.PlayerWeight = Weight.Normal;
             };
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.OpenInventory,
@@ -212,44 +213,13 @@ namespace WAG.Player
             Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
         }
 
-        private float targetSpeed;
 
         private void Move()
         {
-            targetSpeed = walkSpeed;
-
-            if (InputManager.Instance.Move == Vector2.zero)
-                targetSpeed = 0f;
-
-            if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
-                targetSpeed += targetSpeed * runSpeedFactor;
-
-
-            if (temporarySpeedModifier.HasValue)
-                targetSpeed += targetSpeed * temporarySpeedModifier.Value;
-
-            ///TODO : Move this in dedicate componant 
-            switch (PlayerWeight)
-            {
-                case Weight.LightOverweight:
-                    targetSpeed += targetSpeed * lightOverweightSpeedModifier;
-                    break;
-                case Weight.LargeOverweight:
-                    targetSpeed += targetSpeed * largeOverweightSpeedModifier;
-                    break;
-                case Weight.Normal:
-                default:
-                    break;
-            }
-
-            targetSpeed *= DebuggerManager.Instance.debugSpeed;
+            float targetSpeed = speedController.GetSpeed();
 
             if (grounded)
             {
-                targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
-
-                targetSpeed += targetSpeed * HealthController.HealthSpeedModifier;
-
                 currentVelocity.x = Mathf.Lerp(currentVelocity.x,
                     targetSpeed * InputManager.Instance.Move.x,
                     animBlendSpeed * Time.fixedDeltaTime);
@@ -315,47 +285,14 @@ namespace WAG.Player
         #region Public
 
         /// <summary>
-        /// Set a temporary speed for seconds 
-        /// </summary>
-        /// <param name="speedModifier">Speed modifier value</param>
-        /// <param name="duration">Time in seconds</param>
-        /// <param name="delay">Delay speed modifier in seconds</param>
-        public void SetTemporarySpeedForSeconds(float speedModifier, float duration, float? delay = null,
-            Action callBack = null)
-        {
-            StartCoroutine(SetTemporarySpeed(speedModifier, duration, delay, callBack));
-        }
-
-        private IEnumerator SetTemporarySpeed(float speedModifier, float duration, float? delay = null,
-            Action callBack = null)
-        {
-            //Apply delay
-            if (delay.HasValue)
-                yield return new WaitForSeconds(delay.Value);
-
-            //Apply speed
-            if (temporarySpeedModifier.HasValue)
-                temporarySpeedModifier += speedModifier;
-            else
-                temporarySpeedModifier = speedModifier;
-
-            //Reset value
-            yield return new WaitForSeconds(duration);
-            temporarySpeedModifier -= speedModifier;
-            if (temporarySpeedModifier <= 0)
-                temporarySpeedModifier = null;
-            
-            callBack?.Invoke();
-        }
-
-        /// <summary>
         /// Set Speed by team
         /// </summary>
         /// <param name="teamDataSpeedModifier"></param>
         public void SetTeamSpeedModifier(float teamDataSpeedModifier)
         {
-            teamSpeedModifier = teamDataSpeedModifier;
+            speedController.SetTeamSpeedModifier(teamDataSpeedModifier);
         }
+
 
         /// <summary>
         /// If the player controller is mine
@@ -419,7 +356,7 @@ namespace WAG.Player
         [PunRPC]
         private void RPC_Interact()
         {
-            Pac.InteractTrigger();
+            pac.InteractTrigger();
         }
 
         #endregion RPC
