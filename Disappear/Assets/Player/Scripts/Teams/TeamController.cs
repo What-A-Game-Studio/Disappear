@@ -1,4 +1,3 @@
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using WAG.Audio.Footsteps;
@@ -22,8 +21,8 @@ namespace WAG.Player.Teams
         [SerializeField] private float hiderTransparencySpeed;
         [SerializeField] private float hiderTransparencyThreshold;
 
-        private PhotonView pv;
         private TeamData teamData;
+        private PlayerController pc;
 
         public FootstepEvent FootstepEvent { get; protected set; }
 
@@ -44,10 +43,11 @@ namespace WAG.Player.Teams
             teamData = seeker;
         }
 
-        public ModelInfos SetTeamData(PhotonView photonView)
+        public ModelInfos SetTeamData(bool isSeeker, PlayerController pc)
         {
-            teamData = (string) photonView.Owner.CustomProperties["team"] == "S" ? seeker : hider;
-            pv = photonView;
+            this.pc = pc;
+            this.isSeeker = isSeeker;
+            teamData =  isSeeker ? seeker : hider;
 
             SkinnedMeshRenderer[] hiderRenderers;
             DecalProjector hiderShadow;
@@ -68,7 +68,7 @@ namespace WAG.Player.Teams
 
         private void SetPostProcessingVolume()
         {
-            if (pv.IsMine && PostProcessingController.Instance)
+            if (pc.IsMine() && PostProcessingController.Instance)
                 PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
         }
 
@@ -102,19 +102,17 @@ namespace WAG.Player.Teams
             }
 
             hiderRenderers = smr;
-            // Animator anim = go.GetComponent<Animator>();
-            // pac.SetAnimator(anim);
-            // go.transform.localPosition = teamData.ModelOffset;
-            // FootstepEvent = go.GetComponent<FootstepEvent>();
+            go.transform.localPosition = teamData.ModelOffset;
+            FootstepEvent = go.GetComponent<FootstepEvent>();
             // FootstepEvent.Init(meshContainer.GetChild(1));
             return go.GetComponent<ModelInfos>();
         }
 
         private void SetHider(SkinnedMeshRenderer[] hiderRenderers, DecalProjector hiderShadow)
         {
-            // HiderController hc = AddComponent<HiderController>();
-            // hc.Init(hiderLife, hiderTransparencySpeed, hiderTransparencyThreshold);
-            // hc.SetMaterials(hiderRenderers, hiderShadow);
+            HiderController hc = gameObject.AddComponent<HiderController>();
+            hc.Init(hiderLife, hiderTransparencySpeed, hiderTransparencyThreshold);
+            hc.SetMaterials(hiderRenderers, hiderShadow);
         }
     }
 }

@@ -10,7 +10,6 @@ namespace WAG.Inventory
 {
     public class InventoryController : MonoBehaviour, IInventoryController
     {
-        
         public delegate void ChangeWeight(float currentWeight);
         public event ChangeWeight OnChangeWeight;
         

@@ -12,7 +12,7 @@ namespace WAG.Items
 
         protected override void ActionOnInteract(GameObject sender)
         {
-            if (sender.TryGetComponent(out inventory))
+            if (sender.TryGetComponent<IInventoryController>(out inventory))
             {
                 if (inventory.AddItemToInventory(ItemController))
                     ItemManager.Instance.StoreItem(ItemController);

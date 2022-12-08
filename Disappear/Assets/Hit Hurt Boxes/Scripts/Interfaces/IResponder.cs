@@ -1,9 +1,11 @@
-﻿using WAG.HitHurtBoxes.Class;
+﻿using UnityEngine;
+using WAG.HitHurtBoxes.Class;
 
 namespace WAG.HitHurtBoxes.Interfaces
 {
     public interface IResponder
     {
+        Transform Owner { get; }
         /// <summary>
         /// Check if hurt with data
         /// </summary>

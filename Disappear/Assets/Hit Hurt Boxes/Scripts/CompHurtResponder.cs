@@ -7,6 +7,9 @@ namespace WAG.HitHurtBoxes
 {
     public class CompHurtResponder : MonoBehaviour, IHurtResponder
     {
+        [field:SerializeField]
+        public Transform Owner { get; protected set; }
+        
         protected List<IHurtBox> hurtBoxes = new List<IHurtBox>();
 
         protected virtual void Start()
@@ -17,8 +20,13 @@ namespace WAG.HitHurtBoxes
                 hurtBoxes[i].HurtResponder = this;
         }
 
+
         public virtual bool CheckHit(HitData data)
         {
+            if (data.HitDetector.HitResponder != null)
+            {
+                
+            }
             return true;
         }
 
@@ -26,5 +34,6 @@ namespace WAG.HitHurtBoxes
         {
             Debug.Log(data.ColliderName + " take " + data.Damage + " damage(s)", this);
         }
+
     }
 }

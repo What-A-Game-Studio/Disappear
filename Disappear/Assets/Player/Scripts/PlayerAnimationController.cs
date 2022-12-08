@@ -41,7 +41,7 @@ namespace WAG.Player
             animator.SetFloat(PlayerAnimationController.XVelHash, PC.PlayerVelocity.x);
             animator.SetFloat(PlayerAnimationController.ZVelHash, PC.PlayerVelocity.z);
             animator.SetFloat(PlayerAnimationController.YVelHash, PC.PlayerVelocity.y);
-            animator.SetBool(PlayerAnimationController.CrouchHash, PC.CrouchController.Crouched);
+            animator.SetBool(PlayerAnimationController.CrouchHash, PC.SpeedController.CrouchController.Crouched);
             animator.SetBool(PlayerAnimationController.InventoryHash, PC.InventoryStatus);
             animator.SetBool(PlayerAnimationController.FallingHash, !PC.Grounded);
             animator.SetBool(PlayerAnimationController.GroundedHash, PC.Grounded);

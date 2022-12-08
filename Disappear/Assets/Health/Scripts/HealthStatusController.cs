@@ -1,4 +1,5 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 
 namespace WAG.Health
@@ -6,21 +7,30 @@ namespace WAG.Health
     public abstract class HealthStatusController : MonoBehaviour
     {
         public delegate void ChangeHealth(HeathStatus status);
+
         public event ChangeHealth OnHealthChanged;
 
-        [SerializeField] private HeathStatus startHeathStatus = HeathStatus.Healthy;
+        [SerializeField] protected HeathStatus startHeathStatus = HeathStatus.Healthy;
 
         [SerializeField] private bool recalculateHealth;
-        
+
         private HeathStatus currentHeathStatus;
         public HeathStatus CurrentHeathStatus => currentHeathStatus;
 
+        protected PhotonView pv;
+
         protected virtual void Awake()
         {
+            if (!TryGetComponent<PhotonView>(out pv))
+            {
+                Debug.LogError("HealthStatusController need status", this);
+                Debug.Break();
+            }
+
             currentHeathStatus = startHeathStatus;
 
             OnHealthChanged += HealthChangeAction;
-            OnHealthChanged?.Invoke(currentHeathStatus);
+            Invoke();
         }
 
         protected virtual void OnDestroy()
@@ -28,14 +38,11 @@ namespace WAG.Health
             OnHealthChanged -= HealthChangeAction;
         }
 
-        private void Update()
+        public void Invoke()
         {
-            if (recalculateHealth)
-            {
-                OnHealthChanged?.Invoke(startHeathStatus);
-                recalculateHealth = false;
-            }
+            OnHealthChanged?.Invoke(currentHeathStatus);
         }
+
 
         private void HealthChangeAction(HeathStatus status)
         {
@@ -92,22 +99,25 @@ namespace WAG.Health
         /// Set health status
         /// </summary>
         /// <param name="newStatus"></param>
-        public void SetHealth(HeathStatus newStatus)
+        /// <param name="invoke">Fire callback</param>
+        public void SetHealth(HeathStatus newStatus, bool invoke = true)
         {
             if (newStatus == currentHeathStatus)
                 return;
 
             currentHeathStatus = newStatus;
-            OnHealthChanged?.Invoke(currentHeathStatus);
+            if (invoke)
+                Invoke();
         }
 
         /// <summary>
         /// Set health status 
         /// </summary>
         /// <param name="newStatus">Bounded</param>
-        public void SetHealth(int newStatus)
+        /// <param name="invoke">Fire callback</param>
+        public void SetHealth(int newStatus, bool invoke = true)
         {
-            SetHealth((HeathStatus) Math.Clamp(newStatus, 0, (int) HeathStatus.Healthy));
+            SetHealth((HeathStatus) Math.Clamp(newStatus, 0, (int) HeathStatus.Healthy), invoke);
         }
 
         /// <summary>

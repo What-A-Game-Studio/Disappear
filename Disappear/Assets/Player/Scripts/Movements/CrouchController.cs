@@ -1,4 +1,3 @@
-using Photon.Pun;
 using UnityEngine;
 using WAG.Core.Controls;
 
@@ -17,10 +16,11 @@ namespace WAG.Player.Movements
         [SerializeField] private float capsuleColliderCrouchHeight = .89f;
         private CapsuleCollider capsuleCollider;
 
-        private bool rpcCrouch;
-        public bool Crouched => pv.IsMine ? InputManager.Instance.Crouch : rpcCrouch;
+        public bool Crouched =>
+            PlayerController.IsMine() ? InputManager.Instance.Crouch : PlayerController.Sync.RPCCrouch;
 
-        private PhotonView pv;
+        public PlayerController PlayerController { get; set; }
+
 
         private void Awake()
         {
@@ -32,12 +32,6 @@ namespace WAG.Player.Movements
 
             capsuleCollider.height = capsuleColliderStandRadius;
             capsuleCollider.radius = capsuleColliderStandHeight;
-
-            if (!TryGetComponent<PhotonView>(out pv))
-            {
-                Debug.LogError("Need PhotonView", this);
-                Debug.Break();
-            }
         }
 
 
@@ -60,13 +54,7 @@ namespace WAG.Player.Movements
 
         private void FixedUpdate()
         {
-            pv.RPC(nameof(RPC_Crouch), RpcTarget.All, Crouched);
-        }
-
-        [PunRPC]
-        private void RPC_Crouch(bool crouch)
-        {
-            rpcCrouch = crouch;
+            PlayerController.Sync.SyncCrouch(Crouched);
         }
     }
 }

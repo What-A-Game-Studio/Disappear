@@ -1,9 +1,9 @@
 using UnityEngine;
 using Photon.Pun;
 using WAG.Core.Controls;
-using WAG.Core.Menus;
-using WAG.Debugger;
+using WAG.Health;
 using WAG.Inventory;
+using WAG.Multiplayer;
 using WAG.Player.Enums;
 using WAG.Player.Health;
 using WAG.Player.Models;
@@ -13,9 +13,19 @@ using WAG.Player.Teams;
 namespace WAG.Player
 {
     [RequireComponent(
+        typeof(Animator),
         typeof(Rigidbody),
-        typeof(CapsuleCollider),
-        typeof(StaminaController)
+        typeof(CapsuleCollider)
+    )]
+    [RequireComponent(
+        typeof(TeamController),
+        typeof(CrouchController),
+        typeof(PlayerHealthController)
+    )]
+    [RequireComponent(
+        typeof(PlayerSpeedController),
+        typeof(PlayerAnimationController),
+        typeof(PlayerSync)
     )]
     public class PlayerController : MonoBehaviour
     {
@@ -24,32 +34,12 @@ namespace WAG.Player
         public static PlayerController MainPlayer { get; private set; }
 
         private Rigidbody rb;
-        private StaminaController stamina;
-        private Animator animator;
         private Vector3 currentVelocity;
-        private float teamSpeedModifier = 0;
-        public PlayerAnimationController Pac { get; private set; }
-        public CrouchController CrouchController { get; private set; }
-        public InventoryController InventoryController { get; private set; }
-        public PhotonView Pv { get; private set; }
-        private CameraController cameraController;
-
-
-        [Header("Walk")] [SerializeField] private float walkSpeed = 2f;
-        [Header("Run")] [SerializeField] private float runSpeedFactor = 0.5f;
-
         public bool CanRotate { get; set; } = true;
         public bool CanMove { get; set; } = true;
-        
-
-        [Header("Weight Modifiers")] [SerializeField]
-        private float lightOverweightSpeedModifier;
-
-        [SerializeField] private float largeOverweightSpeedModifier;
 
         private bool grounded;
-        private bool rpcGrounded;
-        public bool Grounded => Pv.IsMine ? grounded : rpcGrounded;
+        public bool Grounded => sync.IsMine ? grounded : sync.RPCGrounded;
 
         [Header("Jump")] [SerializeField] [Range(100, 1000)]
         private float jumpFactor = 260f;
@@ -65,35 +55,36 @@ namespace WAG.Player
         private GameObject inventoryUI;
 
         private bool inventoryStatus;
-        private bool rpcInventoryStatus;
-        public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
+        public bool InventoryStatus => sync.IsMine ? inventoryStatus : sync.RPCInventoryStatus;
 
-        private Vector3 rpcVelocity;
 
-        public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
-        public float? TemporarySpeedModifier { get; set; } = null;
+        public Vector3 PlayerVelocity => sync.IsMine ? currentVelocity : sync.RPCVelocity;
 
-        public Weight PlayerWeight { private get; set; }
-        private PlayerHealthController healthController;
+
+        #region Needed Components
+
+        private Animator animator;
+
         public PlayerHealthController HealthController => healthController;
+        private PlayerHealthController healthController;
+        private PlayerAnimationController pac;
+        public InventoryController InventoryController { get; private set; }
+        private CameraController cameraController;
 
+        private PlayerSpeedController speedController;
+        public PlayerSpeedController SpeedController => speedController;
 
-        #region Unity Events
+        private PlayerSync sync;
+        public PlayerSync Sync => sync;
 
-        void Awake()
+        private StaminaController stamina;
+        private CrouchController crouchController;
+
+        private void GetNeededComponents()
         {
-            InputManager.Instance.SwitchMap(ControlMap.Player);
-            HideCursor();
             if (!TryGetComponent<Animator>(out animator))
             {
                 Debug.LogError("Need animator", this);
-                Debug.Break();
-            }
-
-            CrouchController = GetComponent<CrouchController>();
-            if (CrouchController == null)
-            {
-                Debug.LogError("Need crouchController", this);
                 Debug.Break();
             }
 
@@ -103,28 +94,62 @@ namespace WAG.Player
                 Debug.Break();
             }
 
-            if (!TryGetComponent<PlayerHealthController>(out healthController))
-            {
-                Debug.LogError("Need playerHealthController", this);
-                Debug.Break();
-            }
-
             rb.freezeRotation = true;
 
-            stamina = GetComponent<StaminaController>();
 
-            Pv = GetComponent<PhotonView>();
-            if (Pv == null)
+            if (!TryGetComponent<PlayerSpeedController>(out speedController))
             {
-                Debug.LogError("Need PhotonView", this);
+                Debug.LogError("Need PlayerSpeedController", this);
                 Debug.Break();
             }
-            
-            InitModel();
-            Pac = gameObject.AddComponent<PlayerAnimationController>();
-            Pac.PC = this;
 
-            if (!Pv.IsMine)
+            if (!TryGetComponent<PlayerAnimationController>(out pac))
+            {
+                Debug.LogError("Need PlayerAnimationController", this);
+                Debug.Break();
+            }
+            else
+                pac.PC = this;
+
+            if (!TryGetComponent<CrouchController>(out crouchController))
+            {
+                Debug.LogError("Need CrouchController", this);
+                Debug.Break();
+            }
+            else
+            {
+                crouchController.PlayerController = this;
+            }
+
+            if (!TryGetComponent<PlayerHealthController>(out healthController))
+            {
+                Debug.LogError("Need PlayerHealthController", this);
+                Debug.Break();
+            }
+
+            if (!TryGetComponent<PlayerSync>(out sync))
+            {
+                Debug.LogError("Need PlayerSync", this);
+                Debug.Break();
+            }
+            else
+            {
+                sync.Init((HealthStatusController) healthController, () => { pac.InteractTrigger(); });
+            }
+        }
+
+        #endregion Needed Components
+
+        #region Unity Events
+
+        void Awake()
+        {
+            InputManager.Instance.SwitchMap(ControlMap.Player);
+            HideCursor();
+            GetNeededComponents();
+            InitModel();
+
+            if (!sync.IsMine)
                 return;
 
             Init();
@@ -133,7 +158,7 @@ namespace WAG.Player
         private void FixedUpdate()
         {
             SampleGround();
-            if (!Pv.IsMine)
+            if (!sync.IsMine)
                 return;
 
             if (CanMove)
@@ -146,8 +171,8 @@ namespace WAG.Player
                 currentVelocity = Vector3.zero;
             }
 
-            Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, currentVelocity);
-            Pv.RPC(nameof(RPC_Ground), RpcTarget.All, Grounded);
+            sync.SyncGround(grounded);
+            sync.SyncVelocity(currentVelocity);
         }
 
         #endregion Unity Events
@@ -156,10 +181,9 @@ namespace WAG.Player
 
         private void InitModel()
         {
-            // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
             name = PhotonNetwork.LocalPlayer.NickName;
             TeamController tc = GetComponent<TeamController>();
-            modelInfos = tc.SetTeamData(Pv);
+            modelInfos = tc.SetTeamData(sync.IsSeeker(), this);
         }
 
         private void Init()
@@ -173,12 +197,12 @@ namespace WAG.Player
             InventoryController.OnChangeWeight += currentWeight =>
             {
                 if (currentWeight > maxWeight * 0.75f)
-                    PlayerWeight = Weight.LargeOverweight;
+                    speedController.PlayerWeight = Weight.LargeOverweight;
 
                 else if (currentWeight > maxWeight * 0.5f)
-                    PlayerWeight = Weight.LightOverweight;
+                    speedController.PlayerWeight = Weight.LightOverweight;
                 else
-                    PlayerWeight = Weight.Normal;
+                    speedController.PlayerWeight = Weight.Normal;
             };
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.OpenInventory,
@@ -190,7 +214,7 @@ namespace WAG.Player
             );
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.Interact,
-                (context) => HandleInteract());
+                (context) => sync.HandleInteract());
         }
 
         private void HideCursor()
@@ -202,52 +226,15 @@ namespace WAG.Player
         private void HandleInventory()
         {
             inventoryStatus = !inventoryStatus;
-            Pv.RPC(nameof(RPC_InventoryStatus), RpcTarget.All, inventoryStatus);
+            sync.SyncInventoryStatus(inventoryStatus);
         }
-
-        private void HandleInteract()
-        {
-            Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
-        }
-
-        private float targetSpeed;
 
         private void Move()
         {
-            targetSpeed = walkSpeed;
-
-            if (InputManager.Instance.Move == Vector2.zero)
-                targetSpeed = 0f;
-
-            if (InputManager.Instance.Run && (stamina.CanRun || DebuggerManager.Instance.UnlimitedStamina))
-                targetSpeed += targetSpeed * runSpeedFactor;
-
-
-            if (TemporarySpeedModifier.HasValue)
-                targetSpeed += targetSpeed * TemporarySpeedModifier.Value;
-
-            ///TODO : Move this in dedicate componant 
-            switch (PlayerWeight)
-            {
-                case Weight.LightOverweight:
-                    targetSpeed += targetSpeed * lightOverweightSpeedModifier;
-                    break;
-                case Weight.LargeOverweight:
-                    targetSpeed += targetSpeed * largeOverweightSpeedModifier;
-                    break;
-                case Weight.Normal:
-                default:
-                    break;
-            }
-
-            targetSpeed *= DebuggerManager.Instance.debugSpeed;
+            float targetSpeed = speedController.GetSpeed();
 
             if (grounded)
             {
-                targetSpeed += targetSpeed * CrouchController.CrouchSpeedFactor;
-
-                targetSpeed += targetSpeed * HealthController.HealthSpeedModifier;
-
                 currentVelocity.x = Mathf.Lerp(currentVelocity.x,
                     targetSpeed * InputManager.Instance.Move.x,
                     animBlendSpeed * Time.fixedDeltaTime);
@@ -318,8 +305,9 @@ namespace WAG.Player
         /// <param name="teamDataSpeedModifier"></param>
         public void SetTeamSpeedModifier(float teamDataSpeedModifier)
         {
-            teamSpeedModifier = teamDataSpeedModifier;
+            speedController.SetTeamSpeedModifier(teamDataSpeedModifier);
         }
+
 
         /// <summary>
         /// If the player controller is mine
@@ -327,64 +315,12 @@ namespace WAG.Player
         /// <returns></returns>
         public bool IsMine()
         {
-            return Pv.IsMine;
-        }
-
-        public void Defeat()
-        {
-            Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
+            return sync.IsMine;
         }
 
         #endregion Public
 
         #region RPC
-
-        public void Teleport()
-        {
-            Pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
-        }
-
-        [PunRPC]
-        private void RPC_Teleport()
-        {
-            if (!Pv.IsMine)
-                return;
-            // transform.position = PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition();
-        }
-
-
-        [PunRPC]
-        private void RPC_Defeat()
-        {
-            if (!Pv.IsMine)
-                return;
-            MenuManager.Instance.OpenMenu(MenuType.Pause);
-        }
-
-        [PunRPC]
-        private void RPC_Velocity(Vector3 vel)
-        {
-            rpcVelocity = vel;
-        }
-
-
-        [PunRPC]
-        private void RPC_Ground(bool ground)
-        {
-            rpcGrounded = ground;
-        }
-
-        [PunRPC]
-        private void RPC_InventoryStatus(bool inventoryStatus)
-        {
-            rpcInventoryStatus = inventoryStatus;
-        }
-
-        [PunRPC]
-        private void RPC_Interact()
-        {
-            Pac.InteractTrigger();
-        }
 
         #endregion RPC
     }

@@ -16,7 +16,7 @@ namespace WAG.Items
 
         protected void Update()
         {
-            if (canAttack && hitBox.CheckHit())
+            if (canAttack && hitBox.CheckHit(out HitData data))
                 canAttack = false;
         }
 
@@ -31,7 +31,6 @@ namespace WAG.Items
             animator.SetBool(Open,false);
             if (data.HurtBox.Owner.parent.TryGetComponent<PlayerController>(out PlayerController pc))
             {
-                Debug.Log("fuuuuuuuuuuuuuu");
                 pc.CanMove = false;
                 Vector3 pos = new Vector3(transform.position.x, pc.transform.position.y, transform.position.z);
                 pc.transform.position = pos;
