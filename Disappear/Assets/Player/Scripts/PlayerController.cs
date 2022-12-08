@@ -1,8 +1,9 @@
 using UnityEngine;
 using Photon.Pun;
 using WAG.Core.Controls;
-using WAG.Core.Menus;
+using WAG.Health;
 using WAG.Inventory;
+using WAG.Multiplayer;
 using WAG.Player.Enums;
 using WAG.Player.Health;
 using WAG.Player.Models;
@@ -23,7 +24,8 @@ namespace WAG.Player
     )]
     [RequireComponent(
         typeof(PlayerSpeedController),
-        typeof(PlayerAnimationController)
+        typeof(PlayerAnimationController),
+        typeof(PlayerSync)
     )]
     public class PlayerController : MonoBehaviour
     {
@@ -37,8 +39,7 @@ namespace WAG.Player
         public bool CanMove { get; set; } = true;
 
         private bool grounded;
-        private bool rpcGrounded;
-        public bool Grounded => Pv.IsMine ? grounded : rpcGrounded;
+        public bool Grounded => sync.IsMine ? grounded : sync.RPCGrounded;
 
         [Header("Jump")] [SerializeField] [Range(100, 1000)]
         private float jumpFactor = 260f;
@@ -54,26 +55,30 @@ namespace WAG.Player
         private GameObject inventoryUI;
 
         private bool inventoryStatus;
-        private bool rpcInventoryStatus;
-        public bool InventoryStatus => Pv.IsMine ? inventoryStatus : rpcInventoryStatus;
+        public bool InventoryStatus => sync.IsMine ? inventoryStatus : sync.RPCInventoryStatus;
 
-        private Vector3 rpcVelocity;
 
-        public Vector3 PlayerVelocity => Pv.IsMine ? currentVelocity : rpcVelocity;
+        public Vector3 PlayerVelocity => sync.IsMine ? currentVelocity : sync.RPCVelocity;
 
 
         #region Needed Components
 
         private Animator animator;
 
-        public PlayerHealthController HealthController => speedController.HealthController;
+        public PlayerHealthController HealthController => healthController;
+        private PlayerHealthController healthController;
         private PlayerAnimationController pac;
         public InventoryController InventoryController { get; private set; }
-        public PhotonView Pv { get; private set; }
         private CameraController cameraController;
 
         private PlayerSpeedController speedController;
         public PlayerSpeedController SpeedController => speedController;
+
+        private PlayerSync sync;
+        public PlayerSync Sync => sync;
+
+        private StaminaController stamina;
+        private CrouchController crouchController;
 
         private void GetNeededComponents()
         {
@@ -91,12 +96,6 @@ namespace WAG.Player
 
             rb.freezeRotation = true;
 
-            Pv = GetComponent<PhotonView>();
-            if (Pv == null)
-            {
-                Debug.LogError("Need PhotonView", this);
-                Debug.Break();
-            }
 
             if (!TryGetComponent<PlayerSpeedController>(out speedController))
             {
@@ -111,9 +110,33 @@ namespace WAG.Player
             }
             else
                 pac.PC = this;
-        }
 
-        private StaminaController stamina;
+            if (!TryGetComponent<CrouchController>(out crouchController))
+            {
+                Debug.LogError("Need CrouchController", this);
+                Debug.Break();
+            }
+            else
+            {
+                crouchController.PlayerController = this;
+            }
+
+            if (!TryGetComponent<PlayerHealthController>(out healthController))
+            {
+                Debug.LogError("Need PlayerHealthController", this);
+                Debug.Break();
+            }
+
+            if (!TryGetComponent<PlayerSync>(out sync))
+            {
+                Debug.LogError("Need PlayerSync", this);
+                Debug.Break();
+            }
+            else
+            {
+                sync.Init((HealthStatusController) healthController, () => { pac.InteractTrigger(); });
+            }
+        }
 
         #endregion Needed Components
 
@@ -126,8 +149,7 @@ namespace WAG.Player
             GetNeededComponents();
             InitModel();
 
-
-            if (!Pv.IsMine)
+            if (!sync.IsMine)
                 return;
 
             Init();
@@ -136,7 +158,7 @@ namespace WAG.Player
         private void FixedUpdate()
         {
             SampleGround();
-            if (!Pv.IsMine)
+            if (!sync.IsMine)
                 return;
 
             if (CanMove)
@@ -149,8 +171,8 @@ namespace WAG.Player
                 currentVelocity = Vector3.zero;
             }
 
-            Pv.RPC(nameof(RPC_Velocity), RpcTarget.All, currentVelocity);
-            Pv.RPC(nameof(RPC_Ground), RpcTarget.All, Grounded);
+            sync.SyncGround(grounded);
+            sync.SyncVelocity(currentVelocity);
         }
 
         #endregion Unity Events
@@ -159,10 +181,9 @@ namespace WAG.Player
 
         private void InitModel()
         {
-            // PlayerAnimationController pac = GetComponent<PlayerAnimationController>();
             name = PhotonNetwork.LocalPlayer.NickName;
             TeamController tc = GetComponent<TeamController>();
-            modelInfos = tc.SetTeamData(Pv);
+            modelInfos = tc.SetTeamData(sync.IsSeeker(), this);
         }
 
         private void Init()
@@ -193,7 +214,7 @@ namespace WAG.Player
             );
             InputManager.Instance.AddCallbackAction(
                 ActionsControls.Interact,
-                (context) => HandleInteract());
+                (context) => sync.HandleInteract());
         }
 
         private void HideCursor()
@@ -205,14 +226,8 @@ namespace WAG.Player
         private void HandleInventory()
         {
             inventoryStatus = !inventoryStatus;
-            Pv.RPC(nameof(RPC_InventoryStatus), RpcTarget.All, inventoryStatus);
+            sync.SyncInventoryStatus(inventoryStatus);
         }
-
-        private void HandleInteract()
-        {
-            Pv.RPC(nameof(RPC_Interact), RpcTarget.All);
-        }
-
 
         private void Move()
         {
@@ -300,64 +315,12 @@ namespace WAG.Player
         /// <returns></returns>
         public bool IsMine()
         {
-            return Pv.IsMine;
-        }
-
-        public void Defeat()
-        {
-            Pv.RPC(nameof(RPC_Defeat), RpcTarget.All);
+            return sync.IsMine;
         }
 
         #endregion Public
 
         #region RPC
-
-        public void Teleport()
-        {
-            Pv.RPC(nameof(RPC_Teleport), RpcTarget.All);
-        }
-
-        [PunRPC]
-        private void RPC_Teleport()
-        {
-            if (!Pv.IsMine)
-                return;
-            // transform.position = PlayerSpawnerManager.Instance.ChooseRandomSpawnPosition();
-        }
-
-
-        [PunRPC]
-        private void RPC_Defeat()
-        {
-            if (!Pv.IsMine)
-                return;
-            MenuManager.Instance.OpenMenu(MenuType.Pause);
-        }
-
-        [PunRPC]
-        private void RPC_Velocity(Vector3 vel)
-        {
-            rpcVelocity = vel;
-        }
-
-
-        [PunRPC]
-        private void RPC_Ground(bool ground)
-        {
-            rpcGrounded = ground;
-        }
-
-        [PunRPC]
-        private void RPC_InventoryStatus(bool inventoryStatus)
-        {
-            rpcInventoryStatus = inventoryStatus;
-        }
-
-        [PunRPC]
-        private void RPC_Interact()
-        {
-            pac.InteractTrigger();
-        }
 
         #endregion RPC
     }

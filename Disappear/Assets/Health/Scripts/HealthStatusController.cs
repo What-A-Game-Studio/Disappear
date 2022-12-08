@@ -38,7 +38,7 @@ namespace WAG.Health
             OnHealthChanged -= HealthChangeAction;
         }
 
-        protected void Invoke()
+        public void Invoke()
         {
             OnHealthChanged?.Invoke(currentHeathStatus);
         }

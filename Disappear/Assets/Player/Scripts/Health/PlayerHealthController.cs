@@ -1,4 +1,3 @@
-using Photon.Pun;
 using UnityEngine;
 using WAG.Health;
 
@@ -6,6 +5,8 @@ namespace WAG.Player.Health
 {
     public class PlayerHealthController : HealthStatusController
     {
+        private PlayerController pc;
+
         [SerializeField] private float healthySpeedModifier;
         [SerializeField] private float woundedSpeedModifier = -0.2f;
         [SerializeField] private float dyingSpeedModifier = -0.8f;
@@ -15,17 +16,13 @@ namespace WAG.Player.Health
         protected override void Awake()
         {
             base.Awake();
-            pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int) startHeathStatus);
-            OnHealthChanged += status => pv.RPC(nameof(RPC_SyncHealth), RpcTarget.All, (int) status);
-        }
-
-        [PunRPC]
-        private void RPC_SyncHealth(int status)
-        {
-            SetHealth(status, false);
-            if (!pv.IsMine)
-                return;
-            Invoke();
+            if (!TryGetComponent<PlayerController>(out pc))
+            {
+                Debug.LogError("Need PlayerController", this);
+                Debug.Break();
+            }
+            pc.Sync.SyncHealth(startHeathStatus);
+            OnHealthChanged += status => pc.Sync.SyncHealth(status);
         }
 
         protected override void OnHealthy()

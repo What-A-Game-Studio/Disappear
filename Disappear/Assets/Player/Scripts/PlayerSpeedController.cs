@@ -1,5 +1,6 @@
 using System.Collections;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using WAG.Core.Controls;
 using WAG.Debugger;
@@ -16,11 +17,13 @@ namespace WAG.Player
 
         [Header("Weight Modifiers")] [SerializeField]
         private float lightOverweightSpeedModifier = -.2f;
+
         [SerializeField] private float largeOverweightSpeedModifier = -.5f;
+        readonly IDictionary<int, float> speedModifiers = new Dictionary<int, float>();
+
         public Weight PlayerWeight { private get; set; }
         private float teamSpeedModifier = 0;
 
-        private float? temporarySpeedModifier = null;
         private float targetSpeed;
         private StaminaController staminaController;
         private CrouchController crouchController;
@@ -58,59 +61,49 @@ namespace WAG.Player
         {
             targetSpeed = walkSpeed;
 
+
             if (InputManager.Instance.Move == Vector2.zero)
                 return 0f;
 
             if (InputManager.Instance.Run && (staminaController.CanRun || DebuggerManager.Instance.UnlimitedStamina))
-                targetSpeed += targetSpeed * runSpeedFactor;
+                targetSpeed += walkSpeed * runSpeedFactor;
 
-            walkSpeed *= teamSpeedModifier;
+            targetSpeed += walkSpeed * teamSpeedModifier;
 
-            if (temporarySpeedModifier.HasValue)
-                targetSpeed += targetSpeed * temporarySpeedModifier.Value;
-
-            ///TODO : Move this in dedicate componant 
             switch (PlayerWeight)
             {
                 case Weight.LightOverweight:
-                    targetSpeed += targetSpeed * lightOverweightSpeedModifier;
+                    targetSpeed += walkSpeed * lightOverweightSpeedModifier;
                     break;
                 case Weight.LargeOverweight:
-                    targetSpeed += targetSpeed * largeOverweightSpeedModifier;
+                    targetSpeed += walkSpeed * largeOverweightSpeedModifier;
                     break;
                 case Weight.Normal:
                 default:
                     break;
             }
 
-            targetSpeed += targetSpeed * crouchController.CrouchSpeedFactor;
+            targetSpeed += walkSpeed * crouchController.CrouchSpeedFactor;
 
-            targetSpeed += targetSpeed * HealthController.HealthSpeedModifier;
+            targetSpeed += walkSpeed * HealthController.HealthSpeedModifier;
+            foreach (KeyValuePair<int, float> tsm in speedModifiers)
+            {
+                targetSpeed += walkSpeed * tsm.Value;
+            }
 
             targetSpeed *= DebuggerManager.Instance.debugSpeed;
+
             return targetSpeed;
         }
 
-        private IEnumerator SetTemporarySpeed(float speedModifier, float duration, float? delay = null,
-            Action callBack = null)
-        {
-            //Apply delay
-            if (delay.HasValue)
-                yield return new WaitForSeconds(delay.Value);
-
-            //Apply speed
-            AddSpeedModifier(speedModifier);
-
-            //Reset value
-            yield return new WaitForSeconds(duration);
-            temporarySpeedModifier -= speedModifier;
-            if (temporarySpeedModifier <= 0)
-                temporarySpeedModifier = null;
-
-            callBack?.Invoke();
-        }
 
         #region Public methods
+
+        public void AddSpeedModifier(int hash, float speedModifier) =>
+            speedModifiers[hash] = speedModifier;
+
+        public void RemoveSpeedModifier(int hash) =>
+            speedModifiers.Remove(hash);
 
         /// <summary>
         /// Set a temporary speed for seconds 
@@ -118,24 +111,27 @@ namespace WAG.Player
         /// <param name="speedModifier">Speed modifier value</param>
         /// <param name="duration">Time in seconds</param>
         /// <param name="delay">Delay speed modifier in seconds</param>
-        public void SetTemporarySpeedForSeconds(float speedModifier, float duration, float? delay = null,
+        public void SetTemporarySpeedForSeconds(int hash, float speedModifier, float duration, float? delay = null,
             Action callBack = null)
         {
-            StartCoroutine(SetTemporarySpeed(speedModifier, duration, delay, callBack));
+            StartCoroutine(SetTemporarySpeed(hash, speedModifier, duration, delay, callBack));
         }
 
-        public void AddSpeedModifier(float speedModifier)
+        private IEnumerator SetTemporarySpeed(int hash, float speedModifier, float duration, float? delay = null,
+            Action callBack = null)
         {
-            if (temporarySpeedModifier.HasValue)
-                temporarySpeedModifier += speedModifier;
-            else
-                temporarySpeedModifier = speedModifier;
-        }
+            //Apply delay
+            if (delay.HasValue)
+                yield return new WaitForSeconds(delay.Value);
 
-        public void RemoveSpeedModifier(float speedModifier)
-        {
-            if (temporarySpeedModifier.HasValue)
-                temporarySpeedModifier -= speedModifier;
+            //Apply speed
+            AddSpeedModifier(hash, speedModifier);
+
+            //Reset value
+            yield return new WaitForSeconds(duration);
+            RemoveSpeedModifier(hash);
+
+            callBack?.Invoke();
         }
 
         /// <summary>
