@@ -1,7 +1,7 @@
 using System;
 using Photon.Pun;
 using UnityEngine;
-using WAG.Core.Menus;
+using WAG.Menu;
 using WAG.Health;
 
 namespace WAG.Multiplayer

@@ -1,14 +1,10 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using WAG.Core.Controls;
-using WAG.Core.Menus;
 
 namespace WAG.Core.GM
 {
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance { get; private set; }
-        private MenuController pauseMenu;
 
         private void Awake()
         {
@@ -26,27 +22,9 @@ namespace WAG.Core.GM
             DontDestroyOnLoad(gameObject);
 
             SwitchCursorLockMode(CursorLockMode.None, true);
-            WAG.Core.Controls.InputManager.Instance.AddCallbackAction(ActionsControls.OpenMenu, OpenPauseMenu);
-            WAG.Core.Controls.InputManager.Instance.AddCallbackAction(ActionsControls.CloseMenu, ClosePauseMenu);
         }
 
-        public void OpenPauseMenu(InputAction.CallbackContext context)
-        {
-            MenuManager.Instance.OpenMenu(pauseMenu);
-            SwitchCursorLockMode(CursorLockMode.None, true);
-        }
 
-        public void ClosePauseMenu(InputAction.CallbackContext context)
-        {
-            MenuManager.Instance.CloseMenu(pauseMenu);
-            SwitchCursorLockMode(CursorLockMode.Locked, false);
-            MenuManager.Instance.OpenMenu(MenuType.Game);
-        }
-
-        public void Start()
-        {
-            pauseMenu = MenuManager.Instance.GetMenu(MenuType.Pause);
-        }
 
         public void QuitGame()
         {
@@ -60,7 +38,6 @@ namespace WAG.Core.GM
          Application.Quit();
 #endif
         }
-        
 
         public void SwitchCursorLockMode(CursorLockMode lockMode, bool visible)
 
@@ -68,5 +45,7 @@ namespace WAG.Core.GM
             Cursor.lockState = lockMode;
             Cursor.visible = visible;
         }
+
+        
     }
 }

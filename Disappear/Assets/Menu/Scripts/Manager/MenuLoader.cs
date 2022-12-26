@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WAG.Core.Menus
+namespace WAG.Menu
 {
     public class MenuLoader : MonoBehaviour
     {

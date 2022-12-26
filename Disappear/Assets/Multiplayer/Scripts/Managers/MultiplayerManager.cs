@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using WAG.Core;
 using WAG.Core.Controls;
 using WAG.Core.GM;
-using WAG.Core.Menus;
+using WAG.Menu;
 using WAG.Debugger;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 

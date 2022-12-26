@@ -1,10 +1,12 @@
-namespace WAG.Core.Menus
+namespace WAG.Menu
 {
     public enum MenuType
     {
         Loading,
+        Authentication,
+        MainMenu,
         Title,
-        CreateRoom,
+        LobbyRoom,
         JoinRoom,
         Role,
         Room,
@@ -14,5 +16,7 @@ namespace WAG.Core.Menus
         Pause,
         Game,
         None,
+        CreateLobby,
+        FindLobby
     }
 }
