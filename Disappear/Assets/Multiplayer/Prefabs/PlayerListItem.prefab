@@ -91,6 +91,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722f56c9191026846864c9b0a1dd0ba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerItemBG: {fileID: 3317054231038178214}
+  playerReadyButton: {fileID: 6080990702816680228}
 --- !u!114 &6080990702816680228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,8 +138,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6379972126863767137}
-        m_TargetAssemblyTypeName: LobbyListItemUI, Assembly-CSharp
-        m_MethodName: JoinLobbyOnClick
+        m_TargetAssemblyTypeName: PlayerListItemUI, WAG.Multiplayer
+        m_MethodName: SetPlayerReady
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

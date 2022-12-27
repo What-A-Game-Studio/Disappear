@@ -44,13 +44,40 @@ namespace WAG.Multiplayer
 
         public static async Task<Lobby> TryUpdateLobby(string lobbyId, Dictionary<string, DataObject> updatedData)
         {
-            Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(lobbyId, new UpdateLobbyOptions
+            try
             {
-                Data = updatedData
-            });
-            return lobby;
+                Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(lobbyId, new UpdateLobbyOptions
+                {
+                    Data = updatedData
+                });
+                return lobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log("e");
+                throw;
+            }
         }
 
+
+        public static async Task<Lobby> TryUpdatePlayerInLobby(string lobbyId,
+            Dictionary<string, PlayerDataObject> updatedPlayerData)
+        {
+            try
+            {
+                string playerId = AuthenticationService.Instance.PlayerId;
+                Lobby lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, new UpdatePlayerOptions
+                {
+                    Data = updatedPlayerData
+                });
+                return lobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log(e);
+                throw;
+            }
+        }
 
         /// <summary>
         /// Find the active lobbies

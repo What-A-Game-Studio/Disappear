@@ -26,6 +26,7 @@ namespace WAG.Multiplayer
 
         private void HandleLobbyRoomUIUpdate()
         {
+            if (LobbyManager.Instance.CurrentLobby == null) return;
             refreshLobbyRoomTimer -= Time.deltaTime;
             if (!(refreshLobbyRoomTimer < 0)) return;
             refreshLobbyRoomTimer = refreshLobbyRoomTimerTimerMax;

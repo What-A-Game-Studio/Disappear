@@ -76,9 +76,22 @@ namespace WAG.Multiplayer
             CurrentLobby = await LobbyService.Instance.GetLobbyAsync(CurrentLobby.Id);
         }
 
+        /// <summary>
+        /// Update the data of the current lobby
+        /// </summary>
+        /// <param name="updates"> new data to save in the lobby</param>
         public async void UpdateCurrentLobby(Dictionary<string, DataObject> updates)
         {
             await LobbyAPIInterface.TryUpdateLobby(CurrentLobby.Id, updates);
+        }
+
+        /// <summary>
+        /// Update the data of the local player in the current lobby
+        /// </summary>
+        /// <param name="updates"> new data to save in the lobby </param>
+        public async void UpdatePlayerDataInCurrentLobby(Dictionary<string, PlayerDataObject> updates)
+        {
+           await LobbyAPIInterface.TryUpdatePlayerInLobby(CurrentLobby.Id, updates);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -128,6 +129,16 @@ namespace WAG.Multiplayer
                 await LobbyAPIInterface.TryJoinLobbyById(lobbyId, localPlayer.GetLocalPlayerData()));
             UpdateLobbyRoomUI();
             RelayAPIInterface.JoinRelay(LobbyManager.Instance.CurrentLobby.Data["RelayCode"].Value);
+        }
+
+        public void StartHost()
+        {
+            NetworkManager.Singleton.StartHost();
+        }
+
+        public void StartClient()
+        {
+            NetworkManager.Singleton.StartClient();
         }
     }
 }

@@ -23,6 +23,7 @@ public class LocalPlayerData
         return new Player(id: AuthenticationService.Instance.PlayerId, data: new Dictionary<string, PlayerDataObject>
         {
             { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
+            { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "N") }
         });
     }
 }
