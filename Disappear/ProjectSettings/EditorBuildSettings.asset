@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Multiplayer/Scenes/MainMenuScene.unity
     guid: 4a0d318042d8f224daf8e03e68df9b32
+  - enabled: 1
+    path: Assets/Maps/Map-test1/Scenes/MapTest1Scene.unity
+    guid: 4ad3bb4efbd015b44a0db39729803303
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7261e7b95a3a63b4e8677ca3cf1d02c3,
       type: 2}

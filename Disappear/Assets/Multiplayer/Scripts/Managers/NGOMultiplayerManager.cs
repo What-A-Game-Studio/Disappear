@@ -5,14 +5,14 @@ using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WAG.Menu;
 
 namespace WAG.Multiplayer
 {
-    public class NGOMultiplayerManager : MonoBehaviour
+    public class NGOMultiplayerManager : NetworkBehaviour
     {
         public static NGOMultiplayerManager Instance { get; private set; }
-
 
         [SerializeField] private FindLobbyUI findLobbyMenu;
         [SerializeField] private LobbyRoomUI lobbyRoomMenu;
@@ -131,14 +131,15 @@ namespace WAG.Multiplayer
             RelayAPIInterface.JoinRelay(LobbyManager.Instance.CurrentLobby.Data["RelayCode"].Value);
         }
 
-        public void StartHost()
-        {
-            NetworkManager.Singleton.StartHost();
-        }
 
-        public void StartClient()
+        /// <summary>
+        /// Load a scene and synchronize it with all players via NetworkManager
+        /// </summary>
+        /// <param name="sceneName">Name of the scene to load</param>
+        /// <param name="loadMode"> Looading mode, can be additive or single</param>
+        public void LoadSceneByName(string sceneName, LoadSceneMode loadMode)
         {
-            NetworkManager.Singleton.StartClient();
+            NetworkManager.Singleton.SceneManager.LoadScene(sceneName, loadMode);
         }
     }
 }

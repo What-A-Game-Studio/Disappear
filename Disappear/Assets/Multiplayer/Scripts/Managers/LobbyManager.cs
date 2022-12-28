@@ -12,7 +12,8 @@ namespace WAG.Multiplayer
     {
         public static LobbyManager Instance { get; private set; }
         public Lobby CurrentLobby { get; private set; }
-        private bool isHost;
+        public bool IsHost { get; private set; }
+        
         private float heartbeatTimer;
         [SerializeField] private float heartbeatTimerMax;
         [SerializeField] private float lobbyUpdateTimerMax;
@@ -41,13 +42,13 @@ namespace WAG.Multiplayer
         public void StartLobbyLogic(Lobby lobby)
         {
             CurrentLobby = lobby;
-            isHost = lobby.HostId == AuthenticationService.Instance.PlayerId;
+            IsHost = lobby.HostId == AuthenticationService.Instance.PlayerId;
         }
 
         public void LeaveLobby()
         {
             CurrentLobby = null;
-            isHost = false;
+            IsHost = false;
             Debug.Log("Left Lobby");
         }
 
@@ -56,7 +57,7 @@ namespace WAG.Multiplayer
         /// </summary>
         private async void HandleLobbyHeartbeat()
         {
-            if (!isHost || CurrentLobby == null) return;
+            if (!IsHost || CurrentLobby == null) return;
             heartbeatTimer -= Time.deltaTime;
             if (!(heartbeatTimer < 0)) return;
             heartbeatTimer = heartbeatTimerMax;
@@ -91,7 +92,7 @@ namespace WAG.Multiplayer
         /// <param name="updates"> new data to save in the lobby </param>
         public async void UpdatePlayerDataInCurrentLobby(Dictionary<string, PlayerDataObject> updates)
         {
-           await LobbyAPIInterface.TryUpdatePlayerInLobby(CurrentLobby.Id, updates);
+            await LobbyAPIInterface.TryUpdatePlayerInLobby(CurrentLobby.Id, updates);
         }
     }
 }
