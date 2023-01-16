@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using Unity.Services.Lobbies;
@@ -10,14 +11,14 @@ using WAG.Menu;
 
 namespace WAG.Multiplayer
 {
-    public class NGOMultiplayerManager : NetworkBehaviour
+    public class NGOMultiplayerManager : MonoBehaviour
     {
         public static NGOMultiplayerManager Instance { get; private set; }
 
         [SerializeField] private FindLobbyUI findLobbyMenu;
         [SerializeField] private LobbyRoomUI lobbyRoomMenu;
         [SerializeField] private TMP_InputField playerNameInputField;
-        private LocalPlayerData localPlayer;
+        public LocalPlayerData localPlayer { get; private set; }
 
         private void Awake()
         {
@@ -42,6 +43,7 @@ namespace WAG.Multiplayer
 
             AuthenticationAPIInterface.InitializeAndSignInAsync(name);
             localPlayer = new LocalPlayerData(name);
+            Debug.Log("Player Id : " + localPlayer.playerId);
             MenuManager.Instance.OpenMenu(MenuType.MainMenu);
         }
 
@@ -98,7 +100,7 @@ namespace WAG.Multiplayer
         /// <param name="lobbyName"> the name of the lobby</param>
         /// <param name="maxPlayers"> the max number of players that can join the lobby </param>
         /// <param name="isPrivate"> the private state of the lobby</param>
-        public async void CreateLobby(string lobbyName, int maxPlayers, bool isPrivate)
+        public async Task CreateLobby(string lobbyName, int maxPlayers, bool isPrivate)
         {
             string relayCode = await RelayAPIInterface.CreateRelay(maxPlayers);
             CreateLobbyOptions lobbyOptions = new CreateLobbyOptions
@@ -116,18 +118,16 @@ namespace WAG.Multiplayer
                 maxPlayers,
                 lobbyOptions);
             LobbyManager.Instance.StartLobbyLogic(createdLobby);
-            UpdateLobbyRoomUI();
         }
 
         /// <summary>
         /// Make the local player join a lobby by id
         /// </summary>
         /// <param name="lobbyId"> The ID of the lobby to join</param>
-        public async void JoinLobby(string lobbyId)
+        public async Task JoinLobby(string lobbyId)
         {
             LobbyManager.Instance.StartLobbyLogic(
                 await LobbyAPIInterface.TryJoinLobbyById(lobbyId, localPlayer.GetLocalPlayerData()));
-            UpdateLobbyRoomUI();
             RelayAPIInterface.JoinRelay(LobbyManager.Instance.CurrentLobby.Data["RelayCode"].Value);
         }
 

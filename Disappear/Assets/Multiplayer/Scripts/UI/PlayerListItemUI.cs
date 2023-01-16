@@ -10,6 +10,7 @@ using WAG.Multiplayer;
 public class PlayerListItemUI : MonoBehaviour
 {
     public string PlayerId { get; private set; }
+    public string PlayerRole { get; private set; }
     [SerializeField] private Button playerReadyButton;
     private TextMeshProUGUI playerNameText;
     private bool isReady = false;
@@ -22,11 +23,11 @@ public class PlayerListItemUI : MonoBehaviour
         }
     }
 
-
     public void SetPlayerData(Player playerData)
     {
         playerNameText.SetText(playerData.Data["PlayerName"].Value);
         PlayerId = playerData.Id;
+        PlayerRole = playerData.Data["Role"].Value;
         if (PlayerId != AuthenticationService.Instance.PlayerId)
         {
             playerReadyButton.interactable = false;
@@ -35,8 +36,6 @@ public class PlayerListItemUI : MonoBehaviour
                 playerReadyButton.image.color = Color.green;
             }
         }
-
-        
     }
 
     public void SetPlayerReady()

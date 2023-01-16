@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -93,6 +94,11 @@ namespace WAG.Multiplayer
         public async void UpdatePlayerDataInCurrentLobby(Dictionary<string, PlayerDataObject> updates)
         {
             await LobbyAPIInterface.TryUpdatePlayerInLobby(CurrentLobby.Id, updates);
+        }
+
+        public Player FindPlayerInCurrentLobby(string id)
+        {
+            return CurrentLobby.Players.FirstOrDefault(player => player.Id == id);
         }
     }
 }

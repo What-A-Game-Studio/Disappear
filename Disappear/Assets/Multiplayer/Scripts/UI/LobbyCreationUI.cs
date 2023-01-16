@@ -33,10 +33,11 @@ namespace WAG.Multiplayer
 
         public async void CreateLobbyRequest()
         {
-            NGOMultiplayerManager.Instance.CreateLobby(lobbyNameInputField.text,
+            await NGOMultiplayerManager.Instance.CreateLobby(lobbyNameInputField.text,
                 maxPlayers,
                 isPrivate.isOn);
             MenuManager.Instance.OpenMenu(MenuType.LobbyRoom);
+            NGOMultiplayerManager.Instance.UpdateLobbyRoomUI();
         }
     }
 }

@@ -30,12 +30,13 @@ namespace WAG.Multiplayer
             lobbyNameText.SetText(lobbyData.Name);
             playerCountText.SetText($"{lobbyData.Players.Count} / {lobbyData.MaxPlayers}");
             LobbyId = lobbyData.Id;
-        }
+        }   
 
         public async void JoinLobbyOnClick()
         {
-            NGOMultiplayerManager.Instance.JoinLobby(LobbyId);
+            await NGOMultiplayerManager.Instance.JoinLobby(LobbyId);
             MenuManager.Instance.OpenMenu(MenuType.LobbyRoom);
+            NGOMultiplayerManager.Instance.UpdateLobbyRoomUI();
         }
     }
 }

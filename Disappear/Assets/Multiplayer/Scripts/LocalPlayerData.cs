@@ -6,24 +6,33 @@ using UnityEngine;
 
 public class LocalPlayerData
 {
-    private string playerName;
+    public string playerId { get; private set; }
+    public string playerName { get; private set; }
+    public string playerReady { get; private set; }
+    public string playerRole { get; private set; }
 
     public LocalPlayerData()
     {
         playerName = null;
+        playerReady = "N";
+        playerRole = "S";
     }
 
-    public LocalPlayerData(string name)
+    public LocalPlayerData(string name, string ready = "N", string role = "S")
     {
+        playerId = AuthenticationService.Instance.PlayerId;
         playerName = name;
+        playerReady = ready;
+        playerRole = role;
     }
 
     public Player GetLocalPlayerData()
     {
-        return new Player(id: AuthenticationService.Instance.PlayerId, data: new Dictionary<string, PlayerDataObject>
+        return new Player(id: playerId, data: new Dictionary<string, PlayerDataObject>
         {
             { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
-            { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "N") }
+            { "Ready", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerReady) },
+            { "Role", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerRole) }
         });
     }
 }

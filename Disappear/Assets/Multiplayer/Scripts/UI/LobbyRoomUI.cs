@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,7 +13,11 @@ namespace WAG.Multiplayer
     {
         [SerializeField] private TextMeshProUGUI lobbyNameText;
         [SerializeField] private PlayerListItemUI playerListItemPrefab;
+        [SerializeField] private Transform seekerContainer;
+        [SerializeField] private Transform hiderContainer;
         [SerializeField] private Button startGameButton;
+        [SerializeField] private Button seekerJoinButton;
+        [SerializeField] private Button hiderJoinButton;
         [SerializeField] private string chosenScene;
         private List<PlayerListItemUI> displayedPlayers = new List<PlayerListItemUI>();
         private float refreshLobbyRoomTimer;
@@ -44,14 +50,7 @@ namespace WAG.Multiplayer
                 lobbyNameText.text = LobbyManager.Instance.CurrentLobby.Name;
             }
 
-            if (LobbyManager.Instance.IsHost)
-            {
-                startGameButton.gameObject.SetActive(true);
-            }
-            else
-            {
-                startGameButton.gameObject.SetActive(false);
-            }
+            startGameButton.gameObject.SetActive(LobbyManager.Instance.IsHost);
 
             bool isEveryoneReady = true;
             List<Player> lobbyPlayers = LobbyManager.Instance.CurrentLobby.Players;
@@ -63,7 +62,7 @@ namespace WAG.Multiplayer
                     isEveryoneReady = false;
             }
 
-            startGameButton.interactable = isEveryoneReady;
+            startGameButton.interactable = isEveryoneReady && LobbyManager.Instance.IsHost;
         }
 
         private PlayerListItemUI GetPlayerListItem(Player player)
@@ -71,22 +70,46 @@ namespace WAG.Multiplayer
             foreach (PlayerListItemUI displayedPlayer in displayedPlayers)
             {
                 if (displayedPlayer.PlayerId == player.Id)
-                {
                     return displayedPlayer;
-                }
             }
 
-            return CreatePlayerListItem();
+            return CreatePlayerListItem(player.Data["Role"].Value);
         }
 
-        private PlayerListItemUI CreatePlayerListItem()
+        private PlayerListItemUI CreatePlayerListItem(string role)
         {
             PlayerListItemUI playerItem =
-                Instantiate(playerListItemPrefab.gameObject, playerListItemPrefab.transform.parent)
+                Instantiate(playerListItemPrefab.gameObject, role == "S" ? seekerContainer : hiderContainer)
                     .GetComponent<PlayerListItemUI>();
             playerItem.gameObject.SetActive(true);
             displayedPlayers.Add(playerItem);
             return playerItem;
+        }
+
+        public void JoinSeekerTeamOnClick()
+        {
+            PlayerListItemUI pli =
+                displayedPlayers.FirstOrDefault(pli => pli.PlayerId == AuthenticationService.Instance.PlayerId);
+            pli.transform.SetParent(seekerContainer);
+            LobbyManager.Instance.UpdatePlayerDataInCurrentLobby(new Dictionary<string, PlayerDataObject>
+            {
+                {
+                    "Role", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, value: "S")
+                }
+            });
+        }
+
+        public void JoinHiderTeamOnClick()
+        {
+            PlayerListItemUI pli =
+                displayedPlayers.FirstOrDefault(pli => pli.PlayerId == AuthenticationService.Instance.PlayerId);
+            pli.transform.SetParent(hiderContainer);
+            LobbyManager.Instance.UpdatePlayerDataInCurrentLobby(new Dictionary<string, PlayerDataObject>
+            {
+                {
+                    "Role", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, value: "H")
+                }
+            });
         }
 
         public void StartGameWithChosenScene()
