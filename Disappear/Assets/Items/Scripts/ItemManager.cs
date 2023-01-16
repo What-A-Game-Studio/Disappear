@@ -1,17 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using WAG.Inventory_Items;
+using WAG.Multiplayer;
+using Unity.Collections;
 using Random = UnityEngine.Random;
 
 namespace WAG.Items
 {
+    public struct ItemNetworkData : INetworkSerializable
+    {
+        public Vector3 Position;
+        public int ItemToSpawn;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref Position);
+            serializer.SerializeValue(ref ItemToSpawn);
+        }
+    }
+
     /// <summary>
     /// ItemManager 
     /// </summary>
-    public class ItemManager : MonoBehaviour
+
+    public class ItemManager : NetworkSideBehaviour
     {
+        private List<ItemNetworkData> InternalItemPool = new List<ItemNetworkData>();
+        private NetworkVariable<ItemNetworkData[]> ItemPool = new NetworkVariable<ItemNetworkData[]>();
+
         public static ItemManager Instance { get; private set; }
 
         [SerializeField] private RarityTierSO[] RarityTiers;
@@ -33,12 +52,40 @@ namespace WAG.Items
                 Destroy(gameObject);
                 return;
             }
-            
-            // if (PhotonNetwork.IsMasterClient)
-            // {
-            //     CreateItems();
-            // }
+
         }
+
+        protected override void OnClientSpawn()
+        {
+            ItemPool.OnValueChanged += (value, newValue) =>
+            {
+                Debug.Log(newValue.Length);
+                foreach (var item in newValue)
+                    InstantiateItem(item.Position, item.ItemToSpawn);
+            };
+        }
+
+        protected override void OnServerSpawn()
+        {
+            CreateItems();
+        }
+
+        protected override void UpdateServer()
+        {
+        }
+
+        protected override void UpdateClient()
+        {
+        }
+
+        protected override void FixedUpdateServer()
+        {
+        }
+
+        protected override void FixedUpdateClient()
+        {
+        }
+
 
         /// <summary>
         /// Create all items in all spawns
@@ -61,14 +108,19 @@ namespace WAG.Items
                     ItemDataSO item = GetTierToSpawn(goodTypeItem);
                     if (item != null)
                     {
-                        // pv.RPC(nameof(RPC_InstantiateItem),
-                        //     RpcTarget.All,
-                        //     spawn.SpawnCoordinate(),
-                        //     Array.IndexOf(itemsData, item));
-                        // ++TotalItems;
+
+                        InternalItemPool.Add(new ItemNetworkData()
+                        {
+                            Position = spawn.SpawnCoordinate(),
+                            ///TODO : peut-etre revoir le system d'id avec des vrai ID ?
+                            ItemToSpawn = Array.IndexOf(itemsData, item)
+                        });
+                        ++TotalItems;
                     }
                 }
             }
+
+            ItemPool.Value = InternalItemPool.ToArray();
         }
 
         /// <summary>
@@ -215,9 +267,7 @@ namespace WAG.Items
             return null;
         }
 
-        #region ====================== Photon : Start ======================
 
- //       [PunRPC]
         private void RPC_StoreItem(int indexInChildren)
         {
             if (indexInChildren > transform.childCount)
@@ -228,18 +278,17 @@ namespace WAG.Items
             child.localPosition = Vector3.zero;
         }
 
-  //      [PunRPC]
+
         private void RPC_DropItem(int indexInChildren, Vector3 spawnPos, Vector3 forwardOrientation)
         {
             if (indexInChildren > transform.childCount)
                 return;
 
             Transform child = transform.GetChild(indexInChildren);
-            child.GetComponent<ItemController>()?.Activate(spawnPos+Vector3.up, forwardOrientation);
+            child.GetComponent<ItemController>()?.Activate(spawnPos + Vector3.up, forwardOrientation);
         }
+        protected virtual void InstantiateItem(Vector3 position, int itemToSpawn)
 
-   //     [PunRPC] // Remote Procedure Calls
-        protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
         {
             // Debug.Log("Item To Spawn : " + itemToSpawn);
             ItemDataSO item = GetItemById(itemToSpawn);
@@ -253,6 +302,5 @@ namespace WAG.Items
             ic.ItemData = item;
         }
 
-        #endregion ====================== Photon : End ======================
     }
 }

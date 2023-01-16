@@ -8,13 +8,14 @@ namespace WAG.Multiplayer
 {
     public abstract class NetworkSideBehaviour : NetworkBehaviour
     {
+
         public override void OnNetworkSpawn()
         {
             if (IsServer)
             {
                 OnServerSpawn();
             }
-            else
+            // else
             {
                 OnClientSpawn();
             }
