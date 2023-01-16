@@ -9,12 +9,12 @@ namespace WAG.Multiplayer
 {
     public class NGOPlayerSync : NetworkBehaviour
     {
-        public NetworkVariable<FixedString32Bytes> RPCName { get; set; }
-        public NetworkVariable<Vector2> RPCMove { get; set; }
-        public NetworkVariable<Vector3> RPCVelocity { get; private set; }
-        public NetworkVariable<bool> RPCGrounded { get; private set; }
-        public NetworkVariable<bool> RPCCrouch { get; set; }
-        public NetworkVariable<bool> RPCInventoryStatus { get; private set; }
+        public NetworkVariable<FixedString32Bytes> RPCName = new NetworkVariable<FixedString32Bytes>();
+        public NetworkVariable<Vector2> RPCMove = new NetworkVariable<Vector2>();
+        public NetworkVariable<Vector3> RPCVelocity = new NetworkVariable<Vector3>();
+        public NetworkVariable<bool> RPCGrounded = new NetworkVariable<bool>();
+        public NetworkVariable<bool> RPCCrouch= new NetworkVariable<bool>();
+        public NetworkVariable<bool> RPCInventoryStatus= new NetworkVariable<bool>();
 
 
         private NGOHealthStatusController healthController;

@@ -21,7 +21,6 @@ namespace WAG.Multiplayer
                 string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
                 RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-                NetworkManager.Singleton.StartHost();
                 return joinCode;
             }
             catch (RelayServiceException e)
@@ -38,7 +37,6 @@ namespace WAG.Multiplayer
                 JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(relayCode);
                 RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-                NetworkManager.Singleton.StartClient();
             }
             catch (RelayServiceException e)
             {

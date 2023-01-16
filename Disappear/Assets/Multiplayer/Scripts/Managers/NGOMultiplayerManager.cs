@@ -114,6 +114,8 @@ namespace WAG.Multiplayer
                 lobbyOptions);
             LobbyManager.Instance.StartLobbyLogic(createdLobby);
             MenuManager.Instance.OpenMenu(MenuType.LobbyRoom);
+            NetworkManager.Singleton.StartHost();
+
         }
 
         /// <summary>
@@ -140,6 +142,7 @@ namespace WAG.Multiplayer
                 maxPlayers,
                 lobbyOptions);
             LobbyManager.Instance.StartLobbyLogic(createdLobby);
+            NetworkManager.Singleton.StartHost();
         }
 
         /// <summary>
@@ -151,6 +154,8 @@ namespace WAG.Multiplayer
             LobbyManager.Instance.StartLobbyLogic(
                 await LobbyAPIInterface.TryJoinLobbyById(lobbyId, localPlayer.GetLocalPlayerData()));
             RelayAPIInterface.JoinRelay(LobbyManager.Instance.CurrentLobby.Data["RelayCode"].Value);
+            NetworkManager.Singleton.StartClient();
+
         }
 
 
