@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace WAG.Multiplayer
 {
     public class AuthenticationAPIInterface : MonoBehaviour
     {
-        public static async void InitializeAndSignInAsync(string name)
+        public static async Task InitializeAndSignInAsync(string name)
         {
             InitializationOptions initializationOptions = new InitializationOptions();
             initializationOptions.SetProfile(name);

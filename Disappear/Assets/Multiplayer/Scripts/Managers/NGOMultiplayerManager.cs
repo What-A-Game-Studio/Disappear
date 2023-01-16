@@ -33,7 +33,7 @@ namespace WAG.Multiplayer
         /// <summary>
         /// Try to anonymously sign in the player at launch
         /// </summary>
-        public void TrySignIn()
+        public async void TrySignIn()
         {
             string name;
             if (string.IsNullOrEmpty(playerNameInputField.text))
@@ -41,7 +41,7 @@ namespace WAG.Multiplayer
             else
                 name = playerNameInputField.text;
 
-            AuthenticationAPIInterface.InitializeAndSignInAsync(name);
+            await AuthenticationAPIInterface.InitializeAndSignInAsync(name);
             localPlayer = new LocalPlayerData(name);
             Debug.Log("Player Id : " + localPlayer.playerId);
             MenuManager.Instance.OpenMenu(MenuType.MainMenu);
