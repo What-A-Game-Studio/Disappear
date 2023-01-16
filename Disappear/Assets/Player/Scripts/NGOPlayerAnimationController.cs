@@ -38,20 +38,20 @@ namespace WAG.Player
         // Update is called once per frame
         private void Update()
         {
-            animator.SetFloat(PlayerAnimationController.XVelHash, PC.PlayerVelocity.x);
-            animator.SetFloat(PlayerAnimationController.ZVelHash, PC.PlayerVelocity.z);
-            animator.SetFloat(PlayerAnimationController.YVelHash, PC.PlayerVelocity.y);
-            animator.SetBool(PlayerAnimationController.CrouchHash, PC.SpeedController.CrouchController.Crouched);
-            animator.SetBool(PlayerAnimationController.InventoryHash, PC.InventoryStatus);
-            animator.SetBool(PlayerAnimationController.FallingHash, !PC.Grounded);
-            animator.SetBool(PlayerAnimationController.GroundedHash, PC.Grounded);
-            animator.SetBool(PlayerAnimationController.Wounded,
+            animator.SetFloat(NGOPlayerAnimationController.XVelHash, PC.PlayerVelocity.x);
+            animator.SetFloat(NGOPlayerAnimationController.ZVelHash, PC.PlayerVelocity.z);
+            animator.SetFloat(NGOPlayerAnimationController.YVelHash, PC.PlayerVelocity.y);
+            animator.SetBool(NGOPlayerAnimationController.CrouchHash, PC.SpeedController.CrouchController.Crouched);
+            animator.SetBool(NGOPlayerAnimationController.InventoryHash, PC.InventoryStatus);
+            animator.SetBool(NGOPlayerAnimationController.FallingHash, !PC.Grounded);
+            animator.SetBool(NGOPlayerAnimationController.GroundedHash, PC.Grounded);
+            animator.SetBool(NGOPlayerAnimationController.Wounded,
                 PC.HealthController.CurrentHeathStatus != HeathStatus.Healthy);
         }
 
         public void InteractTrigger()
         {
-            animator.SetTrigger(PlayerAnimationController.Interact);
+            animator.SetTrigger(NGOPlayerAnimationController.Interact);
         }
 
         public void Trigger(int animatorHash)

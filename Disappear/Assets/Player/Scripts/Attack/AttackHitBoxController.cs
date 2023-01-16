@@ -5,13 +5,13 @@ namespace WAG.Player.Attacks
 {
     public class AttackHitBoxController : MonoBehaviour
     {
-        [SerializeField] private HealthStatusController damageableObjectInRange = null;
+        [SerializeField] private NGOHealthStatusController damageableObjectInRange = null;
 
-        public HealthStatusController DamageableObjectInRange => damageableObjectInRange;
+        public NGOHealthStatusController DamageableObjectInRange => damageableObjectInRange;
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.TryGetComponent<HealthStatusController>(out HealthStatusController tmp))
+            if (other.gameObject.TryGetComponent<NGOHealthStatusController>(out NGOHealthStatusController tmp))
             {
                 // Ray r = new Ray(transform.position, (tmp.transform.position - transform.position).normalized);
                 // if (Physics.Raycast(r, out RaycastHit hitInfo))

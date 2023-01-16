@@ -94,6 +94,28 @@ namespace WAG.Multiplayer
             MenuManager.Instance.OpenMenu(MenuType.MainMenu);
         }
 
+        public async void QuickCreateLobby()
+        {
+            int maxPlayers = 4;
+            string relayCode = await RelayAPIInterface.CreateRelay(maxPlayers);
+            CreateLobbyOptions lobbyOptions = new CreateLobbyOptions
+            {
+                IsPrivate = false,
+                Player = localPlayer.GetLocalPlayerData(),
+                Data = new Dictionary<string, DataObject>()
+                {
+                    {
+                        "RelayCode", new DataObject(DataObject.VisibilityOptions.Member, value: relayCode)
+                    }
+                }
+            };
+            Lobby createdLobby = await LobbyAPIInterface.TryCreateLobby("New Lobby",
+                maxPlayers,
+                lobbyOptions);
+            LobbyManager.Instance.StartLobbyLogic(createdLobby);
+            MenuManager.Instance.OpenMenu(MenuType.LobbyRoom);
+        }
+
         /// <summary>
         /// Create a new Lobby
         /// </summary>

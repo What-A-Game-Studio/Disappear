@@ -7,17 +7,17 @@ public class LockController : MonoBehaviour
  
     private void OnEnable()
     {
-        PlayerController.MainPlayer.CanRotate = false;
-        PlayerController.MainPlayer.CanMove = false;
+        NGOPlayerController.MainPlayer.CanRotate = false;
+        NGOPlayerController.MainPlayer.CanMove = false;
     }
 
     private void OnDisable()
     {
-        if (PlayerController.MainPlayer)
+        if (NGOPlayerController.MainPlayer)
         {
            
-            PlayerController.MainPlayer.CanRotate = true;
-            PlayerController.MainPlayer.CanMove = true;
+            NGOPlayerController.MainPlayer.CanRotate = true;
+            NGOPlayerController.MainPlayer.CanMove = true;
         }
     }
 }

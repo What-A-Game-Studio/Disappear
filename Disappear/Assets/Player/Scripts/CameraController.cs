@@ -31,7 +31,7 @@ namespace WAG.Player
 
         private void LateUpdate()
         {
-            if (PlayerController.MainPlayer.CanRotate)
+            if (NGOPlayerController.MainPlayer.CanRotate)
                 CameraMovement();
         }
 

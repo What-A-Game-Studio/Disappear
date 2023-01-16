@@ -17,7 +17,7 @@ namespace WAG.Multiplayer
         public NetworkVariable<bool> RPCInventoryStatus { get; private set; }
 
 
-        private HealthStatusController healthController;
+        private NGOHealthStatusController healthController;
         private Action interactAction;
 
         public bool IsMine => IsOwner;
@@ -141,7 +141,7 @@ namespace WAG.Multiplayer
             interactAction.Invoke();
         }
 
-        public void Init(HealthStatusController hc, Action ia)
+        public void Init(NGOHealthStatusController hc, Action ia)
         {
             healthController = hc;
             interactAction = ia;

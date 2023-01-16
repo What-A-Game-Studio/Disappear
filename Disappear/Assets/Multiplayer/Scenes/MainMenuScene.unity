@@ -198,8 +198,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 142221954}
-    PlayerPrefab: {fileID: 6044308510027733539, guid: 33d1eebbeb72a4546b8a37c3d6c333dc,
-      type: 3}
+    PlayerPrefab: {fileID: 0}
     NetworkPrefabs: []
     TickRate: 30
     ClientConnectionBufferTimeout: 10
@@ -575,6 +574,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1919187805}
+    - target: {fileID: 2000706390285409014, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_text
+      value: QUICK CREATE
+      objectReference: {fileID: 0}
     - target: {fileID: 2000706390622697354, guid: 116a08562f9994b47a1016a9c950217d,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -689,6 +693,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MultiplayerMenuUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1919187805}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: QuickCreateLobby
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: WAG.Multiplayer.NGOMultiplayerManager, WAG.Multiplayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 2000706391613030093, guid: 116a08562f9994b47a1016a9c950217d,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2000706391668059101, guid: 116a08562f9994b47a1016a9c950217d,
         type: 3}

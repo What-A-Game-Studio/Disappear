@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using WAG.Core.Controls;
@@ -66,8 +67,8 @@ namespace WAG.Player
         private Rigidbody rb;
         private Animator animator;
 
-        public PlayerHealthController HealthController => healthController;
-        private PlayerHealthController healthController;
+        public NGOPlayerHealthController HealthController => healthController;
+        private NGOPlayerHealthController healthController;
         private NGOPlayerAnimationController pac;
         public InventoryController InventoryController { get; private set; }
         private CameraController cameraController;
@@ -122,7 +123,7 @@ namespace WAG.Player
                 crouchController.PlayerController = this;
             }
 
-            if (!TryGetComponent<PlayerHealthController>(out healthController))
+            if (!TryGetComponent<NGOPlayerHealthController>(out healthController))
             {
                 Debug.LogError("Need PlayerHealthController", this);
                 Debug.Break();
@@ -135,7 +136,7 @@ namespace WAG.Player
             }
             else
             {
-                sync.Init((HealthStatusController)healthController, () => { pac.InteractTrigger(); });
+                sync.Init((NGOHealthStatusController)healthController, () => { pac.InteractTrigger(); });
             }
         }
 
@@ -143,18 +144,19 @@ namespace WAG.Player
 
         #region Unity Events
 
-        public override void OnNetworkSpawn()
-        {
-            InputManager.Instance.SwitchMap(ControlMap.Player);
-            HideCursor();
-            GetNeededComponents();
-            InitModel();
-
-            if (!sync.IsMine)
-                return;
-
-            Init();
-        }
+        // public override void OnNetworkSpawn()
+        // {
+        //     Debug.Log("Check Components");
+        //     InputManager.Instance.SwitchMap(ControlMap.Player);
+        //     HideCursor();
+        //     GetNeededComponents();
+        //     InitModel();
+        //
+        //     if (!sync.IsMine)
+        //         return;
+        //
+        //     Init();
+        // }
 
         protected override void OnClientSpawn()
         {
@@ -171,13 +173,14 @@ namespace WAG.Player
         protected override void OnServerSpawn()
         {
             if (!IsLocalPlayer) return;
+
             GetNeededComponents();
             this.name = LobbyManager.Instance.CurrentLobby.Players.FirstOrDefault(player =>
                     player.Id == NGOMultiplayerManager.Instance.localPlayer.playerId)
                 ?.Data["PlayerName"].Value ?? "Player";
             InitModel();
         }
-
+        
         protected override void UpdateServer()
         {
             //throw new System.NotImplementedException();

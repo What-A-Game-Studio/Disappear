@@ -5,7 +5,7 @@ using WAG.Core.Controls;
 
 namespace WAG.Health
 {
-    public class SphereHealthController : HealthStatusController
+    public class SphereHealthController : NGOHealthStatusController
     {
         private MeshRenderer mr;
 

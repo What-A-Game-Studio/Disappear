@@ -28,8 +28,8 @@ namespace WAG.Player
         private StaminaController staminaController;
         private NGOCrouchController crouchController;
         public NGOCrouchController CrouchController => crouchController;
-        private PlayerHealthController healthController;
-        public PlayerHealthController HealthController => healthController;
+        private NGOPlayerHealthController healthController;
+        public NGOPlayerHealthController HealthController => healthController;
 
         private void GetNeededComponents()
         {
@@ -45,7 +45,7 @@ namespace WAG.Player
                 Debug.Break();
             }
 
-            if (!TryGetComponent<PlayerHealthController>(out healthController))
+            if (!TryGetComponent<NGOPlayerHealthController>(out healthController))
             {
                 Debug.LogError("Need playerHealthController", this);
                 Debug.Break();

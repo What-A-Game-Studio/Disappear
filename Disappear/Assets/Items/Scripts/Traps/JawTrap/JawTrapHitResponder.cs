@@ -29,7 +29,7 @@ namespace WAG.Items
         {
             canAttack = false;
             animator.SetBool(Open,false);
-            if (data.HurtBox.Owner.parent.TryGetComponent<PlayerController>(out PlayerController pc))
+            if (data.HurtBox.Owner.parent.TryGetComponent<NGOPlayerController>(out NGOPlayerController pc))
             {
                 pc.CanMove = false;
                 Vector3 pos = new Vector3(transform.position.x, pc.transform.position.y, transform.position.z);

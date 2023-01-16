@@ -3,7 +3,7 @@ using WAG.Health;
 
 namespace WAG.Player.Health
 {
-    public class NGOPlayerHealthController : HealthStatusController
+    public class NGOPlayerHealthController : NGOHealthStatusController
     {
         private NGOPlayerController pc;
 
@@ -13,9 +13,8 @@ namespace WAG.Player.Health
 
         public float HealthSpeedModifier { get; private set; } = 0;
 
-        protected override void Awake()
+        public void Start()
         {
-            base.Awake();
             if (!TryGetComponent<NGOPlayerController>(out pc))
             {
                 Debug.LogError("Need PlayerController", this);

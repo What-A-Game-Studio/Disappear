@@ -1,10 +1,10 @@
 using System;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace WAG.Health
 {
-    public abstract class HealthStatusController : MonoBehaviour
+    public abstract class NGOHealthStatusController : NetworkBehaviour
     {
         public delegate void ChangeHealth(HeathStatus status);
 
@@ -17,23 +17,16 @@ namespace WAG.Health
         private HeathStatus currentHeathStatus;
         public HeathStatus CurrentHeathStatus => currentHeathStatus;
 
-        protected PhotonView pv;
 
         protected virtual void Awake()
         {
-            if (!TryGetComponent<PhotonView>(out pv))
-            {
-                Debug.LogError("HealthStatusController need status", this);
-                Debug.Break();
-            }
-
             currentHeathStatus = startHeathStatus;
 
             OnHealthChanged += HealthChangeAction;
             Invoke();
         }
 
-        protected virtual void OnDestroy()
+        public override void OnDestroy()
         {
             OnHealthChanged -= HealthChangeAction;
         }
@@ -117,7 +110,7 @@ namespace WAG.Health
         /// <param name="invoke">Fire callback</param>
         public void SetHealth(int newStatus, bool invoke = true)
         {
-            SetHealth((HeathStatus) Math.Clamp(newStatus, 0, (int) HeathStatus.Healthy), invoke);
+            SetHealth((HeathStatus)Math.Clamp(newStatus, 0, (int)HeathStatus.Healthy), invoke);
         }
 
         /// <summary>
@@ -126,7 +119,7 @@ namespace WAG.Health
         /// <param name="amount">Bounded</param>
         public void ChangeStatus(int amount)
         {
-            SetHealth(amount + (int) currentHeathStatus);
+            SetHealth(amount + (int)currentHeathStatus);
         }
 
         /// <summary>

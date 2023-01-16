@@ -2,14 +2,14 @@
     "name": "WAG.Items",
     "rootNamespace": "WAG.Items",
     "references": [
-        "GUID:831409e8f9d13b5479a3baef9822ad34",
-        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
         "GUID:75469ad4d38634e559750d17036d5f7c",
         "GUID:87b2a3a23ae10a8458e2b9136cbcbac8",
         "GUID:10a379f9748b7e34cb210d8f5781ae10",
         "GUID:1e730a5165869be46b772161bf7cb8ed",
         "GUID:88c0a9ed811e9874490a3428ef4bc615",
-        "GUID:fe16aff440d71e944bada5b811aa591b"
+        "GUID:fe16aff440d71e944bada5b811aa591b",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:ac885473fbab94e4ca1ef888b2193ba4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

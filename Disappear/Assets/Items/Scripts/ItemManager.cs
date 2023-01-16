@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Photon.Pun;
 using WAG.Inventory_Items;
 using Random = UnityEngine.Random;
 
@@ -11,10 +10,8 @@ namespace WAG.Items
     /// <summary>
     /// ItemManager 
     /// </summary>
-    [RequireComponent(typeof(PhotonView))]
     public class ItemManager : MonoBehaviour
     {
-        PhotonView pv;
         public static ItemManager Instance { get; private set; }
 
         [SerializeField] private RarityTierSO[] RarityTiers;
@@ -36,12 +33,11 @@ namespace WAG.Items
                 Destroy(gameObject);
                 return;
             }
-
-            pv = GetComponent<PhotonView>();
-            if (PhotonNetwork.IsMasterClient)
-            {
-                CreateItems();
-            }
+            
+            // if (PhotonNetwork.IsMasterClient)
+            // {
+            //     CreateItems();
+            // }
         }
 
         /// <summary>
@@ -65,11 +61,11 @@ namespace WAG.Items
                     ItemDataSO item = GetTierToSpawn(goodTypeItem);
                     if (item != null)
                     {
-                        pv.RPC(nameof(RPC_InstantiateItem),
-                            RpcTarget.All,
-                            spawn.SpawnCoordinate(),
-                            Array.IndexOf(itemsData, item));
-                        ++TotalItems;
+                        // pv.RPC(nameof(RPC_InstantiateItem),
+                        //     RpcTarget.All,
+                        //     spawn.SpawnCoordinate(),
+                        //     Array.IndexOf(itemsData, item));
+                        // ++TotalItems;
                     }
                 }
             }
@@ -161,9 +157,9 @@ namespace WAG.Items
             if (!indexInChildren.HasValue)
                 return;
 
-            pv.RPC(nameof(RPC_StoreItem),
-                RpcTarget.All,
-                indexInChildren.Value);
+            // pv.RPC(nameof(RPC_StoreItem),
+            //     RpcTarget.All,
+            //     indexInChildren.Value);
         }
 
         /// <summary>
@@ -178,11 +174,11 @@ namespace WAG.Items
 
             if (!indexInChildren.HasValue)
                 return;
-            pv.RPC(nameof(RPC_DropItem),
-                RpcTarget.All,
-                indexInChildren.Value,
-                position,
-                forward);
+            // pv.RPC(nameof(RPC_DropItem),
+            //     RpcTarget.All,
+            //     indexInChildren.Value,
+            //     position,
+            //     forward);
         }
 
         /// <summary>
@@ -221,7 +217,7 @@ namespace WAG.Items
 
         #region ====================== Photon : Start ======================
 
-        [PunRPC]
+ //       [PunRPC]
         private void RPC_StoreItem(int indexInChildren)
         {
             if (indexInChildren > transform.childCount)
@@ -232,7 +228,7 @@ namespace WAG.Items
             child.localPosition = Vector3.zero;
         }
 
-        [PunRPC]
+  //      [PunRPC]
         private void RPC_DropItem(int indexInChildren, Vector3 spawnPos, Vector3 forwardOrientation)
         {
             if (indexInChildren > transform.childCount)
@@ -242,7 +238,7 @@ namespace WAG.Items
             child.GetComponent<ItemController>()?.Activate(spawnPos+Vector3.up, forwardOrientation);
         }
 
-        [PunRPC] // Remote Procedure Calls
+   //     [PunRPC] // Remote Procedure Calls
         protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
         {
             // Debug.Log("Item To Spawn : " + itemToSpawn);

@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using WAG.Core;
-using WAG.Interactions;
 
 namespace WAG.Player.Teams
 {
@@ -12,7 +9,7 @@ namespace WAG.Player.Teams
         [SerializeField] private int HiderLife;
         [SerializeField] private float transparencyThreshold;
 
-        public PlayerController pc { get; private set; }
+        public NGOPlayerController pc { get; private set; }
         private List<Material> hiderMaterial = new List<Material>();
         private DecalProjector shadowProjector;
         private float shadowOpacity;
@@ -28,7 +25,7 @@ namespace WAG.Player.Teams
 
         protected void Awake()
         {
-            pc = GetComponent<PlayerController>();
+            pc = GetComponent<NGOPlayerController>();
         }
 
         public void Init(int maxLife, float hiderMaxRefractionSpeed, float threshold)
