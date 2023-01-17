@@ -158,13 +158,11 @@ namespace WAG.Player
         protected override void OnClientSpawn()
         {
             if (!IsLocalPlayer) return;
-            // InputManager.Instance.SwitchMap(ControlMap.Player);
-            // HideCursor();
             //sync.SyncName(NGOMultiplayerManager.Instance.localPlayer.playerName);
-           // Init();
+            // Init();
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += Init;
         }
 
-     
 
         protected override void UpdateClient()
         {
@@ -196,8 +194,12 @@ namespace WAG.Player
             modelInfos = tc.SetTeamData(sync.IsSeeker(), this);
         }
 
-        private void Init()
+        private void Init(SceneEvent sceneEvent)
         {
+            if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
+            InputManager.Instance.SwitchMap(ControlMap.Player);
+            HideCursor();
+
             MainPlayer = this;
             cameraController = gameObject.AddComponent<CameraController>();
             cameraController.CameraRig = modelInfos.CameraRig;
@@ -252,7 +254,7 @@ namespace WAG.Player
                 currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                     targetSpeed * sync.RPCMove.Value.y,
                     animBlendSpeed * TimeDeltaTime);
-              
+
                 currentVelocity.y = 0;
                 float xVelDiff = currentVelocity.x - rb.velocity.x;
                 float zVelDiff = currentVelocity.z - rb.velocity.z;

@@ -168,5 +168,7 @@ namespace WAG.Multiplayer
         {
             NetworkManager.Singleton.SceneManager.LoadScene(sceneName, loadMode);
         }
+
+       
     }
 }
