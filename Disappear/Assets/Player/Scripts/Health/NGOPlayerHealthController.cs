@@ -20,6 +20,8 @@ namespace WAG.Player.Health
                 Debug.LogError("Need PlayerController", this);
                 Debug.Break();
             }
+
+            if (!IsOwner) return;
             pc.Sync.SyncHealth(startHeathStatus);
             OnHealthChanged += status => pc.Sync.SyncHealth(status);
         }

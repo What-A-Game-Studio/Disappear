@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 using WAG.Core.Controls;
 using WAG.Health;
@@ -31,16 +32,14 @@ namespace WAG.Player
     public class NGOPlayerController : NetworkSideBehaviour
     {
         public static NGOPlayerController MainPlayer { get; private set; }
+        private ModelInfos modelInfos;
+        private NetworkVariable<bool> grounded = new NetworkVariable<bool>();
+        public bool Grounded => grounded.Value;
 
         private float maxWeight = 50f;
-        private ModelInfos modelInfos;
-
         private Vector3 currentVelocity;
         public bool CanRotate { get; set; } = true;
         public bool CanMove { get; set; } = true;
-
-        private bool grounded;
-        public bool Grounded => sync.IsMine ? grounded : sync.RPCGrounded.Value;
 
         [Header("Jump")] [SerializeField] [Range(100, 1000)]
         private float jumpFactor = 260f;
@@ -56,10 +55,10 @@ namespace WAG.Player
         private GameObject inventoryUI;
 
         private bool inventoryStatus;
-        public bool InventoryStatus => sync.IsMine ? inventoryStatus : sync.RPCInventoryStatus.Value;
+        public bool InventoryStatus => IsOwner ? inventoryStatus : sync.RPCInventoryStatus.Value;
 
 
-        public Vector3 PlayerVelocity => sync.IsMine ? currentVelocity : sync.RPCVelocity.Value;
+        public Vector3 PlayerVelocity => IsOwner ? currentVelocity : sync.RPCVelocity.Value;
 
 
         #region Needed Components
@@ -144,69 +143,38 @@ namespace WAG.Player
 
         #region Unity Events
 
-        // public override void OnNetworkSpawn()
-        // {
-        //     Debug.Log("Check Components");
-        //     InputManager.Instance.SwitchMap(ControlMap.Player);
-        //     HideCursor();
-        //     GetNeededComponents();
-        //     InitModel();
-        //
-        //     if (!sync.IsMine)
-        //         return;
-        //
-        //     Init();
-        // }
+        private void Start()
+        {
+            GetNeededComponents();
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            GetNeededComponents();
+            InitModel();
+            base.OnNetworkSpawn();
+        }
 
         protected override void OnClientSpawn()
         {
             if (!IsLocalPlayer) return;
-
-            InputManager.Instance.SwitchMap(ControlMap.Player);
-            HideCursor();
-            GetNeededComponents();
-            sync.SyncName(NGOMultiplayerManager.Instance.localPlayer.playerName);
-            InitModel();
-            Init();
+            // InputManager.Instance.SwitchMap(ControlMap.Player);
+            // HideCursor();
+            //sync.SyncName(NGOMultiplayerManager.Instance.localPlayer.playerName);
+           // Init();
         }
 
-        protected override void OnServerSpawn()
-        {
-            if (!IsLocalPlayer) return;
-
-            GetNeededComponents();
-            this.name = LobbyManager.Instance.CurrentLobby.Players.FirstOrDefault(player =>
-                    player.Id == NGOMultiplayerManager.Instance.localPlayer.playerId)
-                ?.Data["PlayerName"].Value ?? "Player";
-            InitModel();
-        }
-        
-        protected override void UpdateServer()
-        {
-            //throw new System.NotImplementedException();
-        }
+     
 
         protected override void UpdateClient()
         {
-            // sync.SyncMove(new Vector2(InputManager.Instance.Move.x, InputManager.Instance.Move.y));
+            if (!IsLocalPlayer) return;
+            sync.SyncMove(new Vector2(InputManager.Instance.Move.x, InputManager.Instance.Move.y));
         }
 
         protected override void FixedUpdateServer()
         {
-            //  throw new System.NotImplementedException();
-        }
-
-        protected override void FixedUpdateClient()
-        {
-            //   throw new System.NotImplementedException();
-        }
-
-        private void FixedUpdate()
-        {
-        /*    SampleGround();
-            if (!sync.IsMine)
-                return;
-
+            SampleGround();
             if (CanMove)
             {
                 Move();
@@ -216,9 +184,6 @@ namespace WAG.Player
             {
                 currentVelocity = Vector3.zero;
             }
-
-            sync.SyncGround(grounded);
-            sync.SyncVelocity(currentVelocity);*/
         }
 
         #endregion Unity Events
@@ -277,17 +242,17 @@ namespace WAG.Player
         private void Move()
         {
             float targetSpeed = speedController.GetSpeed();
-
-            if (grounded)
+            if (Grounded)
             {
+                float TimeDeltaTime = Time.fixedDeltaTime;
                 currentVelocity.x = Mathf.Lerp(currentVelocity.x,
                     targetSpeed * sync.RPCMove.Value.x,
-                    animBlendSpeed * Time.fixedDeltaTime);
+                    animBlendSpeed * TimeDeltaTime);
 
                 currentVelocity.z = Mathf.Lerp(currentVelocity.z,
                     targetSpeed * sync.RPCMove.Value.y,
-                    animBlendSpeed * Time.fixedDeltaTime);
-
+                    animBlendSpeed * TimeDeltaTime);
+              
                 currentVelocity.y = 0;
                 float xVelDiff = currentVelocity.x - rb.velocity.x;
                 float zVelDiff = currentVelocity.z - rb.velocity.z;
@@ -307,7 +272,7 @@ namespace WAG.Player
         {
             if (!InputManager.Instance.Jump)
                 return;
-            if (!grounded)
+            if (!grounded.Value)
                 return;
             animator.SetTrigger(NGOPlayerAnimationController.JumpHash);
         }
@@ -328,13 +293,14 @@ namespace WAG.Player
         /// </summary>
         private void SampleGround()
         {
-            grounded = Physics.Raycast(
+            grounded.Value = Physics.Raycast(
                 rb.worldCenterOfMass,
                 Vector3.down,
                 out RaycastHit hitInfos,
                 dis2Ground + 0.2f,
                 groundCheck);
-            if (!grounded)
+
+            if (!grounded.Value)
             {
                 currentVelocity.y = rb.velocity.y;
             }

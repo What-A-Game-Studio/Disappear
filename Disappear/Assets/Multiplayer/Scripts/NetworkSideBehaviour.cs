@@ -14,7 +14,8 @@ namespace WAG.Multiplayer
             {
                 OnServerSpawn();
             }
-            else
+
+            if (IsClient)
             {
                 OnClientSpawn();
             }
@@ -26,7 +27,8 @@ namespace WAG.Multiplayer
             {
                 UpdateServer();
             }
-            else
+
+            if (IsClient)
             {
                 UpdateClient();
             }
@@ -34,21 +36,39 @@ namespace WAG.Multiplayer
 
         private void FixedUpdate()
         {
-            if (IsServer || IsHost)
+            if (IsServer)
             {
                 FixedUpdateServer();
             }
-            else
+
+            if (IsClient)
             {
                 FixedUpdateClient();
             }
         }
 
-        protected abstract void OnClientSpawn();
-        protected abstract void OnServerSpawn();
-        protected abstract void UpdateServer();
-        protected abstract void UpdateClient();
-        protected abstract void FixedUpdateServer();
-        protected abstract void FixedUpdateClient();
+        protected virtual void OnClientSpawn()
+        {
+        }
+
+        protected virtual void OnServerSpawn()
+        {
+        }
+
+        protected virtual void UpdateServer()
+        {
+        }
+
+        protected virtual void UpdateClient()
+        {
+        }
+
+        protected virtual void FixedUpdateServer()
+        {
+        }
+
+        protected virtual void FixedUpdateClient()
+        {
+        }
     }
 }

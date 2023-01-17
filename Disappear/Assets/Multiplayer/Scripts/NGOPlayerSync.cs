@@ -2,6 +2,7 @@ using System;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using WAG.Core.GM;
 using WAG.Menu;
 using WAG.Health;
 
@@ -12,13 +13,16 @@ namespace WAG.Multiplayer
         public NetworkVariable<FixedString32Bytes> RPCName = new NetworkVariable<FixedString32Bytes>();
         public NetworkVariable<Vector2> RPCMove = new NetworkVariable<Vector2>();
         public NetworkVariable<Vector3> RPCVelocity = new NetworkVariable<Vector3>();
-        public NetworkVariable<bool> RPCGrounded = new NetworkVariable<bool>();
-        public NetworkVariable<bool> RPCCrouch= new NetworkVariable<bool>();
-        public NetworkVariable<bool> RPCInventoryStatus= new NetworkVariable<bool>();
-
+        public NetworkVariable<bool> RPCCrouch = new NetworkVariable<bool>();
+        public NetworkVariable<bool> RPCInventoryStatus = new NetworkVariable<bool>();
 
         private NGOHealthStatusController healthController;
         private Action interactAction;
+
+        private void Awake()
+        {
+            RPCName.OnValueChanged += (previous, current) => { this.name = current.Value; };
+        }
 
         public bool IsMine => IsOwner;
 
@@ -54,12 +58,7 @@ namespace WAG.Multiplayer
         {
             CrouchServerRpc(crouched);
         }
-
-        public void SyncGround(bool grounded)
-        {
-            GroundServerRpc(grounded);
-        }
-
+        
         public void SyncInventoryStatus(bool inventoryStatus)
         {
             InventoryStatusServerRpc(inventoryStatus);
@@ -121,12 +120,6 @@ namespace WAG.Multiplayer
         private void VelocityServerRpc(Vector3 vel)
         {
             RPCVelocity.Value = vel;
-        }
-
-        [ServerRpc]
-        private void GroundServerRpc(bool ground)
-        {
-            RPCGrounded.Value = ground;
         }
 
         [ServerRpc]

@@ -30,7 +30,7 @@ namespace WAG.Multiplayer
             }
         }
 
-        public static async void JoinRelay(string relayCode)
+        public static async Task JoinRelay(string relayCode)
         {
             try
             {

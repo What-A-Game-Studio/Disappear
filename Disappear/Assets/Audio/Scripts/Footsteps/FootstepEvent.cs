@@ -14,11 +14,11 @@ namespace WAG.Audio.Footsteps
 
         private void OnTriggerEnter(Collider other)
         {
-            if ((mask.value & (1 << other.gameObject.layer)) > 0
-                && other.transform.gameObject.TryGetComponent(out SurfaceController sc))
-                PlayFootstepSound(sc.SurfaceType);
-            else
-                PlayFootstepSound(defaultSurfaceType);
+            // if ((mask.value & (1 << other.gameObject.layer)) > 0
+            //     && other.transform.gameObject.TryGetComponent(out SurfaceController sc))
+            //     PlayFootstepSound(sc.SurfaceType);
+            // else
+            //     PlayFootstepSound(defaultSurfaceType);
         }
 
         private void PlayFootstepSound(SurfaceTypeSO surfaceType)
