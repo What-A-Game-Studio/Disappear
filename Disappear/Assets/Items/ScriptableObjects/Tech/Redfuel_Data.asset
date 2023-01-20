@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: Redfuel_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: 3e90b3704b574a938c2a70a28cba0cb1
   <ShortName>k__BackingField: RedFuel
   <FullName>k__BackingField: Red fuel jerrycan
   <Description>k__BackingField: est un bidon pour carburant en plastique

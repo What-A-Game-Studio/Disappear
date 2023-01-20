@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: Torchlight_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: 8ec0eb1a14a4490588f7080138f141e7
   <ShortName>k__BackingField: Torchlight
   <FullName>k__BackingField: Torchlight
   <Description>k__BackingField: Torchlight providing light

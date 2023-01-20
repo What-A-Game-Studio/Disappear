@@ -14,11 +14,31 @@ namespace WAG.Multiplayer
             {
                 OnServerSpawn();
             }
-
+            
             if (IsClient)
             {
                 OnClientSpawn();
             }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer)
+                OnServerDespawn();
+            else
+                OnClientDespawn();
+            OnDespawn();
+        }
+
+        protected virtual void OnClientDespawn()
+        {
+        }
+
+        protected virtual void OnDespawn()
+        {
+        }
+        protected virtual void OnServerDespawn()
+        {
         }
 
         void Update()
@@ -53,7 +73,7 @@ namespace WAG.Multiplayer
             {
                 LateUpdateServer();
             }
-
+            
             if (IsClient)
             {
                 LateUpdateClient();
@@ -91,5 +111,13 @@ namespace WAG.Multiplayer
         protected virtual void LateUpdateClient()
         {
         }
+
+
+        protected virtual void OnClientSpawn(){}
+        protected virtual void OnServerSpawn(){}
+        protected virtual void UpdateServer(){}
+        protected virtual void UpdateClient(){}
+        protected virtual void FixedUpdateServer(){}
+        protected virtual void FixedUpdateClient(){}
     }
 }

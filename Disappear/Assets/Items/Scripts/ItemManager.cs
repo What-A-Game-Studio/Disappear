@@ -1,21 +1,46 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using QFSW.QC;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 using WAG.Inventory_Items;
+using WAG.Multiplayer;
 using Random = UnityEngine.Random;
 
 namespace WAG.Items
 {
+    public struct ItemNetworkData : INetworkSerializable, IEquatable<ItemNetworkData>
+    {
+        public Vector3 Position;
+        public FixedString64Bytes ItemToSpawn;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref Position);
+            serializer.SerializeValue(ref ItemToSpawn);
+        }
+
+        public bool Equals(ItemNetworkData other)
+        {
+            return other.ItemToSpawn == this.ItemToSpawn && other.Position == Position;
+        }
+    }
+
     /// <summary>
     /// ItemManager 
     /// </summary>
-    public class ItemManager : MonoBehaviour
+    public class ItemManager : NetworkSideBehaviour
     {
+        private NetworkList<ItemNetworkData> ItemPool;
+        private List<ItemNetworkData> localPool = new List<ItemNetworkData>();
+
         public static ItemManager Instance { get; private set; }
 
         [SerializeField] private RarityTierSO[] RarityTiers;
-        [SerializeField] private ItemDataSO[] itemsData;
+        [SerializeField] private ItemController[] itemControllers;
         [SerializeField] private GameObject[] usablePrefabs;
 
         private ItemSpawner[] spawners;
@@ -26,6 +51,7 @@ namespace WAG.Items
 
         private void Awake()
         {
+            Debug.Log("Item Manager Awake", this);
             if (Instance == null)
                 Instance = this;
             else
@@ -33,12 +59,41 @@ namespace WAG.Items
                 Destroy(gameObject);
                 return;
             }
-            
-            // if (PhotonNetwork.IsMasterClient)
-            // {
-            //     CreateItems();
-            // }
+
+            ItemPool = new NetworkList<ItemNetworkData>(new List<ItemNetworkData>());
+            if (!IsServer)
+            {
+                Debug.Log("Client sub to itempool", this);
+                ItemPool.OnListChanged += ItemPoolOnOnListChanged;
+            }
         }
+
+        protected override void OnClientSpawn()
+        {
+            // foreach (ItemNetworkData item in ItemPool)
+            //     if (!localPool.Any(x => x.Equals(item)))
+            //         InstantiateItem(item);
+        }
+
+        protected override void OnDespawn()
+        {
+            ItemPool.Dispose();
+        }
+
+        private void ItemPoolOnOnListChanged(NetworkListEvent<ItemNetworkData> changeevent)
+        {
+            // Debug.Log(
+            //     changeevent.Type + " " + changeevent.Index + " (" + changeevent.Value.ItemToSpawn + ", " +
+            //     changeevent.Value.Position + ")", this);
+            // InstantiateItem(changeevent.Value);
+        }
+
+        protected override void OnServerSpawn()
+        {
+            Debug.Log("item Manager spawn", this);
+            CreateItems();
+        }
+
 
         /// <summary>
         /// Create all items in all spawns
@@ -51,21 +106,25 @@ namespace WAG.Items
             foreach (ItemSpawner spawn in spawners)
             {
                 // Debug.Log("Spawn Item Type : " + spawn.ItemType);
-                ItemDataSO[] goodTypeItem = GetItemByType(spawn.ItemType);
+                ItemController[] goodTypeItemControllers = GetItemByType(spawn.ItemType);
                 // Debug.Log("Item type count : " + goodTypeItem.Length);
 
                 int nbItems = spawn.GetNbItemToSpawn();
                 theoryItems += nbItems;
                 for (int i = 0; i < nbItems; i++)
                 {
-                    ItemDataSO item = GetTierToSpawn(goodTypeItem);
+                    ItemController item = GetTierToSpawn(goodTypeItemControllers);
                     if (item != null)
                     {
-                        // pv.RPC(nameof(RPC_InstantiateItem),
-                        //     RpcTarget.All,
-                        //     spawn.SpawnCoordinate(),
-                        //     Array.IndexOf(itemsData, item));
-                        // ++TotalItems;
+                        // ItemPool.Add(Array.IndexOf(itemsData, item));
+                        var tmp = new ItemNetworkData()
+                        {
+                            Position = spawn.SpawnCoordinate(),
+                            ItemToSpawn = item.ItemData.Uid
+                        };
+                        ItemPool.Add(tmp);
+                        InstantiateItem(tmp);
+                        ++TotalItems;
                     }
                 }
             }
@@ -97,9 +156,9 @@ namespace WAG.Items
         /// </summary>
         /// <param name="it">Type of item to get</param>
         /// <returns>Array of itemSO</returns>
-        protected ItemDataSO[] GetItemByType(ItemType it)
+        protected ItemController[] GetItemByType(ItemType it)
         {
-            return itemsData.Where(data => data.ItemType == it).ToArray();
+            return itemControllers.Where(data => data.ItemData.ItemType == it).ToArray();
         }
 
         /// <summary>
@@ -126,13 +185,13 @@ namespace WAG.Items
         /// </summary>
         /// <param name="items"></param>
         /// <returns>Null if none of the items corresponds to the rarity generated</returns>
-        protected ItemDataSO GetTierToSpawn(ItemDataSO[] items)
+        protected ItemController GetTierToSpawn(ItemController[] items)
         {
             RarityTiersEnum rte = GetTierToSpawn();
-            List<ItemDataSO> filteredItems = new List<ItemDataSO>();
-            foreach (ItemDataSO item in items)
+            List<ItemController> filteredItems = new List<ItemController>();
+            foreach (ItemController item in items)
             {
-                if (rte == item.TierEnum)
+                if (rte == item.ItemData.TierEnum)
                     filteredItems.Add(item);
             }
 
@@ -184,16 +243,12 @@ namespace WAG.Items
         /// <summary>
         /// Get one item by his position in array
         /// </summary>
-        /// <param name="indexItem">item's index</param>
+        /// <param name="idTosSpawn">item's id</param>
         /// <returns>return null if indexItem is greater than array lenght or less than 0</returns>
-        public ItemDataSO GetItemById(int indexItem)
+        public ItemController GetItemById(string idTosSpawn)
         {
-            if (indexItem >= 0 && indexItem < itemsData.Length)
-            {
-                return itemsData[indexItem];
-            }
-
-            return null;
+            Debug.Log(idTosSpawn, this);
+            return itemControllers.FirstOrDefault(x => x.ItemData.Uid == idTosSpawn);
         }
 
         /// <summary>
@@ -215,9 +270,7 @@ namespace WAG.Items
             return null;
         }
 
-        #region ====================== Photon : Start ======================
 
- //       [PunRPC]
         private void RPC_StoreItem(int indexInChildren)
         {
             if (indexInChildren > transform.childCount)
@@ -228,31 +281,59 @@ namespace WAG.Items
             child.localPosition = Vector3.zero;
         }
 
-  //      [PunRPC]
+
         private void RPC_DropItem(int indexInChildren, Vector3 spawnPos, Vector3 forwardOrientation)
         {
             if (indexInChildren > transform.childCount)
                 return;
 
             Transform child = transform.GetChild(indexInChildren);
-            child.GetComponent<ItemController>()?.Activate(spawnPos+Vector3.up, forwardOrientation);
+            child.GetComponent<ItemController>()?.Activate(spawnPos + Vector3.up, forwardOrientation);
         }
 
-   //     [PunRPC] // Remote Procedure Calls
-        protected virtual void RPC_InstantiateItem(Vector3 position, int itemToSpawn)
+        protected virtual void InstantiateItem(ItemNetworkData networkItem)
+
         {
             // Debug.Log("Item To Spawn : " + itemToSpawn);
-            ItemDataSO item = GetItemById(itemToSpawn);
-            if (item == null)
+            ItemController controller = GetItemById(networkItem.ItemToSpawn.Value);
+            if (controller == null)
+            {
+                Debug.Log("Fail to Instantiate item ", this);
                 return;
+            }
 
-            GameObject go = Instantiate(item.Model, position, Quaternion.identity);
-            go.transform.parent = transform;
-            go.layer = LayerMask.NameToLayer("Interactable");
-            ItemController ic = go.AddComponent<ItemController>();
-            ic.ItemData = item;
+            Transform itemToSpawn =
+                Instantiate(controller.transform, networkItem.Position, Quaternion.identity, transform);
+            itemToSpawn.GetComponent<ItemController>().Spawn();
         }
 
-        #endregion ====================== Photon : End ======================
+        private Vector3 GetRdmVector(float min, float max)
+        {
+            return new Vector3(Random.Range(min, max),
+                Random.Range(min, max),
+                Random.Range(min, max));
+        }
+
+        [Command]
+        private void LogNetworkPoolItems()
+        {
+            foreach (var item in ItemPool)
+            {
+                Debug.Log(
+                    item.ItemToSpawn.Value + ", " +
+                    item.Position, this);
+            }
+        }
+
+        [Command]
+        private void LogLocalPoolItems()
+        {
+            foreach (var item in ItemPool)
+            {
+                Debug.Log(
+                    item.ItemToSpawn.Value + ", " +
+                    item.Position, this);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: AdrenalineShot_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: 45c9c6bc6d594ae880c93aab822671ea
   <ShortName>k__BackingField: Adrenaline
   <FullName>k__BackingField: Adrenaline Shot
   <Description>k__BackingField: Boost player speed

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5131023094658319734}
   - component: {fileID: 5131023094658319735}
-  - component: {fileID: 4812442075625682953}
+  - component: {fileID: 1917490050}
   m_Layer: 0
   m_Name: ItemManager
   m_TagString: Untagged
@@ -49,20 +49,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d3e9f941552e7d146b1395cfe7ab5b6b, type: 2}
   - {fileID: 11400000, guid: 054b4960f31edaf449181ba24af5791c, type: 2}
   - {fileID: 11400000, guid: 9f376dfcedb33bb4c930179480f75b8d, type: 2}
-  itemsData:
-  - {fileID: 11400000, guid: 8e1db6e6e61bda64aa4c9f2d41cbfc4a, type: 2}
-  - {fileID: 11400000, guid: f9a3f57ce539d3942a0f022f9e1d8f40, type: 2}
-  - {fileID: 11400000, guid: aa95062f225ae7d47a00a3c59367acef, type: 2}
-  - {fileID: 11400000, guid: 8da80da614052a648b98a9fc7ad1dfdb, type: 2}
-  - {fileID: 11400000, guid: eb720ba4f588e9246a21d50876136f9c, type: 2}
-  - {fileID: 11400000, guid: 792bf3e2076de8b49b038d79669b17a3, type: 2}
-  - {fileID: 11400000, guid: 91ec9d7b759cc1c42964ebdc2c0e613c, type: 2}
-  - {fileID: 11400000, guid: ae3ca0b8c9a40c9498dd11417180ce30, type: 2}
-  - {fileID: 11400000, guid: 9eb1cf2139b824e4db67195959d5b9b4, type: 2}
-  - {fileID: 11400000, guid: 97bd90a3cf31896438ce805cfb1833c6, type: 2}
-  usablesPrefabs:
-  - {fileID: 6289453678080124762, guid: 2e82feaf1668a514caf1f61263cf3f42, type: 3}
---- !u!114 &4812442075625682953
+  itemControllers:
+  - {fileID: 7091308872520390285, guid: f5be7d4797de81c4689d135a817cb7fc, type: 3}
+  - {fileID: 719454814387064960, guid: 9d9034c085fce1d4182faa126c9fd9d3, type: 3}
+  - {fileID: 5598132037638044233, guid: 5649640085ec75f4194c446942f3a33a, type: 3}
+  - {fileID: 7338953335944720034, guid: 851f136ffb7dce94099a4c2c1dcfadc6, type: 3}
+  - {fileID: 1247166902918755337, guid: 0d2b22dc0597e97409fe241c1904dc33, type: 3}
+  - {fileID: 5077819120414483077, guid: 97e966875c4251b46a37bcf404850a4c, type: 3}
+  - {fileID: 8971773915073796103, guid: 604d53cd7ee92614cab59bdb011f63be, type: 3}
+  - {fileID: 5323711714305630217, guid: 1fecfb4473a5a674f86f00a83d7f0cb0, type: 3}
+  - {fileID: 3926818606800402341, guid: f00f84a41d9b08f4fa2928d104a609ac, type: 3}
+  usablePrefabs: []
+--- !u!114 &1917490050
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,16 +69,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5131023094658319732}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1

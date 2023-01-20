@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: Watertank_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: f59704e865d44188b860dbe0539c7eb9
   <ShortName>k__BackingField: Water tank
   <FullName>k__BackingField: Water tank
   <Description>k__BackingField: 5L water
