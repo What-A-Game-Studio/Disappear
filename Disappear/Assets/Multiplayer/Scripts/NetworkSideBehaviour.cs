@@ -8,17 +8,37 @@ namespace WAG.Multiplayer
 {
     public abstract class NetworkSideBehaviour : NetworkBehaviour
     {
-
         public override void OnNetworkSpawn()
         {
             if (IsServer)
             {
                 OnServerSpawn();
             }
+
             // else
             {
                 OnClientSpawn();
             }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer)
+                OnServerDespawn();
+            else
+                OnClientDespawn();
+            OnDespawn();
+        }
+
+        protected virtual void OnClientDespawn()
+        {
+        }
+
+        protected virtual void OnDespawn()
+        {
+        }
+        protected virtual void OnServerDespawn()
+        {
         }
 
         void Update()
@@ -45,11 +65,12 @@ namespace WAG.Multiplayer
             }
         }
 
-        protected abstract void OnClientSpawn();
-        protected abstract void OnServerSpawn();
-        protected abstract void UpdateServer();
-        protected abstract void UpdateClient();
-        protected abstract void FixedUpdateServer();
-        protected abstract void FixedUpdateClient();
+
+        protected virtual void OnClientSpawn(){}
+        protected virtual void OnServerSpawn(){}
+        protected virtual void UpdateServer(){}
+        protected virtual void UpdateClient(){}
+        protected virtual void FixedUpdateServer(){}
+        protected virtual void FixedUpdateClient(){}
     }
 }

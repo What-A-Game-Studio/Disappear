@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: FoodCan_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: a3fab33723864c2f90bad58d27c9696b
   <ShortName>k__BackingField: Food can
   <FullName>k__BackingField: Food can
   <Description>k__BackingField: "est un contenant m\xE9tallique herm\xE9tique permettant

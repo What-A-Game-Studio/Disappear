@@ -732,10 +732,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4812442075625682953, guid: eb92ca4bb18874c419aad699215f7a1b,
-        type: 3}
-      propertyPath: sceneViewId
-      value: 999
+    - target: {fileID: 1917490050, guid: eb92ca4bb18874c419aad699215f7a1b, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3363840872
       objectReference: {fileID: 0}
     - target: {fileID: 5131023094658319732, guid: eb92ca4bb18874c419aad699215f7a1b,
         type: 3}
@@ -1074,15 +1073,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6472363848828315236}
-  m_LocalRotation: {x: 0, y: 0.9848078, z: -0.17364816, w: 0}
-  m_LocalPosition: {x: 0, y: 37.9, z: 0}
+  m_LocalRotation: {x: 0.17364816, y: 0, z: 0, w: 0.9848078}
+  m_LocalPosition: {x: -30.69, y: 6.6, z: 45.73}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4466767559204845177}
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
 --- !u!4 &4466767559204845177
 Transform:
   m_ObjectHideFlags: 0

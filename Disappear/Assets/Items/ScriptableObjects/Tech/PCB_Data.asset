@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: PCB_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: 517747072f0243369d92e9c0ecc53d7a
   <ShortName>k__BackingField: PCB
   <FullName>k__BackingField: Printed circuit board
   <Description>k__BackingField: "est un support, en g\xE9n\xE9ral une plaque, permettant

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: PS1_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: aad7e0ba39f14bd08c9556572d8b77a5
   <ShortName>k__BackingField: PS1
   <FullName>k__BackingField: Playstation 1
   <Description>k__BackingField: "console de jeux vid\xE9o 32-bit cinqui\xE8me g\xE9n\xE9ration
