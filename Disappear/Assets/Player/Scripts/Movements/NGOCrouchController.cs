@@ -18,7 +18,7 @@ namespace WAG.Player.Movements
         private CapsuleCollider capsuleCollider;
 
         public bool Crouched =>
-            PlayerController.IsMine() ? InputManager.Instance.Crouch : PlayerController.Sync.RPCCrouch.Value;
+            PlayerController.IsMine ? InputManager.Instance.Crouch : PlayerController.Sync.RPCCrouch.Value;
 
         public NGOPlayerController PlayerController { get; set; }
 

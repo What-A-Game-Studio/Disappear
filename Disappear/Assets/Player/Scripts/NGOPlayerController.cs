@@ -55,10 +55,11 @@ namespace WAG.Player
         private GameObject inventoryUI;
 
         private bool inventoryStatus;
-        public bool InventoryStatus => IsOwner ? inventoryStatus : sync.RPCInventoryStatus.Value;
+        public bool InventoryStatus => IsLocalPlayer ? inventoryStatus : sync.RPCInventoryStatus.Value;
 
 
-        public Vector3 PlayerVelocity => IsOwner ? currentVelocity : sync.RPCVelocity.Value;
+        public Vector3 PlayerVelocity => IsLocalPlayer ? currentVelocity : sync.RPCVelocity.Value;
+        public bool IsMine => IsLocalPlayer;
 
 
         #region Needed Components
@@ -158,16 +159,22 @@ namespace WAG.Player
         protected override void OnClientSpawn()
         {
             if (!IsLocalPlayer) return;
-            //sync.SyncName(NGOMultiplayerManager.Instance.localPlayer.playerName);
-            // Init();
-            NetworkManager.Singleton.SceneManager.OnSceneEvent += Init;
+            Init();
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += SwitchControlOnSceneChange;
         }
 
 
         protected override void UpdateClient()
         {
             if (!IsLocalPlayer) return;
-            sync.SyncMove(new Vector2(InputManager.Instance.Move.x, InputManager.Instance.Move.y));
+            if (sync.RPCMove.Value.x != InputManager.Instance.Move.x ||
+                sync.RPCMove.Value.y != InputManager.Instance.Move.y)
+                sync.SyncMove(new Vector2(InputManager.Instance.Move.x, InputManager.Instance.Move.y));
+            if (sync.RPCJump.Value != InputManager.Instance.Jump)
+                sync.SyncJump(InputManager.Instance.Jump);
+            float rotation = InputManager.Instance.Look.x * cameraController.MouseSensitivity;
+            if (sync.RPCRotation.Value != rotation)
+                sync.SyncRotation(rotation);
         }
 
         protected override void FixedUpdateServer()
@@ -194,12 +201,15 @@ namespace WAG.Player
             modelInfos = tc.SetTeamData(sync.IsSeeker(), this);
         }
 
-        private void Init(SceneEvent sceneEvent)
+        public void SwitchControlOnSceneChange(SceneEvent sceneEvent)
         {
             if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
             InputManager.Instance.SwitchMap(ControlMap.Player);
             HideCursor();
+        }
 
+        private void Init()
+        {
             MainPlayer = this;
             cameraController = gameObject.AddComponent<CameraController>();
             cameraController.CameraRig = modelInfos.CameraRig;
@@ -267,12 +277,14 @@ namespace WAG.Player
                     transform.TransformVector(currentVelocity.x * airResistance, 0, currentVelocity.z * airResistance),
                     ForceMode.VelocityChange);
             }
+
+            rb.MoveRotation(rb.rotation * (Quaternion.Euler(0, sync.RPCRotation.Value * Time.fixedDeltaTime, 0)));
         }
 
 
         private void HandleJump()
         {
-            if (!InputManager.Instance.Jump)
+            if (!sync.RPCJump.Value)
                 return;
             if (!grounded.Value)
                 return;
@@ -319,16 +331,6 @@ namespace WAG.Player
         public void SetTeamSpeedModifier(float teamDataSpeedModifier)
         {
             speedController.SetTeamSpeedModifier(teamDataSpeedModifier);
-        }
-
-
-        /// <summary>
-        /// If the player controller is mine
-        /// </summary>
-        /// <returns></returns>
-        public bool IsMine()
-        {
-            return sync.IsMine;
         }
 
         #endregion Public

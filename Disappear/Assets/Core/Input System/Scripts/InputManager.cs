@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 
 namespace WAG.Core.Controls
 {
-
     public class InputManager : MonoBehaviour
     {
         [SerializeField] private ControlMap startMap = ControlMap.Menu;
@@ -22,7 +21,6 @@ namespace WAG.Core.Controls
         public bool Crouch { get; private set; }
         public bool Use { get; private set; }
         public bool OpenMenu { get; private set; }
-
 
         private InputAction moveAction;
         private InputAction lookAction;
@@ -212,6 +210,7 @@ namespace WAG.Core.Controls
             if (canceled != null)
                 playerInput.actions[actionControl.ToString()].canceled += canceled;
         }
+
         /// <summary>
         /// remove event on specific events
         /// </summary>
@@ -234,6 +233,7 @@ namespace WAG.Core.Controls
             if (canceled != null)
                 playerInput.actions[actionControl.ToString()].canceled -= canceled;
         }
+
         public void SwitchMap(ControlMap map)
         {
             if (playerInput.actions.FindActionMap(map.ToString()) != null)

@@ -10,21 +10,26 @@ namespace WAG.Multiplayer
 {
     public class NGOPlayerSync : NetworkBehaviour
     {
-        public NetworkVariable<FixedString32Bytes> RPCName = new NetworkVariable<FixedString32Bytes>();
-        public NetworkVariable<Vector2> RPCMove = new NetworkVariable<Vector2>();
-        public NetworkVariable<Vector3> RPCVelocity = new NetworkVariable<Vector3>();
-        public NetworkVariable<bool> RPCCrouch = new NetworkVariable<bool>();
-        public NetworkVariable<bool> RPCInventoryStatus = new NetworkVariable<bool>();
+        [field: SerializeField]
+        public NetworkVariable<Vector2> RPCMove { get; private set; } = new NetworkVariable<Vector2>();
+
+        [field: SerializeField]
+        public NetworkVariable<Vector3> RPCVelocity { get; private set; } = new NetworkVariable<Vector3>();
+
+        [field: SerializeField]
+        public NetworkVariable<bool> RPCJump { get; private set; } = new NetworkVariable<bool>();
+
+        [field: SerializeField]
+        public NetworkVariable<bool> RPCCrouch { get; private set; } = new NetworkVariable<bool>();
+
+        [field: SerializeField]
+        public NetworkVariable<bool> RPCInventoryStatus { get; private set; } = new NetworkVariable<bool>();
+
+        [field: SerializeField]
+        public NetworkVariable<float> RPCRotation { get; private set; } = new NetworkVariable<float>();
 
         private NGOHealthStatusController healthController;
         private Action interactAction;
-
-        private void Awake()
-        {
-            RPCName.OnValueChanged += (previous, current) => { this.name = current.Value; };
-        }
-
-        public bool IsMine => IsOwner;
 
         public bool IsSeeker()
         {
@@ -32,33 +37,33 @@ namespace WAG.Multiplayer
             // return ["Role"] == "S";
         }
 
-        public void SyncName(string name)
-        {
-            NamePlayerServerRpc(name);
-        }
-
-
-        [ServerRpc]
-        private void NamePlayerServerRpc(string name)
-        {
-            RPCName.Value = name;
-        }
-
         public void SyncMove(Vector2 move)
         {
             MoveServerRpc(move);
         }
+
+        public void SyncRotation(float rotation)
+        {
+            RotateServerRpc(rotation);
+        }
+
 
         public void SyncVelocity(Vector3 currentVelocity)
         {
             VelocityServerRpc(currentVelocity);
         }
 
+        public void SyncJump(bool jump)
+        {
+            JumpServerRpc(jump);
+        }
+
+
         public void SyncCrouch(bool crouched)
         {
             CrouchServerRpc(crouched);
         }
-        
+
         public void SyncInventoryStatus(bool inventoryStatus)
         {
             InventoryStatusServerRpc(inventoryStatus);
@@ -117,9 +122,21 @@ namespace WAG.Multiplayer
         }
 
         [ServerRpc]
+        private void RotateServerRpc(float rotation)
+        {
+            RPCRotation.Value = rotation;
+        }
+
+        [ServerRpc]
         private void VelocityServerRpc(Vector3 vel)
         {
             RPCVelocity.Value = vel;
+        }
+
+        [ServerRpc]
+        private void JumpServerRpc(bool jump)
+        {
+            RPCJump.Value = jump;
         }
 
         [ServerRpc]

@@ -32,7 +32,6 @@ namespace WAG.Multiplayer
             try
             {
                 var lobbyCreated = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
-                Debug.Log($"Lobby {lobbyCreated.Name}, {lobbyCreated.IsPrivate}");
                 return lobbyCreated;
             }
             catch (LobbyServiceException e)

@@ -43,7 +43,6 @@ namespace WAG.Multiplayer
 
             await AuthenticationAPIInterface.InitializeAndSignInAsync(name);
             localPlayer = new LocalPlayerData(name);
-            Debug.Log("Player Id : " + localPlayer.playerId);
             MenuManager.Instance.OpenMenu(MenuType.MainMenu);
         }
 

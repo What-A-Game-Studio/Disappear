@@ -46,6 +46,19 @@ namespace WAG.Multiplayer
                 FixedUpdateClient();
             }
         }
+        
+        private void LateUpdate()
+        {
+            if (IsServer)
+            {
+                LateUpdateServer();
+            }
+
+            if (IsClient)
+            {
+                LateUpdateClient();
+            }
+        }
 
         protected virtual void OnClientSpawn()
         {
@@ -68,6 +81,14 @@ namespace WAG.Multiplayer
         }
 
         protected virtual void FixedUpdateClient()
+        {
+        }
+        
+        protected virtual void LateUpdateServer()
+        {
+        }
+
+        protected virtual void LateUpdateClient()
         {
         }
     }

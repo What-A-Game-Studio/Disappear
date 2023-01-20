@@ -20,7 +20,7 @@ namespace WAG.Player.Teams
 
         public bool IsMine()
         {
-            return pc.IsMine();
+            return pc.IsMine;
         }
 
         protected void Awake()

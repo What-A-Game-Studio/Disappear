@@ -57,6 +57,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c6b14934317bf4f9c24db59644b2eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <RPCMove>k__BackingField:
+    m_InternalValue: {x: 0, y: 0}
+  <RPCVelocity>k__BackingField:
+    m_InternalValue: {x: 0, y: 0, z: 0}
+  <RPCJump>k__BackingField:
+    m_InternalValue: 0
+  <RPCCrouch>k__BackingField:
+    m_InternalValue: 0
+  <RPCInventoryStatus>k__BackingField:
+    m_InternalValue: 0
+  <RPCRotation>k__BackingField:
+    m_InternalValue: 0
 --- !u!114 &3305522777187968686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69,11 +81,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 155720b8360d64940915fa2fd28ab299, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpFactor: 200
+  jumpFactor: 5
   airResistance: 0.8
   groundCheck:
     serializedVersion: 2
-    m_Bits: 2147483647
+    m_Bits: 503
   animBlendSpeed: 8.9
   dis2Ground: 0.8
   inventoryUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33,
@@ -240,9 +252,9 @@ MonoBehaviour:
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1
-  SyncRotAngleX: 1
+  SyncRotAngleX: 0
   SyncRotAngleY: 1
-  SyncRotAngleZ: 1
+  SyncRotAngleZ: 0
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0

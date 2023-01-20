@@ -68,7 +68,7 @@ namespace WAG.Player.Teams
 
         private void SetPostProcessingVolume()
         {
-            if (pc.IsMine() && PostProcessingController.Instance)
+            if (pc.IsMine && PostProcessingController.Instance)
                 PostProcessingController.Instance.SetPostProcessing(teamData.PostProcessingVolume);
         }
 
