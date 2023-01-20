@@ -2,9 +2,10 @@
     "name": "WAG.Player",
     "rootNamespace": "WAG.Player",
     "references": [
-        "GUID:57c32fc907df0f54e8e6e8f0d2488336",
-        "GUID:831409e8f9d13b5479a3baef9822ad34",
         "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4c3f49d89436d478ea78315c03159dcc",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
         "GUID:15fc0a57446b3144c949da3e2b9737a9",
         "GUID:df380645f10b7bc4b97d4f5eb6303d95",
         "GUID:f4a8973e1692c3849900caa2c774a016",

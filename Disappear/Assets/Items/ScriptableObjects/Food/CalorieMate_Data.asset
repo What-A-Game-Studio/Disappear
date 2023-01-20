@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: CalorieMate_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: db5e7b5cdc55400abc19480b5eb43553
   <ShortName>k__BackingField: Calorie Mate
   <FullName>k__BackingField: Calorie Mate
   <Description>k__BackingField: 

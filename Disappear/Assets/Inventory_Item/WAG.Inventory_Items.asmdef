@@ -1,7 +1,7 @@
 {
     "name": "WAG.Inventory_Items",
     "rootNamespace": "WAG.Inventory_Items",
-    "references": [],
+    "references": ["GUID:fe16aff440d71e944bada5b811aa591b"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

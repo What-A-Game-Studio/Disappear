@@ -9,7 +9,7 @@ namespace WAG.Items
 {
     public class TrapUIController : MonoBehaviour
     {
-        public PlayerController PlayerController { get; set; }
+        public NGOPlayerController PlayerController { get; set; }
 
         private void Start()
         {

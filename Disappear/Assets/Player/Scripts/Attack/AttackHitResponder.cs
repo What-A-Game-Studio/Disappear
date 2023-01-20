@@ -1,4 +1,3 @@
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem.Interactions;
 using WAG.Core.Controls;
@@ -23,14 +22,13 @@ namespace WAG.Player.Attacks
         [SerializeField] private float chargedAttackSpeedModifier = 0.5f;
 
         private bool canAttack = true;
-        private PhotonView pv;
 
-        private PlayerSpeedController speedController;
+        private NGOPlayerSpeedController speedController;
 
         protected override void Awake()
         {
             base.Awake();
-            if (!transform.parent.TryGetComponent<PlayerSpeedController>(out speedController))
+            if (!transform.parent.TryGetComponent<NGOPlayerSpeedController>(out speedController))
             {
                 Debug.LogError("AttackHitResponder need to be chiled to PlayerController", this);
                 Debug.Break();
@@ -86,8 +84,8 @@ namespace WAG.Player.Attacks
             if (hitBox.CheckHit(out HitData data))
             {
                 Debug.Log("CheckHit = true");
-                if (data.HurtBox.Owner.parent.TryGetComponent<PlayerHealthController>(
-                        out PlayerHealthController phc))
+                if (data.HurtBox.Owner.parent.TryGetComponent<NGOPlayerHealthController>(
+                        out NGOPlayerHealthController phc))
                 {
                     Debug.Log("PlayerHealthController = true");
                     phc.TakeDamage();

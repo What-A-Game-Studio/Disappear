@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc4b0fced1db308429a7a6c370cd0ce8, type: 3}
   m_Name: MekitMilitary_Data
   m_EditorClassIdentifier: 
+  <Uid>k__BackingField: d5e557f7b4de419ea2d62f4f05452949
   <ShortName>k__BackingField: AidKit M
   <FullName>k__BackingField: first aid kit Military
   <Description>k__BackingField: 
