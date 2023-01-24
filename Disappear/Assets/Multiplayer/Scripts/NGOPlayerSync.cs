@@ -10,22 +10,12 @@ namespace WAG.Multiplayer
 {
     public class NGOPlayerSync : NetworkBehaviour
     {
-        [field: SerializeField]
         public NetworkVariable<Vector2> RPCMove { get; private set; } = new NetworkVariable<Vector2>();
-
-        [field: SerializeField]
         public NetworkVariable<Vector3> RPCVelocity { get; private set; } = new NetworkVariable<Vector3>();
-
-        [field: SerializeField]
         public NetworkVariable<bool> RPCJump { get; private set; } = new NetworkVariable<bool>();
-
-        [field: SerializeField]
+        public NetworkVariable<bool> RPCGrounded { get; private set; } = new NetworkVariable<bool>();
         public NetworkVariable<bool> RPCCrouch { get; private set; } = new NetworkVariable<bool>();
-
-        [field: SerializeField]
         public NetworkVariable<bool> RPCInventoryStatus { get; private set; } = new NetworkVariable<bool>();
-
-        [field: SerializeField]
         public NetworkVariable<float> RPCRotation { get; private set; } = new NetworkVariable<float>();
 
         private NGOHealthStatusController healthController;
@@ -56,6 +46,11 @@ namespace WAG.Multiplayer
         public void SyncJump(bool jump)
         {
             JumpServerRpc(jump);
+        }
+
+        public void SyncGrounded(bool grounded)
+        {
+            GroundedServerRpc(grounded);
         }
 
 
@@ -137,6 +132,12 @@ namespace WAG.Multiplayer
         private void JumpServerRpc(bool jump)
         {
             RPCJump.Value = jump;
+        }
+
+        [ServerRpc]
+        private void GroundedServerRpc(bool grounded)
+        {
+            RPCGrounded.Value = grounded;
         }
 
         [ServerRpc]

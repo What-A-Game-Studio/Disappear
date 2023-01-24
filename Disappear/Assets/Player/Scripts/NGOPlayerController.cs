@@ -33,11 +33,8 @@ namespace WAG.Player
     {
         public static NGOPlayerController MainPlayer { get; private set; }
         private ModelInfos modelInfos;
-        private NetworkVariable<bool> grounded = new NetworkVariable<bool>();
-        public bool Grounded => grounded.Value;
 
         private float maxWeight = 50f;
-        private Vector3 currentVelocity;
         public bool CanRotate { get; set; } = true;
         public bool CanMove { get; set; } = true;
 
@@ -57,10 +54,8 @@ namespace WAG.Player
         private bool inventoryStatus;
         public bool InventoryStatus => IsLocalPlayer ? inventoryStatus : sync.RPCInventoryStatus.Value;
 
-
-        public Vector3 PlayerVelocity => IsLocalPlayer ? currentVelocity : sync.RPCVelocity.Value;
         public bool IsMine => IsLocalPlayer;
-
+        private Vector3 currentVelocity;
 
         #region Needed Components
 
@@ -104,14 +99,6 @@ namespace WAG.Player
                 Debug.LogError("Need NGOPlayerSpeedController", this);
                 Debug.Break();
             }
-
-            if (!TryGetComponent<NGOPlayerAnimationController>(out pac))
-            {
-                Debug.LogError("Need NGOPlayerAnimationController", this);
-                Debug.Break();
-            }
-            else
-                pac.PC = this;
 
             if (!TryGetComponent<NGOCrouchController>(out crouchController))
             {
@@ -179,6 +166,7 @@ namespace WAG.Player
 
         protected override void FixedUpdateServer()
         {
+            currentVelocity = sync.RPCVelocity.Value;
             SampleGround();
             if (CanMove)
             {
@@ -189,6 +177,7 @@ namespace WAG.Player
             {
                 currentVelocity = Vector3.zero;
             }
+            sync.RPCVelocity.Value = currentVelocity;
         }
 
         #endregion Unity Events
@@ -254,7 +243,7 @@ namespace WAG.Player
         private void Move()
         {
             float targetSpeed = speedController.GetSpeed();
-            if (Grounded)
+            if (sync.RPCGrounded.Value)
             {
                 float TimeDeltaTime = Time.fixedDeltaTime;
                 currentVelocity.x = Mathf.Lerp(currentVelocity.x,
@@ -274,7 +263,8 @@ namespace WAG.Player
             else
             {
                 rb.AddForce(
-                    transform.TransformVector(currentVelocity.x * airResistance, 0, currentVelocity.z * airResistance),
+                    transform.TransformVector(currentVelocity.x * airResistance, 0,
+                        currentVelocity.z * airResistance),
                     ForceMode.VelocityChange);
             }
 
@@ -286,7 +276,7 @@ namespace WAG.Player
         {
             if (!sync.RPCJump.Value)
                 return;
-            if (!grounded.Value)
+            if (!sync.RPCGrounded.Value)
                 return;
             animator.SetTrigger(NGOPlayerAnimationController.JumpHash);
         }
@@ -307,14 +297,14 @@ namespace WAG.Player
         /// </summary>
         private void SampleGround()
         {
-            grounded.Value = Physics.Raycast(
+            sync.RPCGrounded.Value = Physics.Raycast(
                 rb.worldCenterOfMass,
                 Vector3.down,
                 out RaycastHit hitInfos,
                 dis2Ground + 0.2f,
                 groundCheck);
 
-            if (!grounded.Value)
+            if (!sync.RPCGrounded.Value)
             {
                 currentVelocity.y = rb.velocity.y;
             }

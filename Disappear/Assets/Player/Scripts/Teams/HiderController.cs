@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using WAG.Multiplayer;
 
 namespace WAG.Player.Teams
 {
@@ -9,7 +10,7 @@ namespace WAG.Player.Teams
         [SerializeField] private int HiderLife;
         [SerializeField] private float transparencyThreshold;
 
-        public NGOPlayerController pc { get; private set; }
+        public NGOPlayerSync sync { get; private set; }
         private List<Material> hiderMaterial = new List<Material>();
         private DecalProjector shadowProjector;
         private float shadowOpacity;
@@ -20,12 +21,12 @@ namespace WAG.Player.Teams
 
         public bool IsMine()
         {
-            return pc.IsMine;
+            return sync.IsLocalPlayer;
         }
 
         protected void Awake()
         {
-            pc = GetComponent<NGOPlayerController>();
+            sync = GetComponent<NGOPlayerSync>();
         }
 
         public void Init(int maxLife, float hiderMaxRefractionSpeed, float threshold)
@@ -48,7 +49,7 @@ namespace WAG.Player.Teams
 
         private void Update()
         {
-            transparencyPercentage = Mathf.Floor(10 * pc.PlayerVelocity.magnitude / maxRefractionSpeed) / 10.0f;
+            transparencyPercentage = Mathf.Floor(10 * sync.RPCVelocity.Value.magnitude / maxRefractionSpeed) / 10.0f;
 
             if (!(Mathf.Abs(transparencyPercentage - oldTransparency) > transparencyThreshold)) return;
             float currentTransparency = Mathf.Clamp(1 - transparencyPercentage, 0, 1);

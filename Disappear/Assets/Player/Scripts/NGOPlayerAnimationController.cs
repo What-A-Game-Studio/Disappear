@@ -1,10 +1,15 @@
 using UnityEngine;
 using WAG.Health;
+using WAG.Multiplayer;
+using WAG.Player.Health;
 
 namespace WAG.Player
 {
     public class NGOPlayerAnimationController : MonoBehaviour
     {
+        [SerializeField] private NGOPlayerHealthController healthController;
+        [SerializeField] private NGOPlayerSync sync;
+
         public static readonly int XVelHash = Animator.StringToHash("xVelocity");
         public static readonly int ZVelHash = Animator.StringToHash("zVelocity");
         public static readonly int YVelHash = Animator.StringToHash("yVelocity");
@@ -18,7 +23,6 @@ namespace WAG.Player
         public static readonly int Attacking = Animator.StringToHash("Attacking");
         private Animator animator;
 
-        public NGOPlayerController PC { private get; set; }
 
         // Start is called before the first frame update
         private void Awake()
@@ -38,15 +42,15 @@ namespace WAG.Player
         // Update is called once per frame
         private void Update()
         {
-            animator.SetFloat(NGOPlayerAnimationController.XVelHash, PC.PlayerVelocity.x);
-            animator.SetFloat(NGOPlayerAnimationController.ZVelHash, PC.PlayerVelocity.z);
-            animator.SetFloat(NGOPlayerAnimationController.YVelHash, PC.PlayerVelocity.y);
-            animator.SetBool(NGOPlayerAnimationController.CrouchHash, PC.SpeedController.CrouchController.Crouched);
-            animator.SetBool(NGOPlayerAnimationController.InventoryHash, PC.InventoryStatus);
-            animator.SetBool(NGOPlayerAnimationController.FallingHash, !PC.Grounded);
-            animator.SetBool(NGOPlayerAnimationController.GroundedHash, PC.Grounded);
+            animator.SetFloat(NGOPlayerAnimationController.XVelHash, sync.RPCVelocity.Value.x);
+            animator.SetFloat(NGOPlayerAnimationController.ZVelHash, sync.RPCVelocity.Value.z);
+            animator.SetFloat(NGOPlayerAnimationController.YVelHash, sync.RPCVelocity.Value.y);
+            animator.SetBool(NGOPlayerAnimationController.CrouchHash, sync.RPCCrouch.Value);
+            animator.SetBool(NGOPlayerAnimationController.InventoryHash, sync.RPCInventoryStatus.Value);
+            animator.SetBool(NGOPlayerAnimationController.FallingHash, !sync.RPCGrounded.Value);
+            animator.SetBool(NGOPlayerAnimationController.GroundedHash, sync.RPCGrounded.Value);
             animator.SetBool(NGOPlayerAnimationController.Wounded,
-                PC.HealthController.CurrentHeathStatus != HeathStatus.Healthy);
+                healthController.CurrentHeathStatus != HeathStatus.Healthy);
         }
 
         public void InteractTrigger()
