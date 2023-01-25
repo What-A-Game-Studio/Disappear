@@ -1,10 +1,11 @@
+using Unity.Netcode;
 using UnityEngine;
 using WAG.Core.Controls;
 
 
 namespace WAG.Player.Movements
 {
-    public class NGOCrouchController : MonoBehaviour
+    public class NGOCrouchController : NetworkBehaviour
     {
         [SerializeField] private float crouchSpeedFactor = -0.5f;
         public float CrouchSpeedFactor => Crouched ? crouchSpeedFactor : 0;
@@ -17,7 +18,7 @@ namespace WAG.Player.Movements
         private CapsuleCollider capsuleCollider;
 
         public bool Crouched =>
-            PlayerController.IsMine() ? InputManager.Instance.Crouch : PlayerController.Sync.RPCCrouch.Value;
+            PlayerController.IsMine ? InputManager.Instance.Crouch : PlayerController.Sync.RPCCrouch.Value;
 
         public NGOPlayerController PlayerController { get; set; }
 
@@ -54,6 +55,7 @@ namespace WAG.Player.Movements
 
         private void FixedUpdate()
         {
+            if (!IsOwner) return;
             PlayerController.Sync.SyncCrouch(Crouched);
         }
     }

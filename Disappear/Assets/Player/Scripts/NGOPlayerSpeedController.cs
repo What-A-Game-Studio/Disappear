@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WAG.Core.Controls;
 using WAG.Debugger;
+using WAG.Multiplayer;
 using WAG.Player.Enums;
 using WAG.Player.Health;
 using WAG.Player.Movements;
@@ -26,6 +27,7 @@ namespace WAG.Player
 
         private float targetSpeed;
         private StaminaController staminaController;
+        private NGOPlayerSync sync;
         private NGOCrouchController crouchController;
         public NGOCrouchController CrouchController => crouchController;
         private NGOPlayerHealthController healthController;
@@ -50,6 +52,12 @@ namespace WAG.Player
                 Debug.LogError("Need playerHealthController", this);
                 Debug.Break();
             }
+            
+            if (!TryGetComponent<NGOPlayerSync>(out sync))
+            {
+                Debug.LogError("Need NGOPlayerSync", this);
+                Debug.Break();
+            }
         }
 
         private void Awake()
@@ -60,11 +68,10 @@ namespace WAG.Player
         public float GetSpeed()
         {
             targetSpeed = walkSpeed;
-
-
-            if (InputManager.Instance.Move == Vector2.zero)
+            
+            if (sync.RPCMove.Value == Vector2.zero)
                 return 0f;
-
+            
             if (InputManager.Instance.Run && (staminaController.CanRun || DebuggerManager.Instance.UnlimitedStamina))
                 targetSpeed += walkSpeed * runSpeedFactor;
 
@@ -91,7 +98,7 @@ namespace WAG.Player
                 targetSpeed += walkSpeed * tsm.Value;
             }
 
-            targetSpeed *= DebuggerManager.Instance.debugSpeed;
+       //     targetSpeed *= DebuggerManager.Instance.debugSpeed;
 
             return targetSpeed;
         }
