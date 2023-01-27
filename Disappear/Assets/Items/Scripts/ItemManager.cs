@@ -6,6 +6,7 @@ using Unity.Netcode;
 using UnityEngine;
 using WAG.Inventory_Items;
 using WAG.Multiplayer;
+using WAG.Player;
 using Random = UnityEngine.Random;
 
 namespace WAG.Items
@@ -202,14 +203,7 @@ namespace WAG.Items
         }
 
 
-        private void RPC_DropItem(int indexInChildren, Vector3 spawnPos, Vector3 forwardOrientation)
-        {
-            if (indexInChildren > transform.childCount)
-                return;
 
-            Transform child = transform.GetChild(indexInChildren);
-            child.GetComponent<ItemController>()?.Activate(spawnPos + Vector3.up, forwardOrientation);
-        }
 
         protected virtual void InstantiateItem(Vector3 position, string itemId)
 
@@ -245,6 +239,26 @@ namespace WAG.Items
         {
             Debug.Log(itemNetworkId, transform);
             itemsRegistered[itemNetworkId] = itemController;
+        }
+        [Command]
+        public void DropItemCmd()
+        {
+            foreach (var item in itemsRegistered)
+            {
+                if (!item.Value.IsActive.Value)
+                {
+                    DropItemServerRpc(item.Value.NetworkObjectId, NGOPlayerController.MainPlayer.transform.position);
+                    return;
+                }
+            }
+            Debug.Log("Aucun item a drop");
+        }
+
+        [ServerRpc]
+        private void DropItemServerRpc(ulong valueNetworkObjectId, Vector3 position)
+        {
+            itemsRegistered[valueNetworkObjectId].transform.position = position;  
+            itemsRegistered[valueNetworkObjectId].IsActive.Value = true;
         }
     }
 }
