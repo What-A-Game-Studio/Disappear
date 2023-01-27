@@ -20,7 +20,8 @@ namespace WAG.Multiplayer
         {
             if (IsServer)
                 OnServerDespawn();
-            else
+            
+            if (IsClient)
                 OnClientDespawn();
             OnDespawn();
         }

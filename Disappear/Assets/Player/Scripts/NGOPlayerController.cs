@@ -51,6 +51,22 @@ namespace WAG.Player
         [Header("OpenInventory")] [SerializeField]
         private GameObject inventoryUI;
 
+        [Header("Components")] [SerializeField]
+        private NGOPlayerAnimationController playerAnimationController;
+
+        [SerializeField] private NGOPlayerHealthController healthController;
+        public NGOPlayerHealthController HealthController => healthController;
+
+        [SerializeField] private NGOCrouchController crouchController;
+
+        [SerializeField] private NGOPlayerSync sync;
+        public NGOPlayerSync Sync => sync;
+
+        [SerializeField] private NGOPlayerSpeedController speedController;
+        public NGOPlayerSpeedController SpeedController => speedController;
+        [SerializeField] private Rigidbody rb;
+        [SerializeField] private Animator animator;
+
         private bool inventoryStatus;
         public bool InventoryStatus => IsLocalPlayer ? inventoryStatus : sync.RPCInventoryStatus.Value;
 
@@ -59,72 +75,18 @@ namespace WAG.Player
 
         #region Needed Components
 
-        private Rigidbody rb;
-        private Animator animator;
-
-        public NGOPlayerHealthController HealthController => healthController;
-        private NGOPlayerHealthController healthController;
-        private NGOPlayerAnimationController pac;
         public InventoryController InventoryController { get; private set; }
         private CameraController cameraController;
 
-        private NGOPlayerSpeedController speedController;
-        public NGOPlayerSpeedController SpeedController => speedController;
-
-        private NGOPlayerSync sync;
-        public NGOPlayerSync Sync => sync;
 
         private StaminaController stamina;
-        private NGOCrouchController crouchController;
 
-        private void GetNeededComponents()
+        private void InitComponents()
         {
-            if (!TryGetComponent<Animator>(out animator))
-            {
-                Debug.LogError("Need animator", this);
-                Debug.Break();
-            }
-
-            if (!TryGetComponent<Rigidbody>(out rb))
-            {
-                Debug.LogError("Need Rigidbody", this);
-                Debug.Break();
-            }
-
             rb.freezeRotation = true;
-
-
-            if (!TryGetComponent<NGOPlayerSpeedController>(out speedController))
-            {
-                Debug.LogError("Need NGOPlayerSpeedController", this);
-                Debug.Break();
-            }
-
-            if (!TryGetComponent<NGOCrouchController>(out crouchController))
-            {
-                Debug.LogError("Need NGOCrouchController", this);
-                Debug.Break();
-            }
-            else
-            {
-                crouchController.PlayerController = this;
-            }
-
-            if (!TryGetComponent<NGOPlayerHealthController>(out healthController))
-            {
-                Debug.LogError("Need PlayerHealthController", this);
-                Debug.Break();
-            }
-
-            if (!TryGetComponent<NGOPlayerSync>(out sync))
-            {
-                Debug.LogError("Need PlayerSync", this);
-                Debug.Break();
-            }
-            else
-            {
-                sync.Init((NGOHealthStatusController)healthController, () => { pac.InteractTrigger(); });
-            }
+            crouchController.PlayerController = this;
+            sync.Init((NGOHealthStatusController) healthController,
+                () => { playerAnimationController.InteractTrigger(); });
         }
 
         #endregion Needed Components
@@ -133,12 +95,12 @@ namespace WAG.Player
 
         private void Start()
         {
-            GetNeededComponents();
+            InitComponents();
         }
 
         public override void OnNetworkSpawn()
         {
-            GetNeededComponents();
+            InitComponents();
             InitModel();
             base.OnNetworkSpawn();
         }
@@ -177,6 +139,7 @@ namespace WAG.Player
             {
                 currentVelocity = Vector3.zero;
             }
+
             sync.RPCVelocity.Value = currentVelocity;
         }
 

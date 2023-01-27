@@ -7,7 +7,7 @@ namespace WAG.Items
     public class PickableItem : Interactable
     {
         private IInventoryController inventory;
-        public ItemController ItemController { get; set; }
+        [field: SerializeField] public ItemController ItemController { get; set; }
 
 
         protected override void ActionOnInteract(GameObject sender)

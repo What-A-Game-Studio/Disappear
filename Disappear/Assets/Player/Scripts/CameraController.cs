@@ -12,19 +12,11 @@ namespace WAG.Player
         [SerializeField] private float upperLimit = -40f;
         [SerializeField] private float bottomLimit = 70f;
 
-        private Rigidbody rb;
-
         private void Awake()
         {
             cam = Camera.main.transform;
             cam.parent = transform;
-            cam.GetComponentInChildren<PlayerInteraction>()?.Init(gameObject, true);
-
-            if (!TryGetComponent<Rigidbody>(out rb))
-            {
-                Debug.LogError("Need Rigidbody", this);
-                Debug.Break();
-            }
+            cam.transform.GetChild(0)?.gameObject.SetActive(true);
         }
 
         private void LateUpdate()

@@ -79,6 +79,13 @@ MonoBehaviour:
   dis2Ground: 0.8
   inventoryUI: {fileID: 8876240911573691738, guid: 46f0130c925010649a780409a0427f33,
     type: 3}
+  playerAnimationController: {fileID: 7976443544015772588}
+  healthController: {fileID: 8329052764823636221}
+  crouchController: {fileID: 3054287753033483056}
+  sync: {fileID: 6862144076796432107}
+  speedController: {fileID: 8919060808760302615}
+  rb: {fileID: 7930560486036690796}
+  animator: {fileID: 1029722226550594275}
 --- !u!114 &7976443544015772588
 MonoBehaviour:
   m_ObjectHideFlags: 0

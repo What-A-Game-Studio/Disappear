@@ -2,42 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QFSW.QC;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 using WAG.Inventory_Items;
 using WAG.Multiplayer;
 using Random = UnityEngine.Random;
 
 namespace WAG.Items
 {
-    public struct ItemNetworkData : INetworkSerializable, IEquatable<ItemNetworkData>
-    {
-        public Vector3 Position;
-        public FixedString64Bytes ItemToSpawn;
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref Position);
-            serializer.SerializeValue(ref ItemToSpawn);
-        }
-
-        public bool Equals(ItemNetworkData other)
-        {
-            return other.ItemToSpawn == this.ItemToSpawn && other.Position == Position;
-        }
-    }
-
     /// <summary>
     /// ItemManager 
     /// </summary>
     public class ItemManager : NetworkSideBehaviour
     {
-        private NetworkList<ItemNetworkData> ItemPool;
-        private List<ItemNetworkData> localPool = new List<ItemNetworkData>();
-
         public static ItemManager Instance { get; private set; }
+
+        public static event EventHandler OnInstantiate = delegate { };
 
         [SerializeField] private RarityTierSO[] RarityTiers;
         [SerializeField] private ItemController[] itemControllers;
@@ -45,55 +25,39 @@ namespace WAG.Items
 
         private ItemSpawner[] spawners;
 
-        private int TotalItems, theoryItems;
+        private int totalItems, theoryItems;
 
         private int totalRate;
 
+        private Dictionary<ulong, ItemController> itemsRegistered = new Dictionary<ulong, ItemController>();
+
         private void Awake()
         {
-            Debug.Log("Item Manager Awake", this);
             if (Instance == null)
+            {
                 Instance = this;
+                OnInstantiate.Invoke(this, EventArgs.Empty);
+            }
             else
             {
                 Destroy(gameObject);
                 return;
             }
-
-            ItemPool = new NetworkList<ItemNetworkData>(new List<ItemNetworkData>());
-            if (!IsServer)
-            {
-                Debug.Log("Client sub to itempool", this);
-                ItemPool.OnListChanged += ItemPoolOnOnListChanged;
-            }
-        }
-
-        protected override void OnClientSpawn()
-        {
-            // foreach (ItemNetworkData item in ItemPool)
-            //     if (!localPool.Any(x => x.Equals(item)))
-            //         InstantiateItem(item);
-        }
-
-        protected override void OnDespawn()
-        {
-            ItemPool.Dispose();
-        }
-
-        private void ItemPoolOnOnListChanged(NetworkListEvent<ItemNetworkData> changeevent)
-        {
-            // Debug.Log(
-            //     changeevent.Type + " " + changeevent.Index + " (" + changeevent.Value.ItemToSpawn + ", " +
-            //     changeevent.Value.Position + ")", this);
-            // InstantiateItem(changeevent.Value);
         }
 
         protected override void OnServerSpawn()
         {
-            Debug.Log("item Manager spawn", this);
+            // NetworkManager.Singleton.SceneManager.OnSceneEvent += SceneManagerOnOnSceneEvent;
             CreateItems();
         }
 
+        private void SceneManagerOnOnSceneEvent(SceneEvent sceneevent)
+        {
+            if (sceneevent.SceneEventType == SceneEventType.SynchronizeComplete)
+            {
+                CreateItems();
+            }
+        }
 
         /// <summary>
         /// Create all items in all spawns
@@ -105,9 +69,7 @@ namespace WAG.Items
 
             foreach (ItemSpawner spawn in spawners)
             {
-                // Debug.Log("Spawn Item Type : " + spawn.ItemType);
                 ItemController[] goodTypeItemControllers = GetItemByType(spawn.ItemType);
-                // Debug.Log("Item type count : " + goodTypeItem.Length);
 
                 int nbItems = spawn.GetNbItemToSpawn();
                 theoryItems += nbItems;
@@ -116,39 +78,11 @@ namespace WAG.Items
                     ItemController item = GetTierToSpawn(goodTypeItemControllers);
                     if (item != null)
                     {
-                        // ItemPool.Add(Array.IndexOf(itemsData, item));
-                        var tmp = new ItemNetworkData()
-                        {
-                            Position = spawn.SpawnCoordinate(),
-                            ItemToSpawn = item.ItemData.Uid
-                        };
-                        ItemPool.Add(tmp);
-                        InstantiateItem(tmp);
-                        ++TotalItems;
+                        InstantiateItem(spawn.SpawnCoordinate(), item.ItemData.Uid);
+                        ++totalItems;
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Find index of item in children
-        /// </summary>
-        /// <param name="item">item ton find</param>
-        /// <returns>null if not found</returns>
-        protected int? FindIndexOfItem(ItemController item)
-        {
-            int? indexInChildren = null;
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Transform child = transform.GetChild(i);
-                if (child.TryGetComponent(out ItemController ic) && ic == item)
-                {
-                    indexInChildren = i;
-                    break;
-                }
-            }
-
-            return indexInChildren;
         }
 
         /// <summary>
@@ -195,7 +129,6 @@ namespace WAG.Items
                     filteredItems.Add(item);
             }
 
-            // ItemDataSO[] filteredTiers = items.Where(x => x.TierEnum == rte).ToArray();
             if (filteredItems.Count > 0)
             {
                 int idx = Random.Range(0, filteredItems.Count);
@@ -211,14 +144,7 @@ namespace WAG.Items
         /// <param name="item">Item to store</param>
         public void StoreItem(ItemController item)
         {
-            int? indexInChildren = FindIndexOfItem(item);
-
-            if (!indexInChildren.HasValue)
-                return;
-
-            // pv.RPC(nameof(RPC_StoreItem),
-            //     RpcTarget.All,
-            //     indexInChildren.Value);
+            StoreItemServerRpc(item.NetworkObjectId);
         }
 
         /// <summary>
@@ -229,10 +155,10 @@ namespace WAG.Items
         /// <param name="forward">direction to drop</param>
         public void DropItem(ItemController item, Vector3 position, Vector3 forward)
         {
-            int? indexInChildren = FindIndexOfItem(item);
+            // int? indexInChildren = FindIndexOfItem(item);
 
-            if (!indexInChildren.HasValue)
-                return;
+            // if (!indexInChildren.HasValue)
+            return;
             // pv.RPC(nameof(RPC_DropItem),
             //     RpcTarget.All,
             //     indexInChildren.Value,
@@ -247,7 +173,6 @@ namespace WAG.Items
         /// <returns>return null if indexItem is greater than array lenght or less than 0</returns>
         public ItemController GetItemById(string idTosSpawn)
         {
-            Debug.Log(idTosSpawn, this);
             return itemControllers.FirstOrDefault(x => x.ItemData.Uid == idTosSpawn);
         }
 
@@ -270,15 +195,10 @@ namespace WAG.Items
             return null;
         }
 
-
-        private void RPC_StoreItem(int indexInChildren)
+        [ServerRpc]
+        private void StoreItemServerRpc(ulong indexItemToHide)
         {
-            if (indexInChildren > transform.childCount)
-                return;
-
-            Transform child = transform.GetChild(indexInChildren);
-            child.gameObject.SetActive(false);
-            child.localPosition = Vector3.zero;
+            itemsRegistered[indexItemToHide].IsActive.Value = false;
         }
 
 
@@ -291,19 +211,17 @@ namespace WAG.Items
             child.GetComponent<ItemController>()?.Activate(spawnPos + Vector3.up, forwardOrientation);
         }
 
-        protected virtual void InstantiateItem(ItemNetworkData networkItem)
+        protected virtual void InstantiateItem(Vector3 position, string itemId)
 
         {
-            // Debug.Log("Item To Spawn : " + itemToSpawn);
-            ItemController controller = GetItemById(networkItem.ItemToSpawn.Value);
+            ItemController controller = GetItemById(itemId);
             if (controller == null)
             {
-                Debug.Log("Fail to Instantiate item ", this);
                 return;
             }
 
             Transform itemToSpawn =
-                Instantiate(controller.transform, networkItem.Position, Quaternion.identity, transform);
+                Instantiate(controller.transform, position, Quaternion.identity, transform);
             itemToSpawn.GetComponent<ItemController>().Spawn();
         }
 
@@ -315,25 +233,18 @@ namespace WAG.Items
         }
 
         [Command]
-        private void LogNetworkPoolItems()
+        private void logRegisteredItem()
         {
-            foreach (var item in ItemPool)
+            foreach (var ri in itemsRegistered)
             {
-                Debug.Log(
-                    item.ItemToSpawn.Value + ", " +
-                    item.Position, this);
+                Debug.Log("(" + ri.Key + ", " + ri.Value + ")");
             }
         }
 
-        [Command]
-        private void LogLocalPoolItems()
+        public void RegisterItem(ItemController itemController, ulong itemNetworkId)
         {
-            foreach (var item in ItemPool)
-            {
-                Debug.Log(
-                    item.ItemToSpawn.Value + ", " +
-                    item.Position, this);
-            }
+            Debug.Log(itemNetworkId, transform);
+            itemsRegistered[itemNetworkId] = itemController;
         }
     }
 }

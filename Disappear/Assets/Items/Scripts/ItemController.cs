@@ -1,40 +1,52 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using WAG.Inventory_Items;
 using WAG.Multiplayer;
-using Random = UnityEngine.Random;
 
 namespace WAG.Items
 {
     public class ItemController : NetworkSideBehaviour, IItemController
     {
         [SerializeField] private float forceAtSpawn = 1.2f;
+        [SerializeField] private NetworkObject networkObject;
+        [SerializeField] private Rigidbody rb;
         public float ForceAtSpawn => forceAtSpawn;
-        private Rigidbody rb;
 
         [SerializeField] private float timeToCheckIfItemStill = 1f;
         [SerializeField] private ItemDataSO data;
         public ItemDataSO ItemData => data;
 
+        public NetworkVariable<bool> IsActive = new NetworkVariable<bool>(true);
 
-        // public InventoryController ContainIn { get; set; }
 
         private void Awake()
         {
             tag = "Interactable";
-            
+            IsActive.OnValueChanged += ValueChanged;
+            ItemManager.OnInstantiate += (sender, args) =>
+            {
+                ItemManager.Instance.RegisterItem(
+                    this,
+                    NetworkObjectId);
+            };
         }
 
-        protected override void OnClientSpawn()
+        private void ValueChanged(bool previousvalue, bool newvalue)
         {
-            rb = GetComponent<Rigidbody>();
+            gameObject.SetActive(newvalue);
         }
 
-        IEnumerator CheckItemStill()
+
+        private void Start()
         {
-            yield return new WaitForSeconds(timeToCheckIfItemStill);
-            //if(rb.angularVelocity.magnitude)
+            if (ItemManager.Instance)
+            {
+                ItemManager.Instance.RegisterItem(
+                    this,
+                    NetworkObjectId);
+            }
         }
 
 
@@ -58,7 +70,7 @@ namespace WAG.Items
 
         public void Spawn()
         {
-           GetComponent<NetworkObject>().Spawn(true);
+            GetComponent<NetworkObject>().Spawn(true);
         }
     }
 }
